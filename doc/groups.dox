@@ -1,0 +1,33 @@
+
+/**
+@brief The main, catch-all namespace for TEO.
+ */
+namespace teo {}
+
+/**
+ * \defgroup roboticslab-speech_libraries roboticslab-speech Libraries
+ *
+ * @brief roboticslab-speech libraries.
+ *
+ */
+
+/**
+ * \defgroup roboticslab-speech_programs roboticslab-speech Programs
+ *
+ * @brief roboticslab-speech programs.
+ */
+
+/**
+ * \defgroup roboticslab-speech_applications roboticslab-speech Applications (Collections of Programs)
+ *
+ * @brief roboticslab-speech applications (collections of programs).
+ */
+
+/**
+ * \defgroup roboticslab-speech_examples roboticslab-speech Examples
+ *
+ * @brief roboticslab-speech examples.
+ */
+
+
+
