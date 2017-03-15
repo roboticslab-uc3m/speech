@@ -1,5 +1,5 @@
 # Copyright: Universidad Carlos III de Madrid (C) 2017;
-# Authors: Raul de Santos Rico TEMPLATE_AUTHOR Juan Gonzalez Victores
+# Authors: Raul de Santos Rico & Juan Gonzalez Victores
 # CopyPolicy: Released under the terms of the GNU GPL v2.0.
 
 # Exploit new cmake 2.6 features (export). 
@@ -13,14 +13,14 @@ endif(COMMAND cmake_policy)
 
 project(ROBOTICSLAB_SPEECH)
 
+set(BUILD_SHARED_LIBS TRUE CACHE INTERNAL "hide this!")
+
 ### options: cpp libraries
-option(ENABLE_ExampleLibrary "Choose if you want to compile ExampleLibrary" TRUE)
+option(ENABLE_Espeak "Choose if you want to install Espeak" TRUE)
 
 ### options: cpp programs
-option(ENABLE_exampleProgram "Choose if you want to compile exampleProgram" TRUE)
-
-### options: force default
-option(ENABLE_exampleExtraOption "Enable/disable option exampleExtraOption" TRUE)
+option(ENABLE_speechRecognition "Choose if you want to install speechRecognition" TRUE)
+option(ENABLE_textToSpeech "Choose if you want to install textToSpeech" FALSE)
 
 if(MSVC)
   MESSAGE(STATUS "Running on windows")    

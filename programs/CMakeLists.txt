@@ -1,5 +1,5 @@
-# Copyright: Universidad Carlos III de Madrid (C) 2017
-# Authors: Raul de Santos Rico TEMPLATE_AUTHOR Juan Gonzalez Victores
+# Copyright: Universidad Carlos III de Madrid (C) 2015
+# Authors: Juan G. Victores & Raul de Santos Rico
 
-add_subdirectory(exampleProgram)
-
+add_subdirectory(speechRecognition)
+add_subdirectory(textToSpeech)
