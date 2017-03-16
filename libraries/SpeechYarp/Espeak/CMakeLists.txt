@@ -12,16 +12,16 @@ FIND_PACKAGE(Espeak REQUIRED)
 
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR} ${ROBOTICSLAB_SPEECH_INCLUDE_DIRS} ${ESPEAK_INCLUDE_DIRS})
 
-yarp_add_idl(IDL_GEN_FILES speech.thrift)
+yarp_add_idl(IDL_GEN_FILES speech.thrift) # calls include_directories() on generated headers' dir
 
 YARP_ADD_PLUGIN(Espeak Espeak.hpp Espeak.cpp ${IDL_GEN_FILES})
 TARGET_LINK_LIBRARIES(Espeak ${YARP_LIBRARIES} ${ESPEAK_LIBRARIES})
 install(TARGETS Espeak DESTINATION lib)
 
-# Exporting dependencies for ROBOTICSLAB_SPEECHConfig.cmake quite manually for now... 
-set(ROBOTICSLAB_SPEECH_INCLUDE_DIRS ${ROBOTICSLAB_SPEECH_INCLUDE_DIRS} ${ESPEAK_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_BINARY_DIR}/libraries/SpeechYarp/Espeak/include  CACHE INTERNAL "appended headers")
-# set(ROBOTICSLAB_SPEECH_LIBRARIES ${ROBOTICSLAB_SPEECH_LIBRARIES} VisionYarp Espeak ${ESPEAK_LIBRARIES} CACHE INTERNAL "appended libraries")
+get_directory_property(_included_dirs INCLUDE_DIRECTORIES)
 
+# Exporting dependencies for ROBOTICSLAB_SPEECHConfig.cmake quite manually for now... 
+set(ROBOTICSLAB_SPEECH_INCLUDE_DIRS ${ROBOTICSLAB_SPEECH_INCLUDE_DIRS} ${_included_dirs}  CACHE INTERNAL "appended headers")
 
 #install(TARGETS Espeak DESTINATION lib)
 yarp_install(TARGETS Espeak
