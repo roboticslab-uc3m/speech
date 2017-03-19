@@ -5,10 +5,10 @@
 # crontab -e
 # 30 2 * * * /your/command
 
-echo "Update roboticslab-speech..."
-cd $HOME/roboticslab-speech
+echo "Update speech..."
+cd $HOME/speech
 git pull
-echo "Doxy roboticslab-speech..."
+echo "Doxy speech..."
 cd doc
 rm -r html
 /usr/bin/doxygen
