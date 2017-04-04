@@ -20,7 +20,7 @@ sudo make install  # Install :-)
 
 You may want to (from the same build dir):
 ```bash
-echo "export ROBOTICSLAB_SPEECH=`pwd`" >> ~/.bashrc
+echo "export ROBOTICSLAB_SPEECH_DIR=`pwd`" >> ~/.bashrc
 ```
 
 For additional SPEECH options use ccmake instead of cmake.
