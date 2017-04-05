@@ -7,7 +7,7 @@
 
 ### Install the Software on Ubuntu (working on all tested versions)
 
-Our software integrates the previous dependencies. Note that you will be prompted for your password upon using '''sudo''' a couple of times:
+Our software integrates the previous dependencies. Note that you will be prompted for your password upon using `sudo` a couple of times:
 
 ```bash
 cd  # go home
@@ -23,4 +23,4 @@ You may want to (from the same build dir):
 echo "export ROBOTICSLAB_SPEECH_DIR=`pwd`" >> ~/.bashrc
 ```
 
-For additional SPEECH options use ccmake instead of cmake.
+For additional SPEECH options use `ccmake` instead of `cmake`.
