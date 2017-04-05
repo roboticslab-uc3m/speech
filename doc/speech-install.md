@@ -11,10 +11,10 @@ Our software integrates the previous dependencies. Note that you will be prompte
 
 ```bash
 cd  # go home
-mkdir -p repos; cd repos  # make $HOME/repos if it doesn't exist; then, enter it
+mkdir -p repos; cd repos  # create $HOME/repos if it doesn't exist; then, enter it
 git clone https://github.com/roboticslab-uc3m/speech.git  # Download speech software from the repository
 cd speech; mkdir build; cd build; cmake ..  # Configure the speech software
-make  # Compile
+make -j$(nproc) # Compile
 sudo make install  # Install :-)
 ```
 
