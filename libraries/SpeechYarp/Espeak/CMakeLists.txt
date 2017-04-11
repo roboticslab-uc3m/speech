@@ -16,7 +16,6 @@ yarp_add_idl(IDL_GEN_FILES speech.thrift) # calls include_directories() on gener
 
 YARP_ADD_PLUGIN(Espeak Espeak.hpp Espeak.cpp ${IDL_GEN_FILES})
 TARGET_LINK_LIBRARIES(Espeak ${YARP_LIBRARIES} ${ESPEAK_LIBRARIES})
-install(TARGETS Espeak DESTINATION lib)
 
 get_directory_property(_included_dirs INCLUDE_DIRECTORIES)
 
