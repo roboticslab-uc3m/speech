@@ -15,9 +15,9 @@ before_install:
   #-- Install YARP deps
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo apt-get install libeigen3-dev; fi  # Needed for creating YARP lib_math
   #-- Install espeak/MBROLA
-  - if [ "$TRAVIS_OS_NAME" = "linux" ]; sudo apt-get install espeak libespeak-dev; fi
-  - if [ "$TRAVIS_OS_NAME" = "linux" ]; sudo apt-get install mbrola-en1; fi
-  - if [ "$TRAVIS_OS_NAME" = "linux" ]; sudo apt-get install mbrola-es1; fi
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo apt-get install espeak libespeak-dev; fi
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo apt-get install mbrola-en1; fi
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo apt-get install mbrola-es1; fi
 
 install:
   #-- Install yarp
