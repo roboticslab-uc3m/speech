@@ -2,6 +2,8 @@
 
 ### Install the Software dependencies:
 
+- [Install CMake](https://github.com/roboticslab-uc3m/installation-guides/blob/develop/install-cmake.md)
+- [Install YARP](https://github.com/roboticslab-uc3m/installation-guides/blob/develop/install-yarp.md)
 - [Install MBROLA VOICES](https://github.com/roboticslab-uc3m/installation-guides/blob/develop/install-mbrola.md)
 - [Install Speech Recognition](https://github.com/roboticslab-uc3m/installation-guides/blob/develop/install-speech-recognition.md)
 
