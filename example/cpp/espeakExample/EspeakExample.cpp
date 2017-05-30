@@ -2,7 +2,7 @@
 
 #include "EspeakExample.hpp"
 
-namespace teo
+namespace roboticslab
 {
 
 bool EspeakExample::run()

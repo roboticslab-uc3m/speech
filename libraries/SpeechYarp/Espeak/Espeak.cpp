@@ -4,7 +4,7 @@
 
 // -----------------------------------------------------------------------------
 
-teo::Espeak::Espeak()
+roboticslab::Espeak::Espeak()
 {   
     path = NULL;
     buflength = 500;
@@ -20,7 +20,7 @@ teo::Espeak::Espeak()
 
 // -----------------------------------------------------------------------------
 
-void teo::Espeak::printError(espeak_ERROR code)
+void roboticslab::Espeak::printError(espeak_ERROR code)
 {
     if (code == EE_INTERNAL_ERROR)
         CD_ERROR("EE_INTERNAL_ERROR\n");
@@ -32,7 +32,7 @@ void teo::Espeak::printError(espeak_ERROR code)
 
 // -----------------------------------------------------------------------------
 
-bool teo::Espeak::setLanguage(const std::string& language)
+bool roboticslab::Espeak::setLanguage(const std::string& language)
 {
     espeak_ERROR ret = espeak_SetVoiceByName(language.c_str());
     if ( ret != EE_OK)
@@ -47,7 +47,7 @@ bool teo::Espeak::setLanguage(const std::string& language)
 
 // -----------------------------------------------------------------------------
 
-std::vector<std::string> teo::Espeak::getSupportedLang()
+std::vector<std::string> roboticslab::Espeak::getSupportedLang()
 {
     std::vector<std::string> supportedLang;
 
@@ -83,7 +83,7 @@ std::vector<std::string> teo::Espeak::getSupportedLang()
 }
 
 // -----------------------------------------------------------------------------
-bool teo::Espeak::say(const std::string& text)
+bool roboticslab::Espeak::say(const std::string& text)
 {
     int s = text.length();
     const char* c = text.c_str();
@@ -106,7 +106,7 @@ bool teo::Espeak::say(const std::string& text)
 
 // -----------------------------------------------------------------------------
 
-bool teo::Espeak::setSpeed(const int16_t speed)
+bool roboticslab::Espeak::setSpeed(const int16_t speed)
 {
     espeak_ERROR ret = espeak_SetParameter(espeakRATE, speed, 0);
     if ( ret != EE_OK)
@@ -121,7 +121,7 @@ bool teo::Espeak::setSpeed(const int16_t speed)
 
 // -----------------------------------------------------------------------------
 
- bool teo::Espeak::setPitch(const int16_t pitch)
+ bool roboticslab::Espeak::setPitch(const int16_t pitch)
  {
     espeak_ERROR ret = espeak_SetParameter(espeakPITCH, pitch, 0);
     if ( ret != EE_OK)
@@ -136,7 +136,7 @@ bool teo::Espeak::setSpeed(const int16_t speed)
 
  // -----------------------------------------------------------------------------
 
- int16_t teo::Espeak::getSpeed()
+ int16_t roboticslab::Espeak::getSpeed()
  {
      CD_DEBUG("\n");
      return espeak_GetParameter(espeakRATE, 1);
@@ -144,7 +144,7 @@ bool teo::Espeak::setSpeed(const int16_t speed)
 
  // -----------------------------------------------------------------------------
 
-int16_t teo::Espeak::getPitch()
+int16_t roboticslab::Espeak::getPitch()
 {
     CD_DEBUG("\n");
     return espeak_GetParameter(espeakPITCH, 1);
@@ -152,7 +152,7 @@ int16_t teo::Espeak::getPitch()
 
  // -----------------------------------------------------------------------------
 
-bool teo::Espeak::play()
+bool roboticslab::Espeak::play()
 {
     //-- Wolud need to store previous say().
     CD_WARNING("Not implemented. Use say().\n");
@@ -161,7 +161,7 @@ bool teo::Espeak::play()
 
  // -----------------------------------------------------------------------------
 
- bool teo::Espeak::stop()
+ bool roboticslab::Espeak::stop()
  {
      espeak_ERROR ret = espeak_Cancel();
      if ( ret != EE_OK)
@@ -177,7 +177,7 @@ bool teo::Espeak::play()
 
 // ------------------- DeviceDriver Related ------------------------------------
 
-bool teo::Espeak::open(yarp::os::Searchable& config)
+bool roboticslab::Espeak::open(yarp::os::Searchable& config)
 {
     std::string name = config.check("name",yarp::os::Value(DEFAULT_NAME),"port /name (auto append of /rpc:s)").asString();
     std::string voice = config.check("voice",yarp::os::Value(DEFAULT_VOICE),"voice").asString();
@@ -207,7 +207,7 @@ bool teo::Espeak::open(yarp::os::Searchable& config)
 
 // -----------------------------------------------------------------------------
 
-bool teo::Espeak::close()
+bool roboticslab::Espeak::close()
 {
     return true;
 }

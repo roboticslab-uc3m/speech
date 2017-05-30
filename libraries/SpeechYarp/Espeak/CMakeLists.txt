@@ -2,7 +2,7 @@
 # Author: Juan G. Victores & Raul de Santos Rico
 # CopyPolicy: Released under the terms of the LGPLv2.1 or later, see LGPL.TXT
 
-YARP_PREPARE_PLUGIN(Espeak CATEGORY device TYPE teo::Espeak INCLUDE Espeak.hpp)
+YARP_PREPARE_PLUGIN(Espeak CATEGORY device TYPE roboticslab::Espeak INCLUDE Espeak.hpp)
 
 IF (NOT SKIP_Espeak)
 

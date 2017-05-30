@@ -19,14 +19,14 @@
 #define DEFAULT_NAME "/espeak"
 #define DEFAULT_VOICE "mb-en1"
 
-namespace teo
+namespace roboticslab
 {
 
 /**
  * @ingroup TeoYarp
  * \defgroup Espeak
  *
- * @brief Contains teo::Espeak.
+ * @brief Contains roboticslab::Espeak.
  */
 
 /**
@@ -158,7 +158,7 @@ class Espeak : public yarp::dev::DeviceDriver, public Speech_IDL {
         yarp::os::RpcServer rpcPort;
 };
 
-}  // namespace teo
+}  // namespace roboticslab
 
 #endif  // __ESPEAK_HPP__
 
