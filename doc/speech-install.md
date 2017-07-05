@@ -24,5 +24,16 @@ You may want to (from the same build dir):
 ```bash
 echo "export ROBOTICSLAB_SPEECH_DIR=`pwd`" >> ~/.bashrc
 ```
-
 For additional SPEECH options use `ccmake` instead of `cmake`.
+
+**Note:** `speechRecognition.py` is written in python and uses YARP. YARP is written in C++, so to use all the features of YARP in a program written in a different language, you have to use SWIG and configure YARP for this point:
+```bash
+sudo apt-get install swig
+cd
+cd repos/yarp/build # go to your YARP build path
+cmake .. -DYARP_COMPILE_BINDINGS=ON -DCREATE_PYTHON=ON #configuring YARP to be used in python programs
+make -j$(nproc) # Compile
+sudo make install  # Install :-)
+```
+
+
