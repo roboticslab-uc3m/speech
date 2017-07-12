@@ -10,6 +10,7 @@ compiler:
   - clang
 
 before_install:
+  - '[[ "$TRAVIS_EVENT_TYPE" = cron ]] && export YARP_CHECKOUT=devel || export YARP_CHECKOUT=master'
   #-- Install cmake
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo apt-get install cmake; fi
   #-- Install YARP deps
@@ -21,7 +22,7 @@ before_install:
 
 install:
   #-- Install yarp
-  - git clone https://github.com/robotology/yarp
+  - git clone --branch="$YARP_CHECKOUT https://github.com/robotology/yarp
   - cd yarp && mkdir build && cd build
   - cmake .. -DSKIP_ACE=ON
   - make
