@@ -10,17 +10,16 @@ SET(CMAKE_MODULE_PATH ${ROBOTICSLAB_SPEECH_MODULE_PATH} ${CMAKE_MODULE_PATH})
 FIND_PACKAGE(YARP REQUIRED)
 FIND_PACKAGE(Espeak REQUIRED)
 
-INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR} ${ROBOTICSLAB_SPEECH_INCLUDE_DIRS} ${ESPEAK_INCLUDE_DIRS})
+include(YarpIDL)
 
-yarp_add_idl(IDL_GEN_FILES speech.thrift) # calls include_directories() on generated headers' dir
+yarp_idl_to_dir(speech.thrift ${CMAKE_CURRENT_BINARY_DIR} idl_sources idl_headers idl_include_paths)
 
-YARP_ADD_PLUGIN(Espeak Espeak.hpp Espeak.cpp ${IDL_GEN_FILES})
+YARP_ADD_PLUGIN(Espeak Espeak.hpp Espeak.cpp ${idl_sources} ${idl_headers})
 TARGET_LINK_LIBRARIES(Espeak ${YARP_LIBRARIES} ${ESPEAK_LIBRARIES})
-
-get_directory_property(_included_dirs INCLUDE_DIRECTORIES)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${ROBOTICSLAB_SPEECH_INCLUDE_DIRS} ${ESPEAK_INCLUDE_DIRS} ${idl_include_paths})
 
 # Exporting dependencies for ROBOTICSLAB_SPEECHConfig.cmake quite manually for now... 
-set(ROBOTICSLAB_SPEECH_INCLUDE_DIRS ${ROBOTICSLAB_SPEECH_INCLUDE_DIRS} ${_included_dirs}  CACHE INTERNAL "appended headers")
+set(ROBOTICSLAB_SPEECH_INCLUDE_DIRS ${ROBOTICSLAB_SPEECH_INCLUDE_DIRS} ${idl_include_paths}  CACHE INTERNAL "appended headers")
 
 #install(TARGETS Espeak DESTINATION lib)
 yarp_install(TARGETS Espeak
@@ -32,6 +31,23 @@ yarp_install(TARGETS Espeak
 yarp_install(FILES Espeak.ini
      COMPONENT runtime
      DESTINATION ${YARP_PLUGIN_MANIFESTS_INSTALL_DIR})
+
+# already included in /share?
+if(NOT DEFINED ROBOTICSLAB-SPEECH_DATA_INSTALL_DIR)
+  include(YarpInstallationHelpers)
+  yarp_configure_external_installation(roboticslab-speech)
+endif()
+
+yarp_install(FILES speech.thrift ${idl_sources} ${idl_headers} 
+             DESTINATION ${ROBOTICSLAB-SPEECH_DATA_INSTALL_DIR})
+
+foreach(_file ${idl_sources} ${idl_headers})
+  get_filename_component(_filename ${_file} NAME)
+  # points at current build dir, should be fixed along with <pkg>Config.cmake to handle the install tree, too
+  set(IDL_GEN_FILES_INSTALL ${IDL_GEN_FILES_INSTALL} "${CMAKE_BINARY_DIR}/${ROBOTICSLAB-SPEECH_DATA_INSTALL_DIR}/${_filename}")
+endforeach()
+
+set(ROBOTICSLAB_SPEECH_IDL_FILES "${IDL_GEN_FILES_INSTALL}" CACHE INTERNAL "thrift IDL files")
 
 ENDIF (NOT SKIP_Espeak)
 

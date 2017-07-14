@@ -58,14 +58,18 @@ set(ROBOTICSLAB_SPEECH_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 # let cmake use them
 list(APPEND CMAKE_MODULE_PATH ${ROBOTICSLAB_SPEECH_MODULE_PATH})
 
-set(ROBOTICSLAB_SPEECH_INCLUDE_DIRS CACHE INTERNAL "appended header dirs" FORCE)
-set(ROBOTICSLAB_SPEECH_LINK_DIRS CACHE INTERNAL "appended link dirs" FORCE)
-set(ROBOTICSLAB_SPEECH_LIBRARIES CACHE INTERNAL "appended libraries" FORCE)
+set(ROBOTICSLAB_SPEECH_INCLUDE_DIRS CACHE INTERNAL "appended header dirs")
+set(ROBOTICSLAB_SPEECH_LINK_DIRS CACHE INTERNAL "appended link dirs")
+set(ROBOTICSLAB_SPEECH_LIBRARIES CACHE INTERNAL "appended libraries")
+set(ROBOTICSLAB_SPEECH_IDL_FILES CACHE INTERNAL "thrift IDL files")
 
 # add main contents
 add_subdirectory(share)
 add_subdirectory(libraries)
 add_subdirectory(programs)
+
+# store the package in the user registry
+export(PACKAGE ${PROJECT_NAME})
 
 # export our variables to a ROBOTICSLAB_SPEECHConfig.cmake creation
 set(ROBOTICSLAB_SPEECH_LINK_DIRS ${ROBOTICSLAB_SPEECH_LINK_DIRS} ${LIBRARY_OUTPUT_PATH})
