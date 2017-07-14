@@ -33,5 +33,17 @@ yarp_install(FILES Espeak.ini
      COMPONENT runtime
      DESTINATION ${YARP_PLUGIN_MANIFESTS_INSTALL_DIR})
 
+# already included in /share?
+if(NOT DEFINED ROBOTICSLAB-SPEECH_DATA_INSTALL_DIR)
+  include(YarpInstallationHelpers)
+  yarp_configure_external_installation(roboticslab-speech)
+endif()
+
+yarp_install(FILES speech.thrift
+             DESTINATION ${ROBOTICSLAB-SPEECH_DATA_INSTALL_DIR})
+
+# points at current build dir, should be fixed along with <pkg>Config.cmake to handle the install tree, too
+set(ROBOTICSLAB_SPEECH_DATA_PATH "${CMAKE_BINARY_DIR}/${ROBOTICSLAB-SPEECH_DATA_INSTALL_DIR}" CACHE INTERNAL "data path (e.g. thrift files)")
+
 ENDIF (NOT SKIP_Espeak)
 
