@@ -67,6 +67,9 @@ add_subdirectory(share)
 add_subdirectory(libraries)
 add_subdirectory(programs)
 
+# store the package in the user registry
+export(PACKAGE ${PROJECT_NAME})
+
 # export our variables to a ROBOTICSLAB_SPEECHConfig.cmake creation
 set(ROBOTICSLAB_SPEECH_LINK_DIRS ${ROBOTICSLAB_SPEECH_LINK_DIRS} ${LIBRARY_OUTPUT_PATH})
 configure_file(${CMAKE_SOURCE_DIR}/cmake/template/ROBOTICSLAB_SPEECHConfig.cmake.in
