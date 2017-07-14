@@ -39,11 +39,16 @@ if(NOT DEFINED ROBOTICSLAB-SPEECH_DATA_INSTALL_DIR)
   yarp_configure_external_installation(roboticslab-speech)
 endif()
 
-yarp_install(FILES speech.thrift
+yarp_install(FILES ${IDL_GEN_FILES}
              DESTINATION ${ROBOTICSLAB-SPEECH_DATA_INSTALL_DIR})
 
-# points at current build dir, should be fixed along with <pkg>Config.cmake to handle the install tree, too
-set(ROBOTICSLAB_SPEECH_DATA_PATH "${CMAKE_BINARY_DIR}/${ROBOTICSLAB-SPEECH_DATA_INSTALL_DIR}" CACHE INTERNAL "data path (e.g. thrift files)")
+foreach(_file ${IDL_GEN_FILES})
+  get_filename_component(_filename ${_file} NAME)
+  # points at current build dir, should be fixed along with <pkg>Config.cmake to handle the install tree, too
+  set(IDL_GEN_FILES_INSTALL ${IDL_GEN_FILES_INSTALL} "${CMAKE_BINARY_DIR}/${ROBOTICSLAB-SPEECH_DATA_INSTALL_DIR}/${_filename}")
+endforeach()
+
+set(ROBOTICSLAB_SPEECH_IDL_FILES "${IDL_GEN_FILES_INSTALL}" CACHE INTERNAL "thrift IDL files")
 
 ENDIF (NOT SKIP_Espeak)
 
