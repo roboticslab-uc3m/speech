@@ -10,6 +10,8 @@ SET(CMAKE_MODULE_PATH ${ROBOTICSLAB_SPEECH_MODULE_PATH} ${CMAKE_MODULE_PATH})
 FIND_PACKAGE(YARP REQUIRED)
 FIND_PACKAGE(Espeak REQUIRED)
 
+include(YarpIDL)
+
 yarp_idl_to_dir(speech.thrift ${CMAKE_CURRENT_BINARY_DIR} idl_sources idl_headers idl_include_paths)
 
 YARP_ADD_PLUGIN(Espeak Espeak.hpp Espeak.cpp ${idl_sources} ${idl_headers})
