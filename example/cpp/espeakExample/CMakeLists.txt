@@ -29,7 +29,7 @@ link_directories(${ROBOTICSLAB_SPEECH_LINK_DIRS})
 
 # Set up our main executable.
 if (folder_source)
-  add_executable(${KEYWORD} ${folder_source} ${folder_header})
+  add_executable(${KEYWORD} ${folder_source} ${folder_header} ${ROBOTICSLAB_SPEECH_IDL_FILES})
   target_link_libraries(${KEYWORD} ${YARP_LIBRARIES} ${ROBOTICSLAB_SPEECH_LIBRARIES})
   install(TARGETS ${KEYWORD} DESTINATION bin )
 else (folder_source)
