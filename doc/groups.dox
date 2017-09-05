@@ -5,26 +5,26 @@
 namespace teo {}
 
 /**
- * \defgroup speech_libraries speech Libraries
+ * \defgroup speech-libraries speech Libraries
  *
  * @brief speech libraries.
  *
  */
 
 /**
- * \defgroup speech_programs speech Programs
+ * \defgroup speech-programs speech Programs
  *
  * @brief speech programs.
  */
 
 /**
- * \defgroup speech_applications speech Applications (Collections of Programs)
+ * \defgroup speech-applications speech Applications (Collections of Programs)
  *
  * @brief speech applications (collections of programs).
  */
 
 /**
- * \defgroup speech_examples speech Examples
+ * \defgroup speech-examples speech Examples
  *
  * @brief speech examples.
  */

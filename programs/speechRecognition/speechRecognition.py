@@ -1,11 +1,15 @@
 #!/usr/bin/env python
 
-# 2016 (c) edits by Santiago Morante, Juan G Victores and Raul de Santos. 
-
-# Copyright (c) 2008 Carnegie Mellon University.
+##
+# @ingroup speech-programs
+# \defgroup speechRecognition speechRecognition.py
+# @brief Provides basic ASR capabilities.
 #
-# You may modify and redistribute this file under the same terms as
-# the CMU Sphinx system.  See
+# @section legal Legal
+#
+# Copyright: 2016-present (c) edits by Santiago Morante, Juan G Victores and Raul de Santos; past-2008 (c) Carnegie Mellon University.
+#
+# CopyPolicy: You may modify and redistribute this file under the same terms as the CMU Sphinx system. See
 # http://cmusphinx.sourceforge.net/html/LICENSE for more information.
 
 from gi import pygtkcompat
@@ -30,6 +34,9 @@ import gtk
 import yarp
 import os.path
 
+##
+# @ingroup speechRecognition
+# @brief Speech Recognition callback class.
 class DataProcessor(yarp.PortReader):
     def setRefToFather(self,value):
         self.refToFather = value
@@ -82,10 +89,8 @@ class DataProcessor(yarp.PortReader):
 
 
 ##
-#
 # @ingroup speechRecognition
-#
-# @brief Speech Recognition.
+# @brief Speech Recognition main class.
 class SpeechRecognition(object):
     """Based on GStreamer/PocketSphinx Demo Application"""
     def __init__(self):
@@ -169,13 +174,6 @@ class SpeechRecognition(object):
 
         self.pipeline.set_state(gst.State.PLAYING)
 
-##
-#
-# @ingroup vision_programs
-#
-# \defgroup speechRecognition speechRecognition.py
-#
-# @brief Creates an instance of SpeechRecognition.
 yarp.Network.init()
 if yarp.Network.checkNetwork() != True:
     print '[asr] error: found no yarp network (try running "yarpserver &"), bye!'
