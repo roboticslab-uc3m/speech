@@ -12,7 +12,7 @@ Installation instructions for installing from source can be found [here]( doc/sp
 
 #### Posting Issues
 
-1. Read [CONTRIBUTING.md](https://github.com/roboticslab-uc3m/vision/blob/master/CONTRIBUTING.md)
+1. Read [CONTRIBUTING.md](https://github.com/roboticslab-uc3m/speech/blob/master/CONTRIBUTING.md)
 2. [Post an issue / Feature request / Specific documentation request](https://github.com/roboticslab-uc3m/speech/issues)
 
 #### Fork & Pull Request
