@@ -5,12 +5,27 @@
 # \defgroup speechRecognition speechRecognition.py
 # @brief Provides basic ASR capabilities.
 #
-# @section legal Legal
+# @section speechRecognition_legal Legal
 #
 # Copyright: 2016-present (c) edits by Santiago Morante, Juan G Victores and Raul de Santos; past-2008 (c) Carnegie Mellon University.
 #
 # CopyPolicy: You may modify and redistribute this file under the same terms as the CMU Sphinx system. See
 # http://cmusphinx.sourceforge.net/html/LICENSE for more information.
+#
+# @section speechRecognition_running Running (assuming correct installation)
+# 
+# First we must run a YARP name server if it is not running in our current namespace: 
+# 
+# \verbatim
+# [on terminal 1] yarp server
+# \endverbatim
+#
+# Now launch the program:
+# 
+# \verbatim
+# [on terminal 2] speechRecognition.py
+# \endverbatim
+
 
 from gi import pygtkcompat
 import gi
