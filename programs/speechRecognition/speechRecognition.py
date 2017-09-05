@@ -25,7 +25,20 @@
 # \verbatim
 # [on terminal 2] speechRecognition.py
 # \endverbatim
-
+#
+# You can launch a 3rd terminal to read what is published via YARP port:
+#
+# \verbatim
+# [on terminal 3] yarp read ...  /speechRecognition:o
+# \endverbatim
+#
+# @section speechRecognition_troubleshooting Troubleshooting
+#
+# 1. gst-inspect-1.0 pocketsphinx
+#
+# 2. Check operating system sound settings
+# 
+# 3. Check hardware such as cables, and physical volume controls and on/off switches
 
 from gi import pygtkcompat
 import gi
