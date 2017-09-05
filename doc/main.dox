@@ -6,10 +6,10 @@ Welcome to the roboticslab-speech Repository documentation for the manipulation 
  \li <a class=el href="https://github.com/roboticslab-uc3m/speech/blob/develop/doc/speech-install.md">speech install</a>
  
 Other internal links of interest:
- \li \ref roboticslab-speech_programs
- \li \ref roboticslab-speech_libraries
- \li \ref roboticslab-speech_applications
- \li \ref roboticslab-speech_examples
+ \li \ref speech_programs
+ \li \ref speech_libraries
+ \li \ref speech_applications
+ \li \ref speech_examples
 
 Even more internal links of interest:
  \li <a class=el href="http://robots.uc3m.es/dox-kinematics-dynamics/index.html">kinematics-dynamics</a>

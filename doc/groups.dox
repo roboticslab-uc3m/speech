@@ -5,28 +5,28 @@
 namespace teo {}
 
 /**
- * \defgroup roboticslab-speech_libraries roboticslab-speech Libraries
+ * \defgroup speech_libraries speech Libraries
  *
- * @brief roboticslab-speech libraries.
+ * @brief speech libraries.
  *
  */
 
 /**
- * \defgroup roboticslab-speech_programs roboticslab-speech Programs
+ * \defgroup speech_programs speech Programs
  *
- * @brief roboticslab-speech programs.
+ * @brief speech programs.
  */
 
 /**
- * \defgroup roboticslab-speech_applications roboticslab-speech Applications (Collections of Programs)
+ * \defgroup speech_applications speech Applications (Collections of Programs)
  *
- * @brief roboticslab-speech applications (collections of programs).
+ * @brief speech applications (collections of programs).
  */
 
 /**
- * \defgroup roboticslab-speech_examples roboticslab-speech Examples
+ * \defgroup speech_examples speech Examples
  *
- * @brief roboticslab-speech examples.
+ * @brief speech examples.
  */
 
 
