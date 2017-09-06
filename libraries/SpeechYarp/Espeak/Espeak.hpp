@@ -44,6 +44,29 @@ Now load the YARP plugin library:
 \verbatim
 [on terminal 2] yarpdev --device Espeak
 \endverbatim
+
+You can launch a 3rd terminal to speak via YARP RPC client:
+
+\verbatim
+[on terminal 3] yarp rpc /espeak/rpc:s
+[on terminal 3] help
+Responses:
+  *** Available commands:
+  setLanguage
+  setSpeed
+  setPitch
+  getSpeed
+  getPitch
+  getSupportedLang
+  say
+  play
+  pause
+  stop
+  help
+[on terminal 3] say "hello there"
+Response: [ok]
+\endverbatim
+
 **/
 
 /**
