@@ -23,7 +23,7 @@ namespace roboticslab
 {
 
 /**
- * @ingroup TeoYarp
+ * @ingroup SpeechYarp
  * \defgroup Espeak
  *
  * @brief Contains roboticslab::Espeak.
