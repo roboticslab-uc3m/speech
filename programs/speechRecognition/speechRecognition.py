@@ -62,58 +62,65 @@ import gtk
 import yarp
 import os.path
 
+
+
+model = {}
+model["english"] = "en-us"
+model["spanish"] = "es"
+
+def getRegionCode(languaje):
+    regionCode = ''
+    try:
+        print("llega aqui")
+        regionCode = self.model[languaje]
+    except:
+        print("Invalid Region Code.")
+    return regionCode
+
+
 ##
 # @ingroup speechRecognition
-# @brief Speech Recognition callback class.
+# @brief Speech Recognition callback class
 class DataProcessor(yarp.PortReader):
+
     def setRefToFather(self,value):
         self.refToFather = value
+
     def read(self,connection):
-        print("in DataProcessor.read")
+        bottleIn = yarp.Bottle()
+        bottleOut = yarp.Bottle()
+
         if not(connection.isValid()):
             print("Connection shutting down")
             return False
-        bottleIn = yarp.Bottle()
-        bOut = yarp.Bottle() 
-        print("Trying to read from connection")
-        ok = bottleIn.read(connection)
-        if not(ok):
-            print("Failed to read input")
+
+        if not(bottleIn.read(connection)):
+            print("Error while reading from configuration input.")
             return False
-        # Code goes here :-)
-        print("Received [%s]"%bottleIn.toString())
-        if bottleIn.get(0).asString() == "setDictionary":
-                # follow-me dictionary:
-                if bottleIn.get(1).asString() == "follow-me":
-                        # follow-me english
-			if bottleIn.get(2).asString() == "english":
-				print("follow-me demo configured in english")
-				self.refToFather.setDictionary('dictionary/follow-me-english.lm','dictionary/follow-me-english.dic', 'model/en-us')
-                        # follow-me spanish
-			elif bottleIn.get(2).asString() == "spanish":
-				print("follow-me demo configured in spanish")
-                                print("dictionary not found")
-                                self.refToFather.setDictionary('dictionary/follow-me-spanish.lm','dictionary/follow-me-spanish.dic','model/es')
-                
-                # waiter dictionary:
-                elif bottleIn.get(1).asString() == "waiter":
-                        # waiter english:
-  			if bottleIn.get(2).asString() == "english":
-                                print("waiter demo configured in english")
-				self.refToFather.setDictionary('dictionary/waiter-english.lm','dictionary/waiter-english.dic', 'model/en-us')
-                        # waiter spanish:
-                       	elif bottleIn.get(2).asString() == "spanish":
-                                print("waiter demo configured in spanish")
-                                print("dictionary not found")
-				self.refToFather.setDictionary('dictionary/waiter-spanish.lm','dictionary/waiter-spanish.dic','model/es')
 
+        # if-then-else structure for the implemented configuration options
+        if bottleIn.get(0).asString() == "setDictionary" and bottleIn.size() == 3:
+            modelfile = getRegionCode(bottleIn.get(2).asString())
+            lmfile = bottleIn.get(1).asString() + "-" + bottleIn.get(2).asString() + ".lm"
+            dicfile = bottleIn.get(1).asString() + "-" + bottleIn.get(2).asString() + ".dic"
 
-        bOut.addString("ok")
+            ok = self.refToFather.setDictionary("dictionary/"+lmfile, "dictionary/"+dicfile, "model/"+modelfile)
+            if ok:
+                print("Dictionary changed to %s, %s, %s" % (lmfile, dicfile, modelfile))
+                bottleOut.addString("Dictionary changed to %s, %s, %s" % (lmfile, dicfile, modelfile))
+            else:
+                print("Could not found dictionary. Check file names and directories.")
+                bottleOut.addString("Could not found dictionary. Check file names and directories.")
+        else:
+            print("Invalid command received.")
+            bottleOut.addString("Invalid Operation. USAGE: setDictionary {dictionaryName} {english|en|spanish|es}")
+
         writer = connection.getWriter()
         if writer==None:
             print("No one to reply to")
             return True
-        return bOut.write(writer)
+        return bottleOut.write(writer)
+        return True
 
 
 ##
@@ -182,10 +189,17 @@ class SpeechRecognition(object):
 
     def setDictionary(self, lm, dic, hmm):
         print "Changing Dictionary...."
-        self.my_lm = self.rf.findFileByName(lm)
-        self.my_dic = self.rf.findFileByName(dic)
-	self.my_model = self.rf.findFileByName(hmm)
-        
+        lm = self.rf.findFileByName(lm)
+        dic = self.rf.findFileByName(dic)
+        model = self.rf.findFileByName(hmm)
+
+        if lm == '' or dic == '' or model == '':
+            return False
+
+        self.my_lm = lm
+        self.my_dic = dic
+        self.my_model = model
+
         self.pipeline.set_state(gst.State.NULL)
         self.pipeline = gst.parse_launch('autoaudiosrc ! audioconvert ! audioresample '
                                          + '! pocketsphinx name=asr beam=1e-20 ! fakesink')
@@ -201,6 +215,7 @@ class SpeechRecognition(object):
         bus.connect('message::element', self.element_message)
 
         self.pipeline.set_state(gst.State.PLAYING)
+        return True
 
 yarp.Network.init()
 if yarp.Network.checkNetwork() != True:
