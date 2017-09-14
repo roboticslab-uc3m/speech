@@ -63,7 +63,9 @@ import yarp
 import os.path
 
 
-
+# Workaround to translate languaje names to model names.
+# It is maybe nice to name dictionary files "<dictName>-<model>.<format>"
+# follow-me-es.lm  follow-me-en-us.lm
 model = {}
 model["english"] = "en-us"
 model["spanish"] = "es"
@@ -71,7 +73,6 @@ model["spanish"] = "es"
 def getRegionCode(languaje):
     regionCode = ''
     try:
-        print("llega aqui")
         regionCode = self.model[languaje]
     except:
         print("Invalid Region Code.")
@@ -100,9 +101,9 @@ class DataProcessor(yarp.PortReader):
 
         # if-then-else structure for the implemented configuration options
         if bottleIn.get(0).asString() == "setDictionary" and bottleIn.size() == 3:
-            modelfile = getRegionCode(bottleIn.get(2).asString())
             lmfile = bottleIn.get(1).asString() + "-" + bottleIn.get(2).asString() + ".lm"
             dicfile = bottleIn.get(1).asString() + "-" + bottleIn.get(2).asString() + ".dic"
+            modelfile = getRegionCode(bottleIn.get(2).asString())
 
             ok = self.refToFather.setDictionary("dictionary/"+lmfile, "dictionary/"+dicfile, "model/"+modelfile)
             if ok:
@@ -110,17 +111,15 @@ class DataProcessor(yarp.PortReader):
                 bottleOut.addString("Dictionary changed to %s, %s, %s" % (lmfile, dicfile, modelfile))
             else:
                 print("Could not found dictionary. Check file names and directories.")
-                bottleOut.addString("Could not found dictionary. Check file names and directories.")
+                bottleOut.addString("Could not find dictionary. Check file names and directories.")
         else:
             print("Invalid command received.")
             bottleOut.addString("Invalid Operation. USAGE: setDictionary {dictionaryName} {english|en|spanish|es}")
 
         writer = connection.getWriter()
         if writer==None:
-            print("No one to reply to")
             return True
         return bottleOut.write(writer)
-        return True
 
 
 ##
@@ -188,7 +187,6 @@ class SpeechRecognition(object):
                         self.outPort.write(b)
 
     def setDictionary(self, lm, dic, hmm):
-        print "Changing Dictionary...."
         lm = self.rf.findFileByName(lm)
         dic = self.rf.findFileByName(dic)
         model = self.rf.findFileByName(hmm)
