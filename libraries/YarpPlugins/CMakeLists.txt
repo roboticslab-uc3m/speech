@@ -4,9 +4,9 @@
 
 cmake_minimum_required(VERSION 2.6)
 
-#IF (ENABLE_SpeechYarp)
+#IF (ENABLE_YarpPlugins)
 
-  option(ENABLE_launchSpeechYarp "Choose if you want to compile launchSpeechYarp" TRUE)
+  option(ENABLE_launchYarpPlugins "Choose if you want to compile launchYarpPlugins" TRUE)
 
   find_package(YARP REQUIRED)
   include_directories(${YARP_INCLUDE_DIRS})
@@ -15,4 +15,4 @@ cmake_minimum_required(VERSION 2.6)
 
   add_subdirectory(Espeak)
 
-#ENDIF (ENABLE_SpeechYarp)
+#ENDIF (ENABLE_YarpPlugins)

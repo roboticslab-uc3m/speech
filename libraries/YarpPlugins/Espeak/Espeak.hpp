@@ -23,7 +23,7 @@ namespace roboticslab
 {
 
 /**
-@ingroup SpeechYarp
+@ingroup YarpPlugins
 \defgroup Espeak
 @brief Contains roboticslab::Espeak.
 
