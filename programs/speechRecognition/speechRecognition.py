@@ -73,7 +73,7 @@ model["spanish"] = "es"
 def getRegionCode(languaje):
     regionCode = ''
     try:
-        regionCode = self.model[languaje]
+        regionCode = model[languaje]
     except:
         print("Invalid Region Code.")
     return regionCode
