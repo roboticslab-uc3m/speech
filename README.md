@@ -8,6 +8,10 @@ Link to Doxygen generated documentation: http://robots.uc3m.es/dox-speech
 
 Installation instructions for installing from source can be found [here]( doc/speech-install.md ).
 
+## Usage
+
+Information of how to launch or configure it can be found [here](/doc/speech-instructions.md)
+
 ## Contributing
 
 #### Posting Issues
