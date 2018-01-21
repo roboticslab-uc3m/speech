@@ -15,6 +15,7 @@ include(YarpIDL)
 yarp_idl_to_dir(speech.thrift ${CMAKE_CURRENT_BINARY_DIR} idl_sources idl_headers idl_include_paths)
 
 YARP_ADD_PLUGIN(Espeak Espeak.hpp Espeak.cpp ${idl_sources} ${idl_headers})
+add_dependencies(Espeak COLOR_DEBUG)
 TARGET_LINK_LIBRARIES(Espeak ${YARP_LIBRARIES} ${ESPEAK_LIBRARIES})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${ROBOTICSLAB_SPEECH_INCLUDE_DIRS} ${ESPEAK_INCLUDE_DIRS} ${idl_include_paths})
 

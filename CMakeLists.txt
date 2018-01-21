@@ -58,6 +58,24 @@ set(ROBOTICSLAB_SPEECH_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 # let cmake use them
 list(APPEND CMAKE_MODULE_PATH ${ROBOTICSLAB_SPEECH_MODULE_PATH})
 
+# Bootstrap YCM. Stick to v0.2.2 because of:
+# https://github.com/robotology/ycm/issues/118
+# ...and to keep YCM itself compatible with cmake_minimum_required().
+set(YCM_TAG v0.2.2)
+include(YCMBootstrap)
+
+# Superbuild phase - include color-debug.
+include(FindOrBuildPackage)
+find_or_build_package(COLOR_DEBUG)
+
+# find_or_build_package() doesn't bring into scope COLOR_DEBUG_INCLUDE_DIRS
+# nor other config variables. If a system copy is found, we have to call the
+# find_package() command and proceed as usual.
+if(USE_SYSTEM_COLOR_DEBUG)
+    find_package(COLOR_DEBUG REQUIRED)
+    include_directories(${COLOR_DEBUG_INCLUDE_DIRS})
+endif()
+
 set(ROBOTICSLAB_SPEECH_INCLUDE_DIRS CACHE INTERNAL "appended header dirs")
 set(ROBOTICSLAB_SPEECH_LINK_DIRS CACHE INTERNAL "appended link dirs")
 set(ROBOTICSLAB_SPEECH_LIBRARIES CACHE INTERNAL "appended libraries")
