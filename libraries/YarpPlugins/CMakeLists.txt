@@ -2,17 +2,27 @@
 # Authors: Juan G. Victores & Raul de Santos Rico
 # CopyPolicy: Released under the terms of the LGPLv2.1 or later, see LGPL.TXT
 
-cmake_minimum_required(VERSION 2.6)
+# Find YARP (common dependency for all devices).
+find_package(YARP REQUIRED)
 
-#IF (ENABLE_YarpPlugins)
+# Include YARP CMake modules (needless since YARP 2.3.70).
+list(APPEND CMAKE_MODULE_PATH ${YARP_MODULE_PATH})
 
-  option(ENABLE_launchYarpPlugins "Choose if you want to compile launchYarpPlugins" TRUE)
+# Utilities for creating YARP devices.
+include(YarpPlugin)
 
-  find_package(YARP REQUIRED)
-  include_directories(${YARP_INCLUDE_DIRS})
-  list(APPEND CMAKE_MODULE_PATH ${YARP_MODULE_PATH})  
-  include(YarpPlugin)
+# Common YARP includes for subdirectories (needless since YARP 2.3.70).
+include_directories(${YARP_INCLUDE_DIRS})
 
-  add_subdirectory(Espeak)
+# Make interface headers discoverable by subdirectories.
+#include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
-#ENDIF (ENABLE_YarpPlugins)
+# YARP devices.
+add_subdirectory(Espeak)
+
+# Install interface headers.
+#install(FILES IWhatever.h
+#        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+
+# Export variables to the global scope.
+#set_property(GLOBAL APPEND PROPERTY ROBOTICSLAB_SPEECH_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR})

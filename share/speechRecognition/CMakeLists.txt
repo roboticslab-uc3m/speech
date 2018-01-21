@@ -2,18 +2,38 @@
 # Authors: Juan G Victores & Raul de Santos Rico
 # CopyPolicy: Released under the terms of the GNU GPL v2.0.
 
-set(appname speechRecognition)
+yarp_install(FILES conf/speechRecognition.ini
+             DESTINATION ${ROBOTICSLAB-SPEECH_CONTEXTS_INSTALL_DIR}/speechRecognition)
 
+yarp_install(FILES conf/dictionary/es-20k.dic
+                   conf/dictionary/es-20k.lm
+                   conf/dictionary/follow-me-english.dic
+                   conf/dictionary/follow-me-english.lm
+                   conf/dictionary/follow-me-spanish.dic
+                   conf/dictionary/follow-me-spanish.lm
+                   conf/dictionary/waiter-english.dic
+                   conf/dictionary/waiter-english.lm
+                   conf/dictionary/waiter-spanish.dic
+                   conf/dictionary/waiter-spanish.lm
+             DESTINATION ${ROBOTICSLAB-SPEECH_CONTEXTS_INSTALL_DIR}/speechRecognition/dictionary)
 
-file(GLOB conf ${CMAKE_CURRENT_SOURCE_DIR}/conf/*.ini)
-file(GLOB lm ${CMAKE_CURRENT_SOURCE_DIR}/conf/dictionary/*.lm)
-file(GLOB dic ${CMAKE_CURRENT_SOURCE_DIR}/conf/dictionary/*.dic)
-file(GLOB es_model ${CMAKE_CURRENT_SOURCE_DIR}/conf/model/es/*)
-file(GLOB en_model ${CMAKE_CURRENT_SOURCE_DIR}/conf/model/en-us/*)
+yarp_install(FILES conf/model/en-us/feat.params
+                   conf/model/en-us/feature_transform
+                   conf/model/en-us/mdef
+                   conf/model/en-us/means
+                   conf/model/en-us/mixture_weights
+                   conf/model/en-us/noisedict
+                   conf/model/en-us/README
+                   conf/model/en-us/transition_matrices
+                   conf/model/en-us/variances
+             DESTINATION ${ROBOTICSLAB-SPEECH_CONTEXTS_INSTALL_DIR}/speechRecognition/model/en-us)
 
-yarp_install(FILES ${conf} DESTINATION ${ROBOTICSLAB-SPEECH_CONTEXTS_INSTALL_DIR}/${appname})
-yarp_install(FILES ${lm} DESTINATION ${ROBOTICSLAB-SPEECH_CONTEXTS_INSTALL_DIR}/${appname}/dictionary)
-yarp_install(FILES ${dic} DESTINATION ${ROBOTICSLAB-SPEECH_CONTEXTS_INSTALL_DIR}/${appname}/dictionary)
-yarp_install(FILES ${es_model} DESTINATION ${ROBOTICSLAB-SPEECH_CONTEXTS_INSTALL_DIR}/${appname}/model/es)
-yarp_install(FILES ${en_model} DESTINATION ${ROBOTICSLAB-SPEECH_CONTEXTS_INSTALL_DIR}/${appname}/model/en-us)
-
+yarp_install(FILES conf/model/es/feat.params
+                   conf/model/es/mdef
+                   conf/model/es/means
+                   conf/model/es/mixture_weights
+                   conf/model/es/noisedict
+                   conf/model/es/sendump
+                   conf/model/es/transition_matrices
+                   conf/model/es/variances
+             DESTINATION ${ROBOTICSLAB-SPEECH_CONTEXTS_INSTALL_DIR}/speechRecognition/model/es)
