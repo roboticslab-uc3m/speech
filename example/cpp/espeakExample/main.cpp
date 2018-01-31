@@ -36,7 +36,7 @@ int main(int argc, char **argv)
 {
     //YARP_REGISTER_PLUGINS(HeadYarp);
 
-    teo::EspeakExample mod;
+    roboticslab::EspeakExample mod;
     return mod.run();
 }
 

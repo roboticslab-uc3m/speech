@@ -8,7 +8,7 @@
 
 #include "Speech_IDL.h"
 
-namespace teo
+namespace roboticslab
 {
 
 class EspeakExample
@@ -21,7 +21,7 @@ private:
     yarp::dev::PolyDriver dd; //create a YARP multi-use driver
 };
 
-}  // namespace teo
+}  // namespace roboticslab
 
 #endif // __ESPEAK_EXAMPLE_HPP__
 

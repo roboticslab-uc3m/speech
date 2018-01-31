@@ -1,14 +1,57 @@
 # Authors: Juan G Victores
 # CopyPolicy: Released under the terms of the LGPLv2.1 or later, see LGPL.TXT
-# Evident yet unstandarized names
 
-IF (NOT ROBOTICSLAB_SPEECH_FOUND)
+# Once you find_package(ROBOTICSLAB_SPEECH), it defines:
+#
+# * several targets; it's advised to link against individual libraries with the usual
+#   target_link_libraries() command
+#
+# * ROBOTICSLAB_SPEECH_INCLUDE_DIRS; use include_directories(${ROBOTICSLAB_SPEECH_INCLUDE_DIRS})
+#
+# * ROBOTICSLAB_SPEECH_IDL_INCLUDES; use include_directories(${ROBOTICSLAB_SPEECH_IDL_INCLUDES})
+#
+# * ROBOTICSLAB_SPEECH_IDL_SOURCES; use add_executable(myExe ${mySources} ${ROBOTICSLAB_SPEECH_IDL_SOURCES})
+#
+# * ROBOTICSLAB_SPEECH_MODULE_PATH; use list(APPEND CMAKE_MODULE_PATH ${ROBOTICSLAB_SPEECH_MODULE_PATH})
+#
+# * ROBOTICSLAB_SPEECH_LIBRARIES; shorthand for linking against all targets at once,
+#   use target_link_libraries(_target ${ROBOTICSLAB_SPEECH_LIBRARIES})
+#
+# Notes:
+#
+# * All target names are prepended with the ROBOTICSLAB:: namespace
 
-  SET(ROBOTICSLAB_SPEECH_LIBRARIES "@ROBOTICSLAB_SPEECH_LIBRARIES@")
-  SET(ROBOTICSLAB_SPEECH_INCLUDE_DIRS "@ROBOTICSLAB_SPEECH_INCLUDE_DIRS@")
-  SET(ROBOTICSLAB_SPEECH_LINK_DIRS "@ROBOTICSLAB_SPEECH_LINK_DIRS@")
-  SET(ROBOTICSLAB_SPEECH_DEFINES "@ROBOTICSLAB_SPEECH_DEFINES@")
-  SET(ROBOTICSLAB_SPEECH_MODULE_PATH "@ROBOTICSLAB_SPEECH_MODULE_PATH@")
+@PACKAGE_INIT@
 
-  SET (ROBOTICSLAB_SPEECH_FOUND TRUE)
-ENDIF (NOT ROBOTICSLAB_SPEECH_FOUND)
+set(ROBOTICSLAB_SPEECH_INCLUDE_DIRS)
+
+foreach(_dir @PACKAGE_ROBOTICSLAB_SPEECH_INCLUDE_DIR@)
+    set_and_check(_temp_var ${_dir})
+    list(APPEND ROBOTICSLAB_SPEECH_INCLUDE_DIRS ${_temp_var})
+endforeach()
+
+set(ROBOTICSLAB_SPEECH_IDL_INCLUDES)
+
+foreach(_dir @PACKAGE_ROBOTICSLAB_SPEECH_IDL_INCLUDE@)
+    set_and_check(_temp_var ${_dir})
+    list(APPEND ROBOTICSLAB_SPEECH_IDL_INCLUDES ${_temp_var})
+endforeach()
+
+set(ROBOTICSLAB_SPEECH_IDL_SOURCES)
+
+foreach(_dir @PACKAGE_ROBOTICSLAB_SPEECH_IDL_SOURCE@)
+    set_and_check(_temp_var ${_dir})
+    list(APPEND ROBOTICSLAB_SPEECH_IDL_SOURCES ${_temp_var})
+endforeach()
+
+set(ROBOTICSLAB_SPEECH_MODULE_PATH "@PACKAGE_ROBOTICSLAB_SPEECH_MODULE_DIR@")
+
+if(NOT "@_exported_targets@" STREQUAL "")
+    include(${CMAKE_CURRENT_LIST_DIR}/ROBOTICSLAB_SPEECHTargets.cmake)
+
+    set(ROBOTICSLAB_SPEECH_LIBRARIES)
+
+    foreach(_target @_exported_targets@)
+        list(APPEND ROBOTICSLAB_SPEECH_LIBRARIES ROBOTICSLAB::${_target})
+    endforeach()
+endif()

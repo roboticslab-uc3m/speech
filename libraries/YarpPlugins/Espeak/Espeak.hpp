@@ -19,21 +19,60 @@
 #define DEFAULT_NAME "/espeak"
 #define DEFAULT_VOICE "mb-en1"
 
-namespace teo
+namespace roboticslab
 {
 
 /**
- * @ingroup TeoYarp
- * \defgroup Espeak
- *
- * @brief Contains teo::Espeak.
- */
+@ingroup YarpPlugins
+\defgroup Espeak
+@brief Contains roboticslab::Espeak.
+
+@section Espeak_legal Legal
+
+Copyright: 2016-present (c) Juan G Victores and Raul de Santos.
+
+@section Espeak_running Running (assuming correct installation)
+
+First we must run a YARP name server if it is not running in our current namespace:
+
+\verbatim
+[on terminal 1] yarp server
+\endverbatim
+
+Now load the YARP plugin library:
+
+\verbatim
+[on terminal 2] yarpdev --device Espeak
+\endverbatim
+
+You can launch a 3rd terminal to speak via YARP RPC client:
+
+\verbatim
+[on terminal 3] yarp rpc /espeak/rpc:s
+[on terminal 3] help
+Responses:
+  *** Available commands:
+  setLanguage
+  setSpeed
+  setPitch
+  getSpeed
+  getPitch
+  getSupportedLang
+  say
+  play
+  pause
+  stop
+  help
+[on terminal 3] say "hello there"
+Response: [ok]
+\endverbatim
+
+**/
 
 /**
- * @ingroup Espeak
- * @brief The Espeak class implements...
- */
-
+@ingroup Espeak
+@brief Implements yarp::dev::DeviceDriver and Speech_IDL.
+**/
 class Espeak : public yarp::dev::DeviceDriver, public Speech_IDL {
 
     public:
@@ -158,7 +197,7 @@ class Espeak : public yarp::dev::DeviceDriver, public Speech_IDL {
         yarp::os::RpcServer rpcPort;
 };
 
-}  // namespace teo
+}  // namespace roboticslab
 
 #endif  // __ESPEAK_HPP__
 
