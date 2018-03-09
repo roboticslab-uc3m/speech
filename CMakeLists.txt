@@ -87,9 +87,6 @@ if(USE_SYSTEM_COLOR_DEBUG)
     add_library(COLOR_DEBUG UNKNOWN IMPORTED)
 endif()
 
-# Store common include directories in global scope.
-set_property(GLOBAL PROPERTY ROBOTICSLAB_SPEECH_INCLUDE_DIRS)
-
 # Store IDL files in global scope.
 set_property(GLOBAL PROPERTY ROBOTICSLAB_SPEECH_IDL_INCLUDES)
 set_property(GLOBAL PROPERTY ROBOTICSLAB_SPEECH_IDL_SOURCES)
@@ -107,7 +104,6 @@ add_subdirectory(programs)
 export(PACKAGE ROBOTICSLAB_SPEECH)
 
 # Retrieve global properties.
-get_property(_common_includes GLOBAL PROPERTY ROBOTICSLAB_SPEECH_INCLUDE_DIRS)
 get_property(_idl_includes GLOBAL PROPERTY ROBOTICSLAB_SPEECH_IDL_INCLUDES)
 get_property(_idl_sources GLOBAL PROPERTY ROBOTICSLAB_SPEECH_IDL_SOURCES)
 get_property(_exported_targets GLOBAL PROPERTY ROBOTICSLAB_SPEECH_TARGETS)
@@ -123,7 +119,6 @@ endif()
 include(CMakePackageConfigHelpers)
 
 # Set exported variables (build tree).
-set(ROBOTICSLAB_SPEECH_INCLUDE_DIR "${_common_includes}")
 set(ROBOTICSLAB_SPEECH_IDL_INCLUDE "${_idl_includes}")
 set(ROBOTICSLAB_SPEECH_IDL_SOURCE "${_idl_sources}")
 set(ROBOTICSLAB_SPEECH_MODULE_DIR ${CMAKE_SOURCE_DIR}/cmake)
@@ -133,14 +128,12 @@ configure_package_config_file(${CMAKE_SOURCE_DIR}/cmake/template/ROBOTICSLAB_SPE
                               ${CMAKE_BINARY_DIR}/ROBOTICSLAB_SPEECHConfig.cmake
                               INSTALL_DESTINATION ${CMAKE_BINARY_DIR}
                               INSTALL_PREFIX ${CMAKE_BINARY_DIR}
-                              PATH_VARS ROBOTICSLAB_SPEECH_INCLUDE_DIR
-                                        ROBOTICSLAB_SPEECH_IDL_INCLUDE
+                              PATH_VARS ROBOTICSLAB_SPEECH_IDL_INCLUDE
                                         ROBOTICSLAB_SPEECH_IDL_SOURCE
                                         ROBOTICSLAB_SPEECH_MODULE_DIR
                               NO_CHECK_REQUIRED_COMPONENTS_MACRO)
 
 # Set exported variables (install tree).
-set(ROBOTICSLAB_SPEECH_INCLUDE_DIR ${CMAKE_INSTALL_INCLUDEDIR})
 set(ROBOTICSLAB_SPEECH_IDL_INCLUDE)
 set(ROBOTICSLAB_SPEECH_IDL_SOURCE)
 
@@ -166,8 +159,7 @@ set(ROBOTICSLAB_SPEECH_MODULE_DIR ${CMAKE_INSTALL_DATADIR}/ROBOTICSLAB_SPEECH/cm
 configure_package_config_file(${CMAKE_SOURCE_DIR}/cmake/template/ROBOTICSLAB_SPEECHConfig.cmake.in
                               ${CMAKE_BINARY_DIR}/ROBOTICSLAB_SPEECHConfig.cmake.install
                               INSTALL_DESTINATION ${_cmake_destination}
-                              PATH_VARS ROBOTICSLAB_SPEECH_INCLUDE_DIR
-                                        ROBOTICSLAB_SPEECH_IDL_INCLUDE
+                              PATH_VARS ROBOTICSLAB_SPEECH_IDL_INCLUDE
                                         ROBOTICSLAB_SPEECH_IDL_SOURCE
                                         ROBOTICSLAB_SPEECH_MODULE_DIR
                               NO_CHECK_REQUIRED_COMPONENTS_MACRO)

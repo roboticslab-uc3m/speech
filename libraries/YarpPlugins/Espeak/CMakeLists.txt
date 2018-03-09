@@ -17,12 +17,9 @@ include(YarpIDL)
 
 yarp_idl_to_dir(speech.thrift ${CMAKE_CURRENT_BINARY_DIR} idl_sources idl_headers idl_include_paths)
 
-get_property(_common_dirs GLOBAL PROPERTY ROBOTICSLAB_VISION_INCLUDE_DIRS)
-
 include_directories(${CMAKE_CURRENT_SOURCE_DIR} # yarp plugin builder needs this
                     ${ESPEAK_INCLUDE_DIRS}
-                    ${idl_include_paths}
-                    ${_common_dirs})
+                    ${idl_include_paths})
 
 yarp_add_plugin(Espeak Espeak.hpp
                        Espeak.cpp
@@ -53,7 +50,7 @@ endif()
 
 yarp_install(FILES ${thrift_files}
                    ${idl_sources}
-                   ${idl_headers} 
+                   ${idl_headers}
              DESTINATION ${ROBOTICSLAB-SPEECH_DATA_INSTALL_DIR}/idls)
 
 set_property(GLOBAL APPEND PROPERTY ROBOTICSLAB_SPEECH_IDL_INCLUDES ${idl_include_paths})
