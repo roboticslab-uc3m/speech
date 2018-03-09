@@ -48,7 +48,9 @@ if(NOT CMAKE_CONFIGURATION_TYPES)
 endif()
 
 # Pick up our cmake modules.
-list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake
+                              ${CMAKE_SOURCE_DIR}/cmake/find-modules
+                              ${CMAKE_SOURCE_DIR}/cmake/ycm-modules)
 
 # Bootstrap YCM. Stick to v0.2.2 because of:
 # https://github.com/robotology/ycm/issues/118
@@ -124,7 +126,7 @@ set(ROBOTICSLAB_SPEECH_IDL_SOURCE "${_idl_sources}")
 set(ROBOTICSLAB_SPEECH_MODULE_DIR ${CMAKE_SOURCE_DIR}/cmake)
 
 # <pkg>Config.cmake (build tree).
-configure_package_config_file(${CMAKE_SOURCE_DIR}/cmake/template/ROBOTICSLAB_SPEECHConfig.cmake.in
+configure_package_config_file(${CMAKE_SOURCE_DIR}/cmake/templates/ROBOTICSLAB_SPEECHConfig.cmake.in
                               ${CMAKE_BINARY_DIR}/ROBOTICSLAB_SPEECHConfig.cmake
                               INSTALL_DESTINATION ${CMAKE_BINARY_DIR}
                               INSTALL_PREFIX ${CMAKE_BINARY_DIR}
@@ -156,7 +158,7 @@ endif()
 set(ROBOTICSLAB_SPEECH_MODULE_DIR ${CMAKE_INSTALL_DATADIR}/ROBOTICSLAB_SPEECH/cmake)
 
 # <pkg>Config.cmake (install tree).
-configure_package_config_file(${CMAKE_SOURCE_DIR}/cmake/template/ROBOTICSLAB_SPEECHConfig.cmake.in
+configure_package_config_file(${CMAKE_SOURCE_DIR}/cmake/templates/ROBOTICSLAB_SPEECHConfig.cmake.in
                               ${CMAKE_BINARY_DIR}/ROBOTICSLAB_SPEECHConfig.cmake.install
                               INSTALL_DESTINATION ${_cmake_destination}
                               PATH_VARS ROBOTICSLAB_SPEECH_IDL_INCLUDE
