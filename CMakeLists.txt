@@ -134,8 +134,8 @@ configure_package_config_file(${CMAKE_SOURCE_DIR}/cmake/template/ROBOTICSLAB_SPE
                               NO_CHECK_REQUIRED_COMPONENTS_MACRO)
 
 # Set exported variables (install tree).
-set(ROBOTICSLAB_SPEECH_IDL_INCLUDE)
-set(ROBOTICSLAB_SPEECH_IDL_SOURCE)
+set(ROBOTICSLAB_SPEECH_IDL_INCLUDE "")
+set(ROBOTICSLAB_SPEECH_IDL_SOURCE "")
 
 if(DEFINED ROBOTICSLAB-SPEECH_DATA_INSTALL_DIR)
     find_package(YARP QUIET) # retrieve YARP version string
