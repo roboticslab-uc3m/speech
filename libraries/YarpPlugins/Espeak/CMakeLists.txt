@@ -5,7 +5,13 @@
 find_package(Espeak QUIET)
 
 if(NOT Espeak_FOUND AND (NOT DEFINED ENABLE_Espeak OR ENABLE_Espeak))
-    message(WARNING "Espeak package not found, disabling Espeak device")
+    if(NOT Espeak_FOUND)
+        message(WARNING "Espeak package not found, disabling Espeak device")
+    endif()
+
+    if(NOT YARP_HAS_IDL)
+        message(WARNING "YARP IDL modules not found, disabling Espeak device")
+    endif()
 endif()
 
 yarp_prepare_plugin(Espeak
@@ -13,13 +19,9 @@ yarp_prepare_plugin(Espeak
                     TYPE roboticslab::Espeak
                     INCLUDE Espeak.hpp
                     DEFAULT ON
-                    DEPENDS Espeak_FOUND)
+                    DEPENDS "Espeak_FOUND;YARP_HAS_IDL")
 
 if(NOT SKIP_Espeak)
-
-    find_package(YARP REQUIRED)
-
-    include(YarpIDL)
 
     yarp_idl_to_dir(speech.thrift ${CMAKE_CURRENT_BINARY_DIR} idl_sources idl_headers idl_include_paths)
 
