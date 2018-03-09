@@ -1,3 +1,3 @@
 # Install CMake modules.
-install(FILES FindEspeak.cmake
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/find-modules
         DESTINATION ${CMAKE_INSTALL_DATADIR}/ROBOTICSLAB_SPEECH/cmake)
