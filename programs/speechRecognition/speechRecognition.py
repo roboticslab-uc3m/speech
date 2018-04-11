@@ -32,6 +32,12 @@
 # [on terminal 3] yarp read ...  /speechRecognition:o
 # \endverbatim
 #
+# or you can send commands to configure the speech-recognition. To know how to do that, use "help":
+# \verbatim
+# [on terminal 4] yarp rpc /speechRecognition/rpc:s
+# [on terminal 4] >>help
+# \endverbatim
+#
 # @section speechRecognition_troubleshooting Troubleshooting
 #
 # 1. gst-inspect-1.0 pocketsphinx
