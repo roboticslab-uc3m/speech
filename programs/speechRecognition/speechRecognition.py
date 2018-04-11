@@ -41,8 +41,8 @@
 # 3. Check hardware such as cables, and physical volume controls and on/off switches
 
 from gi import pygtkcompat
-import gi
 
+import gi
 import gobject
 
 gi.require_version('Gst', '1.0')
@@ -62,6 +62,9 @@ import gtk
 import yarp
 import os.path
 
+# For alsaaudio
+import sys
+import alsaaudio
 
 # Workaround to translate languaje names to model names.
 # It is maybe nice to name dictionary files "<dictName>-<model>.<format>"
@@ -98,9 +101,13 @@ class DataProcessor(yarp.PortReader):
         if not(bottleIn.read(connection)):
             print("Error while reading from configuration input.")
             return False
-
+            
+        if bottleIn.get(0).asString() == "help":
+            bottleOut.addString("Usage:")
+            bottleOut.addString("to configure the dictionary: [setDictionary {dictionaryName} {english|en|spanish|es}] or to configure the state of microphone: [setMic {mute|unmute}]")                                 
+        
         # if-then-else structure for the implemented configuration options
-        if bottleIn.get(0).asString() == "setDictionary" and bottleIn.size() == 3:
+        elif bottleIn.get(0).asString() == "setDictionary" and bottleIn.size() == 3:
             lmfile = bottleIn.get(1).asString() + "-" + bottleIn.get(2).asString() + ".lm"
             dicfile = bottleIn.get(1).asString() + "-" + bottleIn.get(2).asString() + ".dic"
             modelfile = getRegionCode(bottleIn.get(2).asString())
@@ -112,14 +119,37 @@ class DataProcessor(yarp.PortReader):
             else:
                 print("Could not found dictionary. Check file names and directories.")
                 bottleOut.addString("Could not find dictionary. Check file names and directories.")
+        
+            
+        # Mute/unmute the mixer        
+        elif bottleIn.get(0).asString() == "setMic" and bottleIn.size() == 2:
+            # Mixer settings
+            try:
+                mixer = alsaaudio.Mixer("Capture") # Capture / Master
+            except alsaaudio.ALSAAudioError:
+                print("No such mixer: %s" %sys.stderr)
+                sys.exit(1)
+    
+            channel = alsaaudio.MIXER_CHANNEL_ALL            
+            # mute/unmute
+            if(bottleIn.get(1).asString() ==  "mute"):
+                mixer.setrec(0, channel)
+                bottleOut.addString("microphone muted")
+            elif(bottleIn.get(1).asString() ==  "unmute"):
+                mixer.setrec(1, channel)
+                bottleOut.addString("microphone unmuted")
+            else:
+                bottleOut.addString("Error: unrecognised order. Please, select: [setMic mute] or [setMic unmute]")                
+            
         else:
-            print("Invalid command received.")
-            bottleOut.addString("Invalid Operation. USAGE: setDictionary {dictionaryName} {english|en|spanish|es}")
-
+            print("Invalid command received. Write help")
+            bottleOut.addString("Invalid Operation: write [help] to know more information")            
+            
         writer = connection.getWriter()
         if writer==None:
             return True
         return bottleOut.write(writer)
+        
 
 
 ##
@@ -135,7 +165,7 @@ class SpeechRecognition(object):
         self.rf.setDefaultConfigFile('speechRecognition.ini')
         self.my_lm = self.rf.findFileByName('dictionary/follow-me-english.lm')
         self.my_dic = self.rf.findFileByName('dictionary/follow-me-english.dic')
-	self.my_model = self.rf.findPath('model/en-us/')
+        self.my_model = self.rf.findPath('model/en-us/')
         self.outPort = yarp.Port()
         self.configPort = yarp.RpcServer()  # Use Port() if not Python wrapper not existent!
         self.dataProcessor = DataProcessor() 
@@ -170,7 +200,7 @@ class SpeechRecognition(object):
 
     def element_message(self, bus, msg):
         """Receive element messages from the bus."""
-        print "---"
+        print '---'
         b = yarp.Bottle()
         msgtype = msg.get_structure().get_name()
         print msgtype # pocketsphinx 
