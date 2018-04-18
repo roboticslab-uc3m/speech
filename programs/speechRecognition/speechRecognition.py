@@ -141,14 +141,16 @@ class DataProcessor(yarp.PortReader):
             if(bottleIn.get(1).asString() ==  "mute"):
                 mixer.setrec(0, channel)
                 bottleOut.addString("microphone muted")
+		print("mic muted")
             elif(bottleIn.get(1).asString() ==  "unmute"):
                 mixer.setrec(1, channel)
                 bottleOut.addString("microphone unmuted")
+		print("mic unmuted")
             else:
                 bottleOut.addString("Error: unrecognised order. Please, select: [setMic mute] or [setMic unmute]")                
             
         else:
-            print("Invalid command received. Write help")
+            print("Invalid command received: %s Write help" %bottleIn.toString())
             bottleOut.addString("Invalid Operation: write [help] to know more information")            
             
         writer = connection.getWriter()
