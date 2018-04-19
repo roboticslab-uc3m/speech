@@ -58,7 +58,7 @@ Gst.init(None)
     
 gst = Gst
     
-print("Using pygtkcompat and Gst from gi")
+print 'Using pygtkcompat and Gst from gi'
 
 pygtkcompat.enable() 
 pygtkcompat.enable_gtk(version='3.0')
@@ -84,7 +84,7 @@ def getRegionCode(languaje):
     try:
         regionCode = model[languaje]
     except:
-        print("Invalid Region Code.")
+        print 'Invalid Region Code.'
     return regionCode
 
 
@@ -101,57 +101,57 @@ class DataProcessor(yarp.PortReader):
         bottleOut = yarp.Bottle()
 
         if not(connection.isValid()):
-            print("Connection shutting down")
+            print 'Connection shutting down'
             return False
 
         if not(bottleIn.read(connection)):
-            print("Error while reading from configuration input.")
+            print 'Error while reading from configuration input'
             return False
             
         if bottleIn.get(0).asString() == "help":
-            bottleOut.addString("Usage:")
-            bottleOut.addString("to configure the dictionary: [setDictionary {dictionaryName} {english|en|spanish|es}] or to configure the state of microphone: [setMic {mute|unmute}]")                                 
-        
+            bottleOut.addString('Usage:')
+            bottleOut.addString('to configure the dictionary: [setDictionary {dictionaryName} {english|en|spanish|es}] or to configure the state of microphone: [setMic {mute|unmute}]')
+
         # if-then-else structure for the implemented configuration options
-        elif bottleIn.get(0).asString() == "setDictionary" and bottleIn.size() == 3:
-            lmfile = bottleIn.get(1).asString() + "-" + bottleIn.get(2).asString() + ".lm"
-            dicfile = bottleIn.get(1).asString() + "-" + bottleIn.get(2).asString() + ".dic"
+        elif bottleIn.get(0).asString() == 'setDictionary' and bottleIn.size() == 3:
+            lmfile = bottleIn.get(1).asString() + "-" + bottleIn.get(2).asString() + '.lm'
+            dicfile = bottleIn.get(1).asString() + "-" + bottleIn.get(2).asString() + '.dic'
             modelfile = getRegionCode(bottleIn.get(2).asString())
 
-            ok = self.refToFather.setDictionary("dictionary/"+lmfile, "dictionary/"+dicfile, "model/"+modelfile)
+            ok = self.refToFather.setDictionary('dictionary/'+lmfile, 'dictionary/'+dicfile, 'model/'+modelfile)
             if ok:
                 print("Dictionary changed to %s, %s, %s" % (lmfile, dicfile, modelfile))
                 bottleOut.addString("Dictionary changed to %s, %s, %s" % (lmfile, dicfile, modelfile))
             else:
                 print("Could not found dictionary. Check file names and directories.")
-                bottleOut.addString("Could not find dictionary. Check file names and directories.")
+                bottleOut.addString('Could not find dictionary. Check file names and directories.')
         
             
         # Mute/unmute the mixer        
-        elif bottleIn.get(0).asString() == "setMic" and bottleIn.size() == 2:
+        elif bottleIn.get(0).asString() == 'setMic' and bottleIn.size() == 2:
             # Mixer settings
             try:
-                mixer = alsaaudio.Mixer("Capture") # Capture / Master
+                mixer = alsaaudio.Mixer('Capture') # Capture / Master
             except alsaaudio.ALSAAudioError:
                 print("No such mixer: %s" %sys.stderr)
                 sys.exit(1)
     
             channel = alsaaudio.MIXER_CHANNEL_ALL            
             # mute/unmute
-            if(bottleIn.get(1).asString() ==  "mute"):
+            if bottleIn.get(1).asString() ==  'mute':
                 mixer.setrec(0, channel)
-                bottleOut.addString("microphone muted")
-		print("mic muted")
-            elif(bottleIn.get(1).asString() ==  "unmute"):
+                bottleOut.addString('microphone muted')
+                print 'mic muted'
+            elif bottleIn.get(1).asString() ==  'unmute':
                 mixer.setrec(1, channel)
-                bottleOut.addString("microphone unmuted")
-		print("mic unmuted")
+                bottleOut.addString('microphone unmuted')
+                print 'mic unmuted'
             else:
-                bottleOut.addString("Error: unrecognised order. Please, select: [setMic mute] or [setMic unmute]")                
-            
+                bottleOut.addString('Error: unrecognised order. Please, select: [setMic mute] or [setMic unmute]')
+
         else:
             print("Invalid command received: %s Write help" %bottleIn.toString())
-            bottleOut.addString("Invalid Operation: write [help] to know more information")            
+            bottleOut.addString('Invalid Operation: write [help] to know more information')
             
         writer = connection.getWriter()
         if writer==None:
@@ -197,7 +197,7 @@ class SpeechRecognition(object):
         # asr.connect('result', self.asr_result) (it's not running with Gstreamer 1.0)
         asr.set_property('lm', self.my_lm )
         asr.set_property('dict', self.my_dic )
-	asr.set_property('hmm', self.my_model )
+        asr.set_property('hmm', self.my_model )
         #asr.set_property('configured', "true")      
 
         bus = self.pipeline.get_bus()
@@ -241,10 +241,12 @@ class SpeechRecognition(object):
                                          + '! pocketsphinx name=asr beam=1e-20 ! fakesink')
 
         asr = self.pipeline.get_by_name('asr')
-	asr.set_property('lm', self.my_lm)
-	asr.set_property('dict', self.my_dic)
-	asr.set_property('hmm', self.my_model )
-        print("Dictionary changed successfully (%s) (%s) (%s)"%(self.my_lm,self.my_dic,self.my_model))
+        asr.set_property('lm', self.my_lm)
+        asr.set_property('dict', self.my_dic)
+        asr.set_property('hmm', self.my_model )
+
+        print '-------------------------------'
+        print "Dictionary changed successfully (%s) (%s) (%s)"%(self.my_lm,self.my_dic,self.my_model)
 
         bus = self.pipeline.get_bus()
         bus.add_signal_watch()
