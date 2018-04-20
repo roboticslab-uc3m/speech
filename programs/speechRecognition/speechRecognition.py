@@ -58,7 +58,7 @@ Gst.init(None)
     
 gst = Gst
     
-print 'Using pygtkcompat and Gst from gi'
+print('Using pygtkcompat and Gst from gi')
 
 pygtkcompat.enable() 
 pygtkcompat.enable_gtk(version='3.0')
@@ -84,7 +84,7 @@ def getRegionCode(languaje):
     try:
         regionCode = model[languaje]
     except:
-        print 'Invalid Region Code.'
+        print('Invalid Region Code.')
     return regionCode
 
 
@@ -100,12 +100,12 @@ class DataProcessor(yarp.PortReader):
         bottleIn = yarp.Bottle()
         bottleOut = yarp.Bottle()
 
-        if not(connection.isValid()):
-            print 'Connection shutting down'
+        if not connection.isValid():
+            print('Connection shutting down')
             return False
 
-        if not(bottleIn.read(connection)):
-            print 'Error while reading from configuration input'
+        if not bottleIn.read(connection):
+            print('Error while reading from configuration input')
             return False
             
         if bottleIn.get(0).asString() == "help":
@@ -141,11 +141,11 @@ class DataProcessor(yarp.PortReader):
             if bottleIn.get(1).asString() ==  'mute':
                 mixer.setrec(0, channel)
                 bottleOut.addString('microphone muted')
-                print 'mic muted'
+                print('mic muted')
             elif bottleIn.get(1).asString() ==  'unmute':
                 mixer.setrec(1, channel)
                 bottleOut.addString('microphone unmuted')
-                print 'mic unmuted'
+                print('mic unmuted')
             else:
                 bottleOut.addString('Error: unrecognised order. Please, select: [setMic mute] or [setMic unmute]')
 
@@ -208,18 +208,18 @@ class SpeechRecognition(object):
 
     def element_message(self, bus, msg):
         """Receive element messages from the bus."""
-        print '---'
+        print('---')
         b = yarp.Bottle()
         msgtype = msg.get_structure().get_name()
-        print msgtype # pocketsphinx 
+        print(msgtype) # pocketsphinx 
         
         if msgtype != 'pocketsphinx':
             return
 
-        print "hypothesis= '%s'  confidence=%s final=%s\n" % (msg.get_structure().get_value('hypothesis'), msg.get_structure().get_value('confidence'), msg.get_structure().get_value('final'))
+        print("hypothesis= '%s'  confidence=%s final=%s\n" % (msg.get_structure().get_value('hypothesis'), msg.get_structure().get_value('confidence'), msg.get_structure().get_value('final')))
         if msg.get_structure().get_value('final') is True:       
                 text = msg.get_structure().get_value('hypothesis')        
-                print text.lower()
+                print(text.lower())
                 b.addString(text.lower())
                 if text != "":
                         self.outPort.write(b)
@@ -245,8 +245,8 @@ class SpeechRecognition(object):
         asr.set_property('dict', self.my_dic)
         asr.set_property('hmm', self.my_model )
 
-        print '-------------------------------'
-        print "Dictionary changed successfully (%s) (%s) (%s)"%(self.my_lm,self.my_dic,self.my_model)
+        print('-------------------------------')
+        print("Dictionary changed successfully (%s) (%s) (%s)"%(self.my_lm,self.my_dic,self.my_model))
 
         bus = self.pipeline.get_bus()
         bus.add_signal_watch()
@@ -257,7 +257,7 @@ class SpeechRecognition(object):
 
 yarp.Network.init()
 if yarp.Network.checkNetwork() != True:
-    print '[asr] error: found no yarp network (try running "yarpserver &"), bye!'
+    print('[asr] error: found no yarp network (try running "yarpserver &"), bye!')
     quit()
 
 app = SpeechRecognition()
