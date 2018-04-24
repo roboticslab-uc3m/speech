@@ -32,6 +32,12 @@
 # [on terminal 3] yarp read ...  /speechRecognition:o
 # \endverbatim
 #
+# or you can send commands to configure the speech-recognition. To know how to do that, use "help":
+# \verbatim
+# [on terminal 4] yarp rpc /speechRecognition/rpc:s
+# [on terminal 4] >>help
+# \endverbatim
+#
 # @section speechRecognition_troubleshooting Troubleshooting
 #
 # 1. gst-inspect-1.0 pocketsphinx
@@ -41,8 +47,8 @@
 # 3. Check hardware such as cables, and physical volume controls and on/off switches
 
 from gi import pygtkcompat
-import gi
 
+import gi
 import gobject
 
 gi.require_version('Gst', '1.0')
@@ -52,7 +58,7 @@ Gst.init(None)
     
 gst = Gst
     
-print("Using pygtkcompat and Gst from gi")
+print('Using pygtkcompat and Gst from gi')
 
 pygtkcompat.enable() 
 pygtkcompat.enable_gtk(version='3.0')
@@ -62,6 +68,9 @@ import gtk
 import yarp
 import os.path
 
+# For alsaaudio
+import sys
+import alsaaudio
 
 # Workaround to translate languaje names to model names.
 # It is maybe nice to name dictionary files "<dictName>-<model>.<format>"
@@ -75,7 +84,7 @@ def getRegionCode(languaje):
     try:
         regionCode = model[languaje]
     except:
-        print("Invalid Region Code.")
+        print('Invalid Region Code.')
     return regionCode
 
 
@@ -91,35 +100,64 @@ class DataProcessor(yarp.PortReader):
         bottleIn = yarp.Bottle()
         bottleOut = yarp.Bottle()
 
-        if not(connection.isValid()):
-            print("Connection shutting down")
+        if not connection.isValid():
+            print('Connection shutting down')
             return False
 
-        if not(bottleIn.read(connection)):
-            print("Error while reading from configuration input.")
+        if not bottleIn.read(connection):
+            print('Error while reading from configuration input')
             return False
+            
+        if bottleIn.get(0).asString() == "help":
+            bottleOut.addString('Usage:')
+            bottleOut.addString('to configure the dictionary: [setDictionary {dictionaryName} {english|en|spanish|es}] or to configure the state of microphone: [setMic {mute|unmute}]')
 
         # if-then-else structure for the implemented configuration options
-        if bottleIn.get(0).asString() == "setDictionary" and bottleIn.size() == 3:
-            lmfile = bottleIn.get(1).asString() + "-" + bottleIn.get(2).asString() + ".lm"
-            dicfile = bottleIn.get(1).asString() + "-" + bottleIn.get(2).asString() + ".dic"
+        elif bottleIn.get(0).asString() == 'setDictionary' and bottleIn.size() == 3:
+            lmfile = bottleIn.get(1).asString() + "-" + bottleIn.get(2).asString() + '.lm'
+            dicfile = bottleIn.get(1).asString() + "-" + bottleIn.get(2).asString() + '.dic'
             modelfile = getRegionCode(bottleIn.get(2).asString())
 
-            ok = self.refToFather.setDictionary("dictionary/"+lmfile, "dictionary/"+dicfile, "model/"+modelfile)
+            ok = self.refToFather.setDictionary('dictionary/'+lmfile, 'dictionary/'+dicfile, 'model/'+modelfile)
             if ok:
                 print("Dictionary changed to %s, %s, %s" % (lmfile, dicfile, modelfile))
                 bottleOut.addString("Dictionary changed to %s, %s, %s" % (lmfile, dicfile, modelfile))
             else:
                 print("Could not found dictionary. Check file names and directories.")
-                bottleOut.addString("Could not find dictionary. Check file names and directories.")
-        else:
-            print("Invalid command received.")
-            bottleOut.addString("Invalid Operation. USAGE: setDictionary {dictionaryName} {english|en|spanish|es}")
+                bottleOut.addString('Could not find dictionary. Check file names and directories.')
+        
+            
+        # Mute/unmute the mixer        
+        elif bottleIn.get(0).asString() == 'setMic' and bottleIn.size() == 2:
+            # Mixer settings
+            try:
+                mixer = alsaaudio.Mixer('Capture') # Capture / Master
+            except alsaaudio.ALSAAudioError:
+                print("No such mixer: %s" %sys.stderr)
+                sys.exit(1)
+    
+            channel = alsaaudio.MIXER_CHANNEL_ALL            
+            # mute/unmute
+            if bottleIn.get(1).asString() ==  'mute':
+                mixer.setrec(0, channel)
+                bottleOut.addString('microphone muted')
+                print('mic muted')
+            elif bottleIn.get(1).asString() ==  'unmute':
+                mixer.setrec(1, channel)
+                bottleOut.addString('microphone unmuted')
+                print('mic unmuted')
+            else:
+                bottleOut.addString('Error: unrecognised order. Please, select: [setMic mute] or [setMic unmute]')
 
+        else:
+            print("Invalid command received: %s Write help" %bottleIn.toString())
+            bottleOut.addString('Invalid Operation: write [help] to know more information')
+            
         writer = connection.getWriter()
         if writer==None:
             return True
         return bottleOut.write(writer)
+        
 
 
 ##
@@ -135,7 +173,7 @@ class SpeechRecognition(object):
         self.rf.setDefaultConfigFile('speechRecognition.ini')
         self.my_lm = self.rf.findFileByName('dictionary/follow-me-english.lm')
         self.my_dic = self.rf.findFileByName('dictionary/follow-me-english.dic')
-	self.my_model = self.rf.findPath('model/en-us/')
+        self.my_model = self.rf.findPath('model/en-us/')
         self.outPort = yarp.Port()
         self.configPort = yarp.RpcServer()  # Use Port() if not Python wrapper not existent!
         self.dataProcessor = DataProcessor() 
@@ -159,7 +197,7 @@ class SpeechRecognition(object):
         # asr.connect('result', self.asr_result) (it's not running with Gstreamer 1.0)
         asr.set_property('lm', self.my_lm )
         asr.set_property('dict', self.my_dic )
-	asr.set_property('hmm', self.my_model )
+        asr.set_property('hmm', self.my_model )
         #asr.set_property('configured', "true")      
 
         bus = self.pipeline.get_bus()
@@ -170,18 +208,18 @@ class SpeechRecognition(object):
 
     def element_message(self, bus, msg):
         """Receive element messages from the bus."""
-        print "---"
+        print('---')
         b = yarp.Bottle()
         msgtype = msg.get_structure().get_name()
-        print msgtype # pocketsphinx 
+        print(msgtype) # pocketsphinx 
         
         if msgtype != 'pocketsphinx':
             return
 
-        print "hypothesis= '%s'  confidence=%s final=%s\n" % (msg.get_structure().get_value('hypothesis'), msg.get_structure().get_value('confidence'), msg.get_structure().get_value('final'))
+        print("hypothesis= '%s'  confidence=%s final=%s\n" % (msg.get_structure().get_value('hypothesis'), msg.get_structure().get_value('confidence'), msg.get_structure().get_value('final')))
         if msg.get_structure().get_value('final') is True:       
                 text = msg.get_structure().get_value('hypothesis')        
-                print text.lower()
+                print(text.lower())
                 b.addString(text.lower())
                 if text != "":
                         self.outPort.write(b)
@@ -203,9 +241,11 @@ class SpeechRecognition(object):
                                          + '! pocketsphinx name=asr beam=1e-20 ! fakesink')
 
         asr = self.pipeline.get_by_name('asr')
-	asr.set_property('lm', self.my_lm)
-	asr.set_property('dict', self.my_dic)
-	asr.set_property('hmm', self.my_model )
+        asr.set_property('lm', self.my_lm)
+        asr.set_property('dict', self.my_dic)
+        asr.set_property('hmm', self.my_model )
+
+        print('-------------------------------')
         print("Dictionary changed successfully (%s) (%s) (%s)"%(self.my_lm,self.my_dic,self.my_model))
 
         bus = self.pipeline.get_bus()
@@ -217,7 +257,7 @@ class SpeechRecognition(object):
 
 yarp.Network.init()
 if yarp.Network.checkNetwork() != True:
-    print '[asr] error: found no yarp network (try running "yarpserver &"), bye!'
+    print('[asr] error: found no yarp network (try running "yarpserver &"), bye!')
     quit()
 
 app = SpeechRecognition()
