@@ -6,13 +6,13 @@ Link to Doxygen generated documentation: http://robots.uc3m.es/dox-speech
 
 ## Installation
 
-Installation instructions for installing from source can be found [here]( doc/speech-install.md ).
+Installation instructions for installing from source can be found [here](doc/speech-install.md).
 
 ## Usage
 
 Information of how to launch or configure it:
-1. [Speech recognition](https://github.com/roboticslab-uc3m/speech/tree/develop/programs/speechRecognition/README.md)
-2. [Espeak](https://github.com/roboticslab-uc3m/speech/tree/develop/libraries/YarpPlugins/Espeak/README.md)
+1. [Speech recognition](programs/speechRecognition/README.md)
+2. [Espeak](libraries/YarpPlugins/Espeak/README.md)
 
 ##### More examples:
 To see how other programs call to `speechRecognition ` and  `Espeak` and configure it by yarp, you can see this part of the [follow-me](https://github.com/roboticslab-uc3m/follow-me/blob/develop/programs/followMeDialogueManager/FollowMeDialogueManager.cpp#L10-L100)  code.
@@ -21,7 +21,7 @@ To see how other programs call to `speechRecognition ` and  `Espeak` and configu
 
 #### Posting Issues
 
-1. Read [CONTRIBUTING.md](https://github.com/roboticslab-uc3m/speech/blob/master/CONTRIBUTING.md)
+1. Read [CONTRIBUTING.md](CONTRIBUTING.md)
 2. [Post an issue / Feature request / Specific documentation request](https://github.com/roboticslab-uc3m/speech/issues)
 
 #### Fork & Pull Request
