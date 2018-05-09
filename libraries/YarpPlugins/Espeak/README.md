@@ -1,11 +1,11 @@
-# Speech software:
+# Speech software
 
-### How to launch:
-1. First, follow the steeps descripted on [installation instruction](https://github.com/roboticslab-uc3m/speech/blob/develop/doc/speech-install.md)
-2. Be sure you have a sound speaker connected to your computer and correctly configurated (you can do it using `AlsaMixer` or directly in sound settings)
+### How to launch
+1. First, follow the steps described on [installation instruction](https://github.com/roboticslab-uc3m/speech/blob/develop/doc/speech-install.md)
+2. Be sure you have a sound speaker connected to your computer and correctly configured (you can do it using `AlsaMixer` or directly in sound settings)
 3. Run on the terminal `yarpdev --device Espeak --name /tts`. The bash will show you some information:
 
-	```sh
+	```bash
 	--name: /tts [/espeak]
 	--voice: mb-en1 [mb-en1]
 	[success] Espeak.cpp:44 setLanguage(): mb-en1
@@ -19,11 +19,11 @@
 	[INFO]device active in background...
 	```
 
-### How to configure it:
+### How to configure it
 
-Once the speech software has started, connect it through the opened yarp port using `yarp rpc /tts/rpc:s` in other terminal. You can see all the available commands writting `help` command:
+Once the speech software has started, connect it through the opened yarp port using `yarp rpc /tts/rpc:s` in another terminal. You can see all the available commands writting the `help` command:
 
-```sh
+```bash
 Responses:
   *** Available commands:
   setLanguage
@@ -38,7 +38,7 @@ Responses:
   stop
   help
 ```
-### Examples of use:
+### Examples of use
 
 ```sh
 >> say "Hello Teo"
