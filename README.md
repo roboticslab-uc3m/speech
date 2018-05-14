@@ -14,6 +14,8 @@ Information of how to launch or configure it:
 1. [Speech recognition](programs/speechRecognition/README.md)
 2. [Espeak](libraries/YarpPlugins/Espeak/README.md)
 
+Read the [development manual](https://github.com/roboticslab-uc3m/speech/blob/develop/doc/speech-development-manual.md) if you want to build a new language model
+
 ##### More examples:
 To see how other programs call to `speechRecognition ` and  `Espeak` and configure it by yarp, you can see this part of the [follow-me](https://github.com/roboticslab-uc3m/follow-me/blob/develop/programs/followMeDialogueManager/FollowMeDialogueManager.cpp#L10-L100)  code.
 
@@ -31,9 +33,6 @@ To see how other programs call to `speechRecognition ` and  `Espeak` and configu
 3. Commit your changes
 4. Push to the branch (`git push origin my-new-feature`)
 5. Create a new Pull Request
-
-#### Manuals
-1. Read [development manual](https://github.com/roboticslab-uc3m/speech/blob/develop/doc/speech-development-manual.md) if you want to build a new language model
 
 ## Status
 
