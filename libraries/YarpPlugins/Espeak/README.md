@@ -1,9 +1,9 @@
 # Speech software
 
 ### How to launch
-1. First, follow the steps described on [installation instruction](https://github.com/roboticslab-uc3m/speech/blob/develop/doc/speech-install.md)
-2. Be sure you have a sound speaker connected to your computer and correctly configured (you can do it using `AlsaMixer` or directly in sound settings)
-3. Run on the terminal `yarpdev --device Espeak --name /tts`. The bash will show you some information:
+1. First, follow the steps described in [installation instructions](https://github.com/roboticslab-uc3m/speech/blob/develop/doc/speech-install.md).
+2. Be sure you have a sound speaker connected to your computer and correctly configured (you can do it using `alsamixer` or directly in sound settings).
+3. Run `yarpdev --device Espeak --name /tts` on the terminal. The bash will show you some information:
 
 	```bash
 	--name: /tts [/espeak]
