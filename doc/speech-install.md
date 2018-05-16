@@ -6,7 +6,7 @@
 - [Install YARP](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-yarp.md)
 with [Python bindings](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-yarp.md#install-python-bindings)
 - [Install eSpeak with MBROLA Voices](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-espeak-mbrola.md)
-- [Install pocketsphinx](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-pocketsphinx.md)
+- [Install gstreamer with pocketsphinx](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-gstreamer-pocketsphinx.md)
 
 We need to configure the path to look for shared libaries:
 
