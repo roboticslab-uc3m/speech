@@ -1,6 +1,6 @@
 # Installation from Source Code
 
-### Install the Software dependencies:
+### Install the Software dependencies
 
 - [Install CMake](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-cmake.md)
 - [Install YARP](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-yarp.md)
