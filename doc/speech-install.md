@@ -17,9 +17,7 @@ Additionally, this project depends on YCM to download and build external package
 Our software integrates the previous dependencies. Note that you will be prompted for your password upon using `sudo` a couple of times:
 
 ```bash
-sudo apt install python-gi
-apt install libasound2-dev # for `pip install --user pyalsaaudio`
-pip install --user pyalsaaudio
+pip install --user pyalsaaudio # Used in speechRecognition.py
 cd  # go home
 mkdir -p repos; cd repos  # create $HOME/repos if it doesn't exist; then, enter it
 git clone https://github.com/roboticslab-uc3m/speech.git  # Download speech software from the repository
@@ -33,3 +31,10 @@ You may want to (from the same build dir):
 echo "export ROBOTICSLAB_SPEECH_DIR=`pwd`" >> ~/.bashrc
 ```
 For additional SPEECH options use `ccmake` instead of `cmake`.
+
+### Troubleshooting installation
+For `pip install --user pyalsaaudio`, some users have had to:
+```
+sudo apt install python-gi # requirement on some systems for pyalsaaudio
+sudo apt install libasound2-dev # requirement on some systems for pyalsaaudio
+```
