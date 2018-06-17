@@ -34,12 +34,11 @@ if(NOT SKIP_Espeak)
                            ${idl_sources}
                            ${idl_headers})
 
-    add_dependencies(Espeak COLOR_DEBUG)
-
     target_link_libraries(Espeak YARP::YARP_OS
                                  YARP::YARP_dev
                                  YARP::YARP_sig
-                                 ${ESPEAK_LIBRARIES})
+                                 ${ESPEAK_LIBRARIES}
+                                 ROBOTICSLAB::ColorDebug)
 
     yarp_install(TARGETS Espeak
                  COMPONENT runtime

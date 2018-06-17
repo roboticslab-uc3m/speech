@@ -7,10 +7,9 @@
 with [Python bindings](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-yarp.md#install-python-bindings)
 - [Install eSpeak with MBROLA Voices](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-espeak-mbrola.md)
 - [Install gstreamer with pocketsphinx](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-gstreamer-pocketsphinx.md)
+- [Install color-debug](https://github.com/roboticslab-uc3m/color-debug)
 
-Additionally, this project depends on YCM to download and build external packages. Although this process is intended to run automatically during the CMake configuration phase, you may still want to install YCM and said packages by yourself. In that respect, refer to [Install YCM](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-ycm.md) and to the installation guides of any package listed below:
-
-- [color-debug](https://github.com/roboticslab-uc3m/color-debug)
+Additionally, this project depends on YCM to download and use additional CMake modules. Although this process is intended to run automatically during the CMake configuration phase, you may still want to install YCM. In that respect, refer to [Install YCM](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-ycm.md).
 
 ### Install the Software on Ubuntu (working on all tested versions)
 
