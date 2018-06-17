@@ -10,7 +10,7 @@ compiler:
   - clang
 
 before_install:
-  - '[[ "$TRAVIS_EVENT_TYPE" = cron ]] && export YARP_CHECKOUT=devel || export YARP_CHECKOUT=master'
+  - '[[ "$TRAVIS_EVENT_TYPE" = cron ]] && export ROBOTOLOGY_CHECKOUT=devel || export ROBOTOLOGY_CHECKOUT=master'
   #-- Install cmake
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo apt-get install cmake; fi
   #-- Install YARP deps
@@ -27,8 +27,15 @@ install:
   - cmake ..
   - sudo make install
   - cd ../..
+  #-- Install ycm
+  - git clone --branch="$ROBOTOLOGY_CHECKOUT" https://github.com/robotology/ycm
+  - cd ycm && mkdir build && cd build
+  - cmake ..
+  - make -j$(nproc)
+  - sudo make install
+  - cd ../..
   #-- Install yarp
-  - git clone --branch="$YARP_CHECKOUT" https://github.com/robotology/yarp
+  - git clone --branch="$ROBOTOLOGY_CHECKOUT" https://github.com/robotology/yarp
   - cd yarp && mkdir build && cd build
   - cmake .. -DSKIP_ACE=ON
   - make

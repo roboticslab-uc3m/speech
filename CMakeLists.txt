@@ -40,14 +40,25 @@ endif()
 
 # Pick up our cmake modules.
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake
-                              ${CMAKE_SOURCE_DIR}/cmake/find-modules
-                              ${CMAKE_SOURCE_DIR}/cmake/ycm-modules)
+                              ${CMAKE_SOURCE_DIR}/cmake/find-modules)
 
-# Bootstrap YCM. Stick to v0.2.2 because of:
-# https://github.com/robotology/ycm/issues/118
-# ...and to keep YCM itself compatible with cmake_minimum_required().
-set(YCM_TAG v0.2.2)
-include(YCMBootstrap)
+# Find project's hard dependencies.
+find_package(YCM 0.2 REQUIRED)
+find_package(YARP REQUIRED)
+find_package(COLOR_DEBUG REQUIRED)
+
+# Load YARP modules.
+if(YARP_VERSION_SHORT VERSION_LESS 2.3.70)
+    list(APPEND CMAKE_MODULE_PATH ${YARP_MODULE_PATH})
+    include(YarpPlugin)
+    include(YarpInstallationHelpers)
+endif()
+
+# Always build YARP devices as MODULE libraries.
+set(YARP_FORCE_DYNAMIC_PLUGINS TRUE CACHE INTERNAL "Force dynamic plugins")
+
+# Configure installation paths for YARP resources.
+yarp_configure_external_installation(roboticslab-speech WITH_PLUGINS)
 
 # Standard installation directories.
 include(GNUInstallDirs)
@@ -76,23 +87,6 @@ set_property(GLOBAL PROPERTY ROBOTICSLAB_SPEECH_TARGETS)
 
 # Create targets if specific requirements are satisfied.
 include(CMakeDependentOption)
-
-# Find project's hard dependencies.
-find_package(COLOR_DEBUG REQUIRED)
-find_package(YARP REQUIRED)
-
-# Load YARP modules.
-if(YARP_VERSION_SHORT VERSION_LESS 2.3.70)
-    list(APPEND CMAKE_MODULE_PATH ${YARP_MODULE_PATH})
-    include(YarpPlugin)
-    include(YarpInstallationHelpers)
-endif()
-
-# Always build YARP devices as MODULE libraries.
-set(YARP_FORCE_DYNAMIC_PLUGINS TRUE CACHE INTERNAL "Force dynamic plugins")
-
-# Configure installation paths for YARP resources.
-yarp_configure_external_installation(roboticslab-speech WITH_PLUGINS)
 
 # Add main contents.
 add_subdirectory(cmake)
