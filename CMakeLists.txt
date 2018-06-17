@@ -12,9 +12,6 @@ endif()
 
 project(ROBOTICSLAB_SPEECH)
 
-# Force building shared libraries and YARP DL modules.
-set(BUILD_SHARED_LIBS TRUE CACHE INTERNAL "hide this!")
-
 # Add suffix for debug libraries.
 if(MSVC)
     message(STATUS "Running on windows")
@@ -90,6 +87,9 @@ if(YARP_VERSION_SHORT VERSION_LESS 2.3.70)
     include(YarpPlugin)
     include(YarpInstallationHelpers)
 endif()
+
+# Always build YARP devices as MODULE libraries.
+set(YARP_FORCE_DYNAMIC_PLUGINS TRUE CACHE INTERNAL "Force dynamic plugins")
 
 # Configure installation paths for YARP resources.
 yarp_configure_external_installation(roboticslab-speech WITH_PLUGINS)
