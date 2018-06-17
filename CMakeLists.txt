@@ -38,15 +38,12 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake
 
 # Find project's hard dependencies.
 find_package(YCM 0.2 REQUIRED)
-find_package(YARP REQUIRED)
-find_package(COLOR_DEBUG REQUIRED)
-
-# Load YARP modules.
-if(YARP_VERSION_SHORT VERSION_LESS 2.3.70)
-    list(APPEND CMAKE_MODULE_PATH ${YARP_MODULE_PATH})
-    include(YarpPlugin)
-    include(YarpInstallationHelpers)
+find_package(YARP 3.0 QUIET)
+# https://github.com/roboticslab-uc3m/questions-and-answers/issues/65
+if(NOT YARP_FOUND)
+    find_package(YARP 2.3.70 REQUIRED)
 endif()
+find_package(COLOR_DEBUG REQUIRED)
 
 # Always build YARP devices as MODULE libraries.
 set(YARP_FORCE_DYNAMIC_PLUGINS TRUE CACHE INTERNAL "Force dynamic plugins")
@@ -123,24 +120,13 @@ configure_package_config_file(${CMAKE_SOURCE_DIR}/cmake/templates/ROBOTICSLAB_SP
                               NO_CHECK_REQUIRED_COMPONENTS_MACRO)
 
 # Set exported variables (install tree).
-set(ROBOTICSLAB_SPEECH_IDL_INCLUDE "")
+set(ROBOTICSLAB_SPEECH_IDL_INCLUDE ${ROBOTICSLAB-SPEECH_DATA_INSTALL_DIR}/idls)
 set(ROBOTICSLAB_SPEECH_IDL_SOURCE "")
 
-if(DEFINED ROBOTICSLAB-SPEECH_DATA_INSTALL_DIR)
-    find_package(YARP QUIET) # retrieve YARP version string
-
-    set(ROBOTICSLAB_SPEECH_IDL_INCLUDE ${ROBOTICSLAB-SPEECH_DATA_INSTALL_DIR}/idls)
-
-    foreach(_file ${_idl_sources})
-        get_filename_component(_filename ${_file} NAME)
-
-        if(NOT YARP_VERSION_SHORT VERSION_LESS 2.3.70.1)
-            list(APPEND ROBOTICSLAB_SPEECH_IDL_SOURCE ${ROBOTICSLAB-SPEECH_DATA_INSTALL_DIR_FULL}/idls/${_filename})
-        else()
-            list(APPEND ROBOTICSLAB_SPEECH_IDL_SOURCE ${CMAKE_INSTALL_PREFIX}/${ROBOTICSLAB-SPEECH_DATA_INSTALL_DIR}/idls/${_filename})
-        endif()
-    endforeach()
-endif()
+foreach(_file ${_idl_sources})
+    get_filename_component(_filename ${_file} NAME)
+    list(APPEND ROBOTICSLAB_SPEECH_IDL_SOURCE ${ROBOTICSLAB-SPEECH_DATA_INSTALL_DIR_FULL}/idls/${_filename})
+endforeach()
 
 set(ROBOTICSLAB_SPEECH_MODULE_DIR ${CMAKE_INSTALL_DATADIR}/ROBOTICSLAB_SPEECH/cmake)
 

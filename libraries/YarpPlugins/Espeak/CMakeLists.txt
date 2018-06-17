@@ -49,12 +49,6 @@ if(NOT SKIP_Espeak)
                  COMPONENT runtime
                  DESTINATION ${ROBOTICSLAB-SPEECH_PLUGIN_MANIFESTS_INSTALL_DIR})
 
-    # Already included in /share?
-    if(NOT DEFINED ROBOTICSLAB-SPEECH_DATA_INSTALL_DIR)
-        include(YarpInstallationHelpers)
-        yarp_configure_external_installation(roboticslab-speech)
-    endif()
-
     yarp_install(FILES ${thrift_files}
                        ${idl_sources}
                        ${idl_headers}
