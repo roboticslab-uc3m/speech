@@ -21,6 +21,12 @@ before_install:
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo apt-get install mbrola-es1; fi
 
 install:
+  #-- Install color-debug
+  - git clone https://github.com/roboticslab-uc3m/color-debug
+  - cd color-debug && mkdir build && cd build
+  - cmake ..
+  - sudo make install
+  - cd ../..
   #-- Install yarp
   - git clone --branch="$YARP_CHECKOUT" https://github.com/robotology/yarp
   - cd yarp && mkdir build && cd build
@@ -55,4 +61,3 @@ after_success:
   - if [ "$CXX" = "g++" ]; then coveralls-lcov --source-encoding=ISO-8859-1 coverage.info; fi
 
   - sudo make uninstall
-
