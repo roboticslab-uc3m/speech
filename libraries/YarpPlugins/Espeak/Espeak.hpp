@@ -14,7 +14,7 @@
 
 #include <Speech_IDL.h>
 
-#include "ColorDebug.hpp"
+#include <ColorDebug.h>
 
 #define DEFAULT_NAME "/espeak"
 #define DEFAULT_VOICE "mb-en1"
