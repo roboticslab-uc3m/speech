@@ -2,15 +2,9 @@
 # Authors: Raul de Santos Rico & Juan Gonzalez Victores
 # CopyPolicy: Released under the terms of the GNU GPL v2.0.
 
-cmake_minimum_required(VERSION 3.0 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.1 FATAL_ERROR)
 
-# Disable annoying YCM-related warnings.
-# Remove if cmake_minimum_required() is set to 3.1 or later.
-if(POLICY CMP0054)
-    cmake_policy(SET CMP0054 NEW)
-endif()
-
-project(ROBOTICSLAB_SPEECH)
+project(ROBOTICSLAB_SPEECH LANGUAGES CXX)
 
 # Add suffix for debug libraries.
 if(MSVC)
@@ -74,7 +68,7 @@ option(ENABLE_coverage "Choose if you want to enable coverage collection" OFF)
 if(ENABLE_coverage)
     # List supported compilers.
     if(CMAKE_COMPILER_IS_GNUCXX)
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage")
+        add_compile_options(-fprofile-arcs -ftest-coverage)
     endif()
 endif()
 
@@ -168,8 +162,7 @@ install(FILES ${CMAKE_BINARY_DIR}/ROBOTICSLAB_SPEECHConfig.cmake.install
 # https://github.com/roboticslab-uc3m/project-generator/issues/19
 if(_exported_targets)
     # <pkg>Targets.cmake (build tree).
-    # In CMake 3.0 or later: export(EXPORT ROBOTICSLAB_SPEECH...)
-    export(TARGETS ${_exported_targets}
+    export(EXPORT ROBOTICSLAB_SPEECH
            NAMESPACE ROBOTICSLAB::
            FILE ROBOTICSLAB_SPEECHTargets.cmake)
 
