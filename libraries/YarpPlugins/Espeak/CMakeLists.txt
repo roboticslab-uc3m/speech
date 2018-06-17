@@ -34,12 +34,11 @@ if(NOT SKIP_Espeak)
                            ${idl_sources}
                            ${idl_headers})
 
-    add_dependencies(Espeak COLOR_DEBUG)
-
     target_link_libraries(Espeak YARP::YARP_OS
                                  YARP::YARP_dev
                                  YARP::YARP_sig
-                                 ${ESPEAK_LIBRARIES})
+                                 ${ESPEAK_LIBRARIES}
+                                 ROBOTICSLAB::ColorDebug)
 
     yarp_install(TARGETS Espeak
                  COMPONENT runtime
@@ -49,12 +48,6 @@ if(NOT SKIP_Espeak)
     yarp_install(FILES Espeak.ini
                  COMPONENT runtime
                  DESTINATION ${ROBOTICSLAB-SPEECH_PLUGIN_MANIFESTS_INSTALL_DIR})
-
-    # Already included in /share?
-    if(NOT DEFINED ROBOTICSLAB-SPEECH_DATA_INSTALL_DIR)
-        include(YarpInstallationHelpers)
-        yarp_configure_external_installation(roboticslab-speech)
-    endif()
 
     yarp_install(FILES ${thrift_files}
                        ${idl_sources}
