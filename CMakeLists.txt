@@ -69,13 +69,6 @@ if(ENABLE_coverage)
     endif()
 endif()
 
-# Store IDL files in global scope.
-set_property(GLOBAL PROPERTY ROBOTICSLAB_SPEECH_IDL_INCLUDES)
-set_property(GLOBAL PROPERTY ROBOTICSLAB_SPEECH_IDL_SOURCES)
-
-# Store list of exported targets in global scope.
-set_property(GLOBAL PROPERTY ROBOTICSLAB_SPEECH_TARGETS)
-
 # Create targets if specific requirements are satisfied.
 include(CMakeDependentOption)
 
