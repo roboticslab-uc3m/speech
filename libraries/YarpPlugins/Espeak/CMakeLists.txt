@@ -2,8 +2,6 @@
 # Author: Juan G. Victores & Raul de Santos Rico
 # CopyPolicy: Released under the terms of the LGPLv2.1 or later, see LGPL.TXT
 
-find_package(Espeak QUIET)
-
 if(NOT Espeak_FOUND AND (NOT DEFINED ENABLE_Espeak OR ENABLE_Espeak))
     if(NOT Espeak_FOUND)
         message(WARNING "Espeak package not found, disabling Espeak device")
