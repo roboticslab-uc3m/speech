@@ -12,7 +12,7 @@ before_install:
   - '[[ "$TRAVIS_EVENT_TYPE" = cron ]] && export ROBOTOLOGY_CHECKOUT=devel || export ROBOTOLOGY_CHECKOUT=master'
 
   #-- Install espeak/MBROLA
-  - sudo apt-get install espeak libespeak-dev mbrola-en1 mbrola-es1
+  - sudo apt-get install libespeak-dev
 
 install:
   #-- Install color-debug
