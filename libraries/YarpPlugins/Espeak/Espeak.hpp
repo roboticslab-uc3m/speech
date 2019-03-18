@@ -3,18 +3,18 @@
 #ifndef __ESPEAK_HPP__
 #define __ESPEAK_HPP__
 
-#include <yarp/os/all.h>
-#include <yarp/dev/Drivers.h>
+#include <string>
+#include <vector>
+
+#include <yarp/os/RpcServer.h>
+#include <yarp/dev/DeviceDriver.h>
 #include <yarp/dev/PolyDriver.h>
-#include <yarp/sig/all.h>
 
 #include <iostream> // only windows
 
 #include <speak_lib.h>
 
 #include <Speech_IDL.h>
-
-#include <ColorDebug.h>
 
 #define DEFAULT_NAME "/espeak"
 #define DEFAULT_VOICE "mb-en1"
@@ -200,4 +200,3 @@ class Espeak : public yarp::dev::DeviceDriver, public Speech_IDL {
 }  // namespace roboticslab
 
 #endif  // __ESPEAK_HPP__
-

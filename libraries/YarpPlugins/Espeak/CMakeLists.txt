@@ -34,7 +34,6 @@ if(NOT SKIP_Espeak)
 
     target_link_libraries(Espeak YARP::YARP_OS
                                  YARP::YARP_dev
-                                 YARP::YARP_sig
                                  ${ESPEAK_LIBRARIES}
                                  ROBOTICSLAB::ColorDebug)
 
