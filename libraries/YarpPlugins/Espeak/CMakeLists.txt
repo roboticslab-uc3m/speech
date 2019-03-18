@@ -3,13 +3,7 @@
 # CopyPolicy: Released under the terms of the LGPLv2.1 or later, see LGPL.TXT
 
 if(NOT Espeak_FOUND AND (NOT DEFINED ENABLE_Espeak OR ENABLE_Espeak))
-    if(NOT Espeak_FOUND)
-        message(WARNING "Espeak package not found, disabling Espeak device")
-    endif()
-
-    if(NOT YARP_HAS_IDL)
-        message(WARNING "YARP IDL modules not found, disabling Espeak device")
-    endif()
+    message(WARNING "Espeak package not found, disabling Espeak device")
 endif()
 
 yarp_prepare_plugin(Espeak
@@ -17,7 +11,7 @@ yarp_prepare_plugin(Espeak
                     TYPE roboticslab::Espeak
                     INCLUDE Espeak.hpp
                     DEFAULT ON
-                    DEPENDS "Espeak_FOUND;YARP_HAS_IDL")
+                    DEPENDS Espeak_FOUND)
 
 if(NOT SKIP_Espeak)
 
