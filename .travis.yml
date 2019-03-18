@@ -37,6 +37,10 @@ before_install:
   - if [ ! `git config --get user.email` ]; then `git config --global user.email 'user@example.com'`; fi
   - if [ ! `git config --get user.name` ]; then `git config --global user.name 'Travis CI'`; fi
 
+  #-- Install eSpeak
+  - sudo apt-get -qq update
+  - sudo apt-get install libespeak-dev
+
   #-- Code coverage
   - if [ "$CXX" = "g++" ]; then gem install coveralls-lcov; fi
 

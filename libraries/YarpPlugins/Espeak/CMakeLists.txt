@@ -2,13 +2,13 @@
 # Author: Juan G. Victores & Raul de Santos Rico
 # CopyPolicy: Released under the terms of the LGPLv2.1 or later, see LGPL.TXT
 
-if(NOT Espeak_FOUND AND (NOT DEFINED ENABLE_Espeak OR ENABLE_Espeak))
+if(NOT DEFINED ENABLE_Espeak OR ENABLE_Espeak)
     if(NOT Espeak_FOUND)
         message(WARNING "Espeak package not found, disabling Espeak device")
     endif()
 
-    if(NOT YARP_HAS_IDL)
-        message(WARNING "YARP IDL modules not found, disabling Espeak device")
+    if(NOT YARP_VERSION_SHORT VERSION_LESS 3 AND NOT YARP_idl_tools_FOUND)
+        message(WARNING "YARP idl_tools component not found, disabling Espeak device")
     endif()
 endif()
 
@@ -17,7 +17,7 @@ yarp_prepare_plugin(Espeak
                     TYPE roboticslab::Espeak
                     INCLUDE Espeak.hpp
                     DEFAULT ON
-                    DEPENDS "Espeak_FOUND;YARP_HAS_IDL")
+                    DEPENDS "Espeak_FOUND;YARP_VERSION_SHORT VERSION_LESS 3 OR YARP_idl_tools_FOUND")
 
 if(NOT SKIP_Espeak)
 
@@ -34,7 +34,6 @@ if(NOT SKIP_Espeak)
 
     target_link_libraries(Espeak YARP::YARP_OS
                                  YARP::YARP_dev
-                                 YARP::YARP_sig
                                  ${ESPEAK_LIBRARIES}
                                  ROBOTICSLAB::ColorDebug)
 

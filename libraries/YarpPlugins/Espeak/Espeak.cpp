@@ -2,6 +2,15 @@
 
 #include "Espeak.hpp"
 
+#include <cstdio>
+
+#include <string>
+#include <vector>
+
+#include <yarp/os/Value.h>
+
+#include <ColorDebug.h>
+
 // -----------------------------------------------------------------------------
 
 roboticslab::Espeak::Espeak()
@@ -89,7 +98,7 @@ bool roboticslab::Espeak::say(const std::string& text)
     const char* c = text.c_str();
     for(int i=0;i<s+1;i++)
     {
-        printf("i[%d] char[%c] int[%d]\n",i,c[i],(int)c[i]);
+        std::printf("i[%d] char[%c] int[%d]\n",i,c[i],(int)c[i]);
     }
     espeak_ERROR ret = espeak_Synth( text.c_str(), text.length()+1, position, position_type, end_position, flags, unique_identifier, user_data );
     if ( ret != EE_OK)

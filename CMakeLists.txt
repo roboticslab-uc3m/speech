@@ -38,7 +38,8 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake
 
 # Hard dependencies.
 find_package(YCM 0.8 REQUIRED)
-find_package(YARP 3.0 QUIET)
+find_package(YARP 3.0 QUIET COMPONENTS OS dev
+                            OPTIONAL_COMPONENTS idl_tools)
 # https://github.com/roboticslab-uc3m/questions-and-answers/issues/65
 if(NOT YARP_FOUND)
     find_package(YARP 2.3.70 REQUIRED)
