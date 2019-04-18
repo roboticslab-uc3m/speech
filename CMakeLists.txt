@@ -37,7 +37,7 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake
                               ${CMAKE_SOURCE_DIR}/cmake/find-modules)
 
 # Hard dependencies.
-find_package(YCM 0.8 REQUIRED)
+find_package(YCM 0.10 REQUIRED)
 find_package(YARP 3.0 QUIET COMPONENTS OS dev
                             OPTIONAL_COMPONENTS idl_tools)
 # https://github.com/roboticslab-uc3m/questions-and-answers/issues/65
@@ -47,6 +47,7 @@ endif()
 find_package(COLOR_DEBUG REQUIRED)
 
 # Soft dependencies.
+find_package(Doxygen QUIET)
 find_package(Espeak QUIET)
 
 # Always build YARP devices as MODULE libraries.
@@ -82,6 +83,7 @@ add_subdirectory(libraries)
 add_subdirectory(programs)
 #add_subdirectory(tests)
 add_subdirectory(share)
+add_subdirectory(doc)
 
 # Store the package in the user registry.
 export(PACKAGE ROBOTICSLAB_SPEECH)
