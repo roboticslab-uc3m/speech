@@ -1,5 +1,5 @@
 language: cpp
-dist: trusty
+dist: xenial
 os: linux
 
 compiler:
@@ -31,13 +31,10 @@ cache:
 addons:
   apt:
     packages:
+    - libespeak-dev
     - lcov # code coverage
 
 before_install:
-  #-- Install eSpeak
-  - sudo apt-get -qq update
-  - sudo apt-get install libespeak-dev
-
   #-- Code coverage
   - if [ "$CXX" = "g++" ]; then gem install coveralls-lcov; fi
 
