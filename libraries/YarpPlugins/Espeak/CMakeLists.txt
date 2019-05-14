@@ -7,7 +7,7 @@ if(NOT DEFINED ENABLE_Espeak OR ENABLE_Espeak)
         message(WARNING "Espeak package not found, disabling Espeak device")
     endif()
 
-    if(NOT YARP_VERSION_SHORT VERSION_LESS 3 AND NOT YARP_idl_tools_FOUND)
+    if(NOT YARP_idl_tools_FOUND)
         message(WARNING "YARP idl_tools component not found, disabling Espeak device")
     endif()
 endif()
@@ -17,7 +17,7 @@ yarp_prepare_plugin(Espeak
                     TYPE roboticslab::Espeak
                     INCLUDE Espeak.hpp
                     DEFAULT ON
-                    DEPENDS "Espeak_FOUND;YARP_VERSION_SHORT VERSION_LESS 3 OR YARP_idl_tools_FOUND")
+                    DEPENDS "Espeak_FOUND;YARP_idl_tools_FOUND")
 
 if(NOT SKIP_Espeak)
 
