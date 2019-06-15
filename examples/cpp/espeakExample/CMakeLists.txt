@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
 
 project(espeakExample LANGUAGES CXX)
 
-find_package(YARP 3.0 REQUIRED COMPONENTS OS dev)
+find_package(YARP 3.1 REQUIRED COMPONENTS OS dev)
 find_package(ROBOTICSLAB_SPEECH REQUIRED)
 
 add_executable(espeakExample main.cpp

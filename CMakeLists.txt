@@ -38,7 +38,7 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake
 
 # Hard dependencies.
 find_package(YCM 0.10 REQUIRED)
-find_package(YARP 3.0 REQUIRED COMPONENTS OS dev
+find_package(YARP 3.1 REQUIRED COMPONENTS OS dev
                                OPTIONAL_COMPONENTS idl_tools)
 find_package(COLOR_DEBUG REQUIRED)
 
