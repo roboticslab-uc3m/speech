@@ -68,7 +68,7 @@ before_script:
 
   - export LD_LIBRARY_PATH=$PWD/install/lib:$LD_LIBRARY_PATH
   - export YARP_DATA_DIRS=$PWD/install/share/roboticslab-speech:$YARP_DATA_DIRS
-  - export CMAKE_PREFIX_PATH="$PWD:$CMAKE_PREFIX_PATH"
+  - export CMAKE_PREFIX_PATH="$PWD/install/lib/cmake/ROBOTICSLAB_SPEECH:$CMAKE_PREFIX_PATH"
 
   - mkdir -p "$TRAVIS_BUILD_DIR/build/espeakExample" && cd "$_"
   - cmake "$TRAVIS_BUILD_DIR/examples/cpp/espeakExample" && make
