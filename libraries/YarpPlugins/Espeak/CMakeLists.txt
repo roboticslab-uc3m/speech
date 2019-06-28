@@ -23,9 +23,7 @@ if(NOT SKIP_Espeak)
 
     yarp_idl_to_dir(speech.thrift ${CMAKE_CURRENT_BINARY_DIR} idl_sources idl_headers idl_include_paths)
 
-    include_directories(${CMAKE_CURRENT_SOURCE_DIR} # yarp plugin builder needs this
-                        ${ESPEAK_INCLUDE_DIRS}
-                        ${idl_include_paths})
+    set(CMAKE_INCLUDE_CURRENT_DIR TRUE) # yarp plugin builder needs this
 
     yarp_add_plugin(Espeak Espeak.hpp
                            Espeak.cpp
@@ -37,14 +35,22 @@ if(NOT SKIP_Espeak)
                                  ${ESPEAK_LIBRARIES}
                                  ROBOTICSLAB::ColorDebug)
 
-    yarp_install(TARGETS Espeak
-                 COMPONENT runtime
-                 LIBRARY DESTINATION ${ROBOTICSLAB-SPEECH_DYNAMIC_PLUGINS_INSTALL_DIR}
-                 ARCHIVE DESTINATION ${ROBOTICSLAB-SPEECH_STATIC_PLUGINS_INSTALL_DIR})
+    target_include_directories(Espeak PRIVATE ${ESPEAK_INCLUDE_DIRS}
+                                              ${idl_include_paths})
 
-    yarp_install(FILES Espeak.ini
-                 COMPONENT runtime
-                 DESTINATION ${ROBOTICSLAB-SPEECH_PLUGIN_MANIFESTS_INSTALL_DIR})
+    if(NOT YARP_VERSION_SHORT VERSION_LESS 3.2)
+        yarp_install(TARGETS Espeak
+                     LIBRARY DESTINATION ${ROBOTICSLAB-SPEECH_DYNAMIC_PLUGINS_INSTALL_DIR}
+                     ARCHIVE DESTINATION ${ROBOTICSLAB-SPEECH_STATIC_PLUGINS_INSTALL_DIR}
+                     YARP_INI DESTINATION ${ROBOTICSLAB-SPEECH_PLUGIN_MANIFESTS_INSTALL_DIR})
+    else()
+        yarp_install(TARGETS Espeak
+                     LIBRARY DESTINATION ${ROBOTICSLAB-SPEECH_DYNAMIC_PLUGINS_INSTALL_DIR}
+                     ARCHIVE DESTINATION ${ROBOTICSLAB-SPEECH_STATIC_PLUGINS_INSTALL_DIR})
+
+        yarp_install(FILES Espeak.ini
+                     DESTINATION ${ROBOTICSLAB-SPEECH_PLUGIN_MANIFESTS_INSTALL_DIR})
+    endif()
 
     yarp_install(FILES ${thrift_files}
                        ${idl_sources}
