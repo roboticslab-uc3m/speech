@@ -10,8 +10,6 @@
 #
 # * ROBOTICSLAB_SPEECH_IDL_SOURCES; use add_executable(myExe ${mySources} ${ROBOTICSLAB_SPEECH_IDL_SOURCES})
 #
-# * ROBOTICSLAB_SPEECH_MODULE_PATH; use list(APPEND CMAKE_MODULE_PATH ${ROBOTICSLAB_SPEECH_MODULE_PATH})
-#
 # Notes:
 #
 # * All target names are prepended with the ROBOTICSLAB:: namespace
@@ -31,10 +29,6 @@ foreach(_dir @PACKAGE_ROBOTICSLAB_SPEECH_IDL_SOURCE@)
     set_and_check(_temp_var ${_dir})
     list(APPEND ROBOTICSLAB_SPEECH_IDL_SOURCES ${_temp_var})
 endforeach()
-
-set(ROBOTICSLAB_SPEECH_MODULE_PATH "@PACKAGE_ROBOTICSLAB_SPEECH_MODULE_DIR@")
-
-list(APPEND ROBOTICSLAB_SPEECH_MODULE_PATH ${ROBOTICSLAB_SPEECH_MODULE_PATH}/find-modules)
 
 if(NOT "@_exported_targets@" STREQUAL "")
     include(${CMAKE_CURRENT_LIST_DIR}/ROBOTICSLAB_SPEECHTargets.cmake)

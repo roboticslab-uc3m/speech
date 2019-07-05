@@ -111,7 +111,6 @@ configure_package_config_file(${CMAKE_SOURCE_DIR}/cmake/templates/ROBOTICSLAB_SP
                               INSTALL_PREFIX ${CMAKE_BINARY_DIR}
                               PATH_VARS ROBOTICSLAB_SPEECH_IDL_INCLUDE
                                         ROBOTICSLAB_SPEECH_IDL_SOURCE
-                                        ROBOTICSLAB_SPEECH_MODULE_DIR
                               NO_CHECK_REQUIRED_COMPONENTS_MACRO)
 
 # Set exported variables (install tree).
@@ -131,7 +130,6 @@ configure_package_config_file(${CMAKE_SOURCE_DIR}/cmake/templates/ROBOTICSLAB_SP
                               INSTALL_DESTINATION ${_cmake_destination}
                               PATH_VARS ROBOTICSLAB_SPEECH_IDL_INCLUDE
                                         ROBOTICSLAB_SPEECH_IDL_SOURCE
-                                        ROBOTICSLAB_SPEECH_MODULE_DIR
                               NO_CHECK_REQUIRED_COMPONENTS_MACRO)
 
 # Install <pkg>Config.cmake.
