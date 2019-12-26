@@ -21,9 +21,15 @@ yarp_prepare_plugin(Espeak
 
 if(NOT SKIP_Espeak)
 
-    yarp_idl_to_dir(speech.thrift ${CMAKE_CURRENT_BINARY_DIR} idl_sources idl_headers idl_include_paths)
+    yarp_idl_to_dir(INPUT_FILES speech.thrift
+                    OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}
+                    SOURCES_VAR idl_sources
+                    HEADERS_VAR idl_headers
+                    INCLUDE_DIRS_VAR idl_include_dirs)
 
-    set(CMAKE_INCLUDE_CURRENT_DIR TRUE) # yarp plugin builder needs this
+    if(NOT YARP_VERSION VERSION_GREATER_EQUAL 3.4)
+        set(CMAKE_INCLUDE_CURRENT_DIR TRUE) # yarp plugin builder needs this
+    endif()
 
     yarp_add_plugin(Espeak Espeak.hpp
                            Espeak.cpp
@@ -36,28 +42,24 @@ if(NOT SKIP_Espeak)
                                  ROBOTICSLAB::ColorDebug)
 
     target_include_directories(Espeak PRIVATE ${ESPEAK_INCLUDE_DIRS}
-                                              ${idl_include_paths})
+                                              ${idl_include_dirs})
 
-    if(NOT YARP_VERSION_SHORT VERSION_LESS 3.2)
-        yarp_install(TARGETS Espeak
-                     LIBRARY DESTINATION ${ROBOTICSLAB-SPEECH_DYNAMIC_PLUGINS_INSTALL_DIR}
-                     ARCHIVE DESTINATION ${ROBOTICSLAB-SPEECH_STATIC_PLUGINS_INSTALL_DIR}
-                     YARP_INI DESTINATION ${ROBOTICSLAB-SPEECH_PLUGIN_MANIFESTS_INSTALL_DIR})
-    else()
-        yarp_install(TARGETS Espeak
-                     LIBRARY DESTINATION ${ROBOTICSLAB-SPEECH_DYNAMIC_PLUGINS_INSTALL_DIR}
-                     ARCHIVE DESTINATION ${ROBOTICSLAB-SPEECH_STATIC_PLUGINS_INSTALL_DIR})
+    yarp_install(TARGETS Espeak
+                 LIBRARY DESTINATION ${ROBOTICSLAB-SPEECH_DYNAMIC_PLUGINS_INSTALL_DIR}
+                 ARCHIVE DESTINATION ${ROBOTICSLAB-SPEECH_STATIC_PLUGINS_INSTALL_DIR}
+                 YARP_INI DESTINATION ${ROBOTICSLAB-SPEECH_PLUGIN_MANIFESTS_INSTALL_DIR})
 
-        yarp_install(FILES Espeak.ini
-                     DESTINATION ${ROBOTICSLAB-SPEECH_PLUGIN_MANIFESTS_INSTALL_DIR})
-    endif()
-
-    yarp_install(FILES ${thrift_files}
-                       ${idl_sources}
+    yarp_install(FILES ${idl_sources}
                        ${idl_headers}
                  DESTINATION ${ROBOTICSLAB-SPEECH_DATA_INSTALL_DIR}/idls)
 
-    set_property(GLOBAL APPEND PROPERTY ROBOTICSLAB_SPEECH_IDL_INCLUDES ${idl_include_paths})
+    foreach(_var_name IN ITEMS idl_sources idl_headers)
+        foreach(_var_value IN LISTS ${_var_name})
+            get_filename_component(${_var_name} ${_var_value} ABSOLUTE BASE_DIR ${CMAKE_CURRENT_BINARY_DIR}/..)
+        endforeach()
+    endforeach()
+
+    set_property(GLOBAL APPEND PROPERTY ROBOTICSLAB_SPEECH_IDL_INCLUDES ${idl_include_dirs})
     set_property(GLOBAL APPEND PROPERTY ROBOTICSLAB_SPEECH_IDL_SOURCES ${idl_sources} ${idl_headers})
 
 else()

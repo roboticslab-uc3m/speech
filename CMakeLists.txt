@@ -37,7 +37,7 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/find-modules)
 
 # Hard dependencies.
 find_package(YCM 0.11 REQUIRED)
-find_package(YARP 3.1 REQUIRED COMPONENTS OS dev
+find_package(YARP 3.2 REQUIRED COMPONENTS OS dev
                                OPTIONAL_COMPONENTS idl_tools)
 find_package(COLOR_DEBUG REQUIRED)
 
@@ -90,8 +90,8 @@ get_property(_idl_includes GLOBAL PROPERTY ROBOTICSLAB_SPEECH_IDL_INCLUDES)
 get_property(_idl_sources GLOBAL PROPERTY ROBOTICSLAB_SPEECH_IDL_SOURCES)
 
 # Set exported variables (build tree).
-set(ROBOTICSLAB_SPEECH_BUILD_IDL_INCLUDE "${_idl_includes}")
-set(ROBOTICSLAB_SPEECH_BUILD_IDL_SOURCE "${_idl_sources}")
+set(ROBOTICSLAB_SPEECH_BUILD_IDL_INCLUDE ${_idl_includes})
+set(ROBOTICSLAB_SPEECH_BUILD_IDL_SOURCE ${_idl_sources})
 
 # Set exported variables (install tree).
 set(ROBOTICSLAB_SPEECH_INSTALL_IDL_INCLUDE ${ROBOTICSLAB-SPEECH_DATA_INSTALL_DIR}/idls)
