@@ -3,7 +3,7 @@
 ### Install the Software dependencies
 
 - [Install CMake 3.5+](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-cmake.md/)
-- [Install YCM 0.10+](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-ycm.md/)
+- [Install YCM 0.11+](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-ycm.md/)
 - [Install YARP 3.1+](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-yarp.md/)
 with [Python bindings](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-yarp.md#install-python-bindings)
 - [Install eSpeak with MBROLA Voices](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-espeak-mbrola.md/)
@@ -43,14 +43,14 @@ This is a way set default sound output card using PulseAudio (not ALSA).
 1. Check list of Sources and Sinks
 ```bash
 $ pactl list short sources
-0	alsa_input.usb-PrimeSense_PrimeSense_Device-01.analog-stereo	module-alsa-card.c	s16le 2ch 44100Hz
-1	alsa_output.usb-C-Media_Electronics_Inc._USB_PnP_Sound_Device-00.analog-stereo.monitor	module-alsa-card.c	s16le 2ch 48000Hz	
-2	alsa_input.usb-C-Media_Electronics_Inc._USB_PnP_Sound_Device-00.analog-mono	module-alsa-card.c	s16le 1ch 44100Hz	
-3	alsa_output.pci-0000_00_1f.3.hdmi-stereo.monitor	module-alsa-card.c	s16le 2ch 44100Hz	
+0   alsa_input.usb-PrimeSense_PrimeSense_Device-01.analog-stereo    module-alsa-card.c  s16le 2ch 44100Hz
+1   alsa_output.usb-C-Media_Electronics_Inc._USB_PnP_Sound_Device-00.analog-stereo.monitor  module-alsa-card.c  s16le 2ch 48000Hz
+2   alsa_input.usb-C-Media_Electronics_Inc._USB_PnP_Sound_Device-00.analog-mono module-alsa-card.c  s16le 1ch 44100Hz
+3   alsa_output.pci-0000_00_1f.3.hdmi-stereo.monitor    module-alsa-card.c  s16le 2ch 44100Hz
 
 $ pactl list short sinks
-0	alsa_output.usb-C-Media_Electronics_Inc._USB_PnP_Sound_Device-00.analog-stereo	module-alsa-card.c	s16le 2ch 48000Hz	
-1	alsa_output.pci-0000_00_1f.3.hdmi-stereo	module-alsa-card.c	s16le 2ch 44100Hz	
+0   alsa_output.usb-C-Media_Electronics_Inc._USB_PnP_Sound_Device-00.analog-stereo  module-alsa-card.c  s16le 2ch 48000Hz
+1   alsa_output.pci-0000_00_1f.3.hdmi-stereo    module-alsa-card.c  s16le 2ch 44100Hz
 ```
 
 2. Set defaults (you can add these lines in the `.profile` file to save this configuration by default):

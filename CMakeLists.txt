@@ -33,11 +33,10 @@ if(NOT CMAKE_CONFIGURATION_TYPES)
 endif()
 
 # Pick up our cmake modules.
-list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake
-                              ${CMAKE_SOURCE_DIR}/cmake/find-modules)
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/find-modules)
 
 # Hard dependencies.
-find_package(YCM 0.10 REQUIRED)
+find_package(YCM 0.11 REQUIRED)
 find_package(YARP 3.1 REQUIRED COMPONENTS OS dev
                                OPTIONAL_COMPONENTS idl_tools)
 find_package(COLOR_DEBUG REQUIRED)
@@ -74,7 +73,6 @@ endif()
 include(CMakeDependentOption)
 
 # Add main contents.
-add_subdirectory(cmake)
 add_subdirectory(libraries)
 add_subdirectory(programs)
 #add_subdirectory(tests)
@@ -82,75 +80,36 @@ add_subdirectory(share)
 add_subdirectory(doc)
 
 # Store the package in the user registry.
-export(PACKAGE ROBOTICSLAB_SPEECH)
+set(CMAKE_EXPORT_PACKAGE_REGISTRY ON)
+
+# Create and install config files.
+include(InstallBasicPackageFiles)
 
 # Retrieve global properties.
 get_property(_idl_includes GLOBAL PROPERTY ROBOTICSLAB_SPEECH_IDL_INCLUDES)
 get_property(_idl_sources GLOBAL PROPERTY ROBOTICSLAB_SPEECH_IDL_SOURCES)
-get_property(_exported_targets GLOBAL PROPERTY ROBOTICSLAB_SPEECH_TARGETS)
-
-# CMake installation path.
-if(WIN32)
-    set(_cmake_destination cmake)
-else()
-    set(_cmake_destination ${CMAKE_INSTALL_LIBDIR}/cmake/ROBOTICSLAB_SPEECH)
-endif()
-
-# Create and install config files.
-include(CMakePackageConfigHelpers)
 
 # Set exported variables (build tree).
-set(ROBOTICSLAB_SPEECH_IDL_INCLUDE "${_idl_includes}")
-set(ROBOTICSLAB_SPEECH_IDL_SOURCE "${_idl_sources}")
-set(ROBOTICSLAB_SPEECH_MODULE_DIR ${CMAKE_SOURCE_DIR}/cmake)
-
-# <pkg>Config.cmake (build tree).
-configure_package_config_file(${CMAKE_SOURCE_DIR}/cmake/templates/ROBOTICSLAB_SPEECHConfig.cmake.in
-                              ${CMAKE_BINARY_DIR}/ROBOTICSLAB_SPEECHConfig.cmake
-                              INSTALL_DESTINATION ${CMAKE_BINARY_DIR}
-                              INSTALL_PREFIX ${CMAKE_BINARY_DIR}
-                              PATH_VARS ROBOTICSLAB_SPEECH_IDL_INCLUDE
-                                        ROBOTICSLAB_SPEECH_IDL_SOURCE
-                              NO_CHECK_REQUIRED_COMPONENTS_MACRO)
+set(ROBOTICSLAB_SPEECH_BUILD_IDL_INCLUDE "${_idl_includes}")
+set(ROBOTICSLAB_SPEECH_BUILD_IDL_SOURCE "${_idl_sources}")
 
 # Set exported variables (install tree).
-set(ROBOTICSLAB_SPEECH_IDL_INCLUDE ${ROBOTICSLAB-SPEECH_DATA_INSTALL_DIR}/idls)
-set(ROBOTICSLAB_SPEECH_IDL_SOURCE "")
+set(ROBOTICSLAB_SPEECH_INSTALL_IDL_INCLUDE ${ROBOTICSLAB-SPEECH_DATA_INSTALL_DIR}/idls)
+set(ROBOTICSLAB_SPEECH_INSTALL_IDL_SOURCE "")
 
 foreach(_file ${_idl_sources})
     get_filename_component(_filename ${_file} NAME)
-    list(APPEND ROBOTICSLAB_SPEECH_IDL_SOURCE ${ROBOTICSLAB-SPEECH_DATA_INSTALL_DIR_FULL}/idls/${_filename})
+    list(APPEND ROBOTICSLAB_SPEECH_INSTALL_IDL_SOURCE ${ROBOTICSLAB-SPEECH_DATA_INSTALL_DIR_FULL}/idls/${_filename})
 endforeach()
 
-set(ROBOTICSLAB_SPEECH_MODULE_DIR ${CMAKE_INSTALL_DATADIR}/ROBOTICSLAB_SPEECH/cmake)
-
-# <pkg>Config.cmake (install tree).
-configure_package_config_file(${CMAKE_SOURCE_DIR}/cmake/templates/ROBOTICSLAB_SPEECHConfig.cmake.in
-                              ${CMAKE_BINARY_DIR}/ROBOTICSLAB_SPEECHConfig.cmake.install
-                              INSTALL_DESTINATION ${_cmake_destination}
-                              PATH_VARS ROBOTICSLAB_SPEECH_IDL_INCLUDE
-                                        ROBOTICSLAB_SPEECH_IDL_SOURCE
-                              NO_CHECK_REQUIRED_COMPONENTS_MACRO)
-
-# Install <pkg>Config.cmake.
-install(FILES ${CMAKE_BINARY_DIR}/ROBOTICSLAB_SPEECHConfig.cmake.install
-        RENAME ROBOTICSLAB_SPEECHConfig.cmake
-        DESTINATION ${_cmake_destination})
-
-# Export library targets if enabled.
-# https://github.com/roboticslab-uc3m/project-generator/issues/19
-if(_exported_targets)
-    # <pkg>Targets.cmake (build tree).
-    export(EXPORT ROBOTICSLAB_SPEECH
-           NAMESPACE ROBOTICSLAB::
-           FILE ROBOTICSLAB_SPEECHTargets.cmake)
-
-    # <pkg>Targets.cmake (install tree).
-    install(EXPORT ROBOTICSLAB_SPEECH
-            DESTINATION ${_cmake_destination}
-            NAMESPACE ROBOTICSLAB::
-            FILE ROBOTICSLAB_SPEECHTargets.cmake)
-endif()
+install_basic_package_files(ROBOTICSLAB_SPEECH
+                            VERSION 0.1.0
+                            COMPATIBILITY AnyNewerVersion
+                            NO_EXPORT
+                            NO_CHECK_REQUIRED_COMPONENTS_MACRO
+                            NAMESPACE ROBOTICSLAB::
+                            EXTRA_PATH_VARS_SUFFIX IDL_INCLUDE IDL_SOURCE
+                            CONFIG_TEMPLATE ${CMAKE_SOURCE_DIR}/cmake/templates/ROBOTICSLAB_SPEECHConfig.cmake.in)
 
 # Configure and create uninstall target.
 include(AddUninstallTarget)
