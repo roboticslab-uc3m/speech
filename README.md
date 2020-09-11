@@ -14,10 +14,10 @@ Information of how to launch or configure it:
 1. [Speech recognition](programs/speechRecognition/README.md)
 2. [Espeak](libraries/YarpPlugins/Espeak/README.md)
 
-Read the [development manual](https://github.com/roboticslab-uc3m/speech/blob/develop/doc/speech-development-manual.md) if you want to build a new language model
+Read the [development manual](doc/speech-development-manual.md) if you want to build a new language model
 
 ##### More examples:
-To see how other programs call to `speechRecognition ` and  `Espeak` and configure it by yarp, you can see this part of the [follow-me](https://github.com/roboticslab-uc3m/follow-me/blob/develop/programs/followMeDialogueManager/FollowMeDialogueManager.cpp#L10-L100)  code.
+To see how other programs call to `speechRecognition` and  `Espeak` and configure it by yarp, you can see this part of the [follow-me](https://github.com/roboticslab-uc3m/follow-me/blob/master/programs/followMeDialogueManager/FollowMeDialogueManager.cpp#L10-L100)  code.
 
 ## Contributing
 
@@ -29,14 +29,14 @@ To see how other programs call to `speechRecognition ` and  `Espeak` and configu
 #### Fork & Pull Request
 
 1. [Fork the repository](https://github.com/roboticslab-uc3m/speech/fork)
-2. Create your feature branch (`git checkout -b my-new-feature`) off the `develop` branch, following the [GitFlow git workflow](https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow)
+2. Create your feature branch (`git checkout -b my-new-feature`) off the `master` branch, following the [Forking Git workflow](https://www.atlassian.com/git/tutorials/comparing-workflows/forking-workflow)
 3. Commit your changes
 4. Push to the branch (`git push origin my-new-feature`)
 5. Create a new Pull Request
 
 ## Status
 
-[![Build Status (Linux)](https://travis-ci.com/roboticslab-uc3m/speech.svg?branch=develop)](https://travis-ci.com/roboticslab-uc3m/speech)
+[![Build Status (Linux)](https://travis-ci.com/roboticslab-uc3m/speech.svg?branch=master)](https://travis-ci.com/roboticslab-uc3m/speech)
 
 [![Coverage Status](https://coveralls.io/repos/roboticslab-uc3m/speech/badge.svg)](https://coveralls.io/r/roboticslab-uc3m/speech)
 
