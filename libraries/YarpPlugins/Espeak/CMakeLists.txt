@@ -36,7 +36,7 @@ if(NOT SKIP_Espeak)
                            ${idl_sources}
                            ${idl_headers})
 
-    target_link_libraries(Espeak YARP::YARP_OS
+    target_link_libraries(Espeak YARP::YARP_os
                                  YARP::YARP_dev
                                  ${ESPEAK_LIBRARIES}
                                  ROBOTICSLAB::ColorDebug)
