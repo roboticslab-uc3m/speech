@@ -36,14 +36,12 @@ To see how other programs call to `speechRecognition ` and  `Espeak` and configu
 
 ## Status
 
-[![Build Status (Linux/OSX)](https://travis-ci.org/roboticslab-uc3m/speech.svg?branch=master)](https://travis-ci.org/roboticslab-uc3m/speech)
+[![Build Status (Linux)](https://travis-ci.com/roboticslab-uc3m/speech.svg?branch=develop)](https://travis-ci.com/roboticslab-uc3m/speech)
 
 [![Coverage Status](https://coveralls.io/repos/roboticslab-uc3m/speech/badge.svg)](https://coveralls.io/r/roboticslab-uc3m/speech)
 
 [![Issues](https://img.shields.io/github/issues/roboticslab-uc3m/speech.svg?label=Issues)](https://github.com/roboticslab-uc3m/speech/issues)
 
-## Links of interest:
-
-* [vision](https://github.com/roboticslab-uc3m/vision)
-* [yarp-devices](https://github.com/roboticslab-uc3m/yarp-devices)
-
+## Similar and Related Projects
+- http://kaldi-asr.org/
+- [robotology/yarp.js/examples/speech_recognition](https://github.com/robotology/yarp.js/tree/master/examples/speech_recognition)

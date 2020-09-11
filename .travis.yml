@@ -1,5 +1,5 @@
 language: cpp
-dist: trusty
+dist: bionic
 os: linux
 
 compiler:
@@ -9,20 +9,19 @@ compiler:
 env:
   global:
     - CACHE_DIR=~/cached-deps
+    - YCM_CHECKOUT=ycm-0.11
   matrix:
-    - YARP_CHECKOUT=master
-    - YARP_CHECKOUT=30dce54 # hotfix for v3.0.1
-    - YARP_CHECKOUT=v2.3.72.1
-    - YARP_CHECKOUT=v2.3.70.2
+    - YARP_CHECKOUT=yarp-3.3
+    - YARP_CHECKOUT=yarp-3.2
 
 matrix:
   include:
     - if: type = cron
       compiler: gcc
-      env: ROBOTOLOGY_CHECKOUT=devel
+      env: ROBOTOLOGY_CHECKOUT=master
     - if: type = cron
       compiler: clang
-      env: ROBOTOLOGY_CHECKOUT=devel
+      env: ROBOTOLOGY_CHECKOUT=master
 
 cache:
   directories: $CACHE_DIR
@@ -30,13 +29,10 @@ cache:
 addons:
   apt:
     packages:
+    - libespeak-dev
     - lcov # code coverage
 
 before_install:
-  #-- Configure Git (needed by YCM)
-  - if [ ! `git config --get user.email` ]; then `git config --global user.email 'user@example.com'`; fi
-  - if [ ! `git config --get user.name` ]; then `git config --global user.name 'Travis CI'`; fi
-
   #-- Code coverage
   - if [ "$CXX" = "g++" ]; then gem install coveralls-lcov; fi
 
@@ -46,7 +42,7 @@ install:
     source "$TRAVIS_BUILD_DIR/scripts/travis/git-cache-dependency.sh"
     --package-name YCM
     --repo-url https://github.com/robotology/ycm
-    --repo-checkout "${ROBOTOLOGY_CHECKOUT:-${YCM_CHECKOUT:-master}}"
+    --repo-checkout "${ROBOTOLOGY_CHECKOUT:-$YCM_CHECKOUT}"
 
   #-- Install YARP
   - >
@@ -69,8 +65,13 @@ before_script:
   - mkdir -p "$TRAVIS_BUILD_DIR/build" && cd "$_"
   - cmake .. -DCMAKE_INSTALL_PREFIX="$PWD/install" -DENABLE_coverage:BOOL=ON
   - make install
+
   - export LD_LIBRARY_PATH=$PWD/install/lib:$LD_LIBRARY_PATH
   - export YARP_DATA_DIRS=$PWD/install/share/roboticslab-speech:$YARP_DATA_DIRS
+  - export CMAKE_PREFIX_PATH="$PWD/install/lib/cmake/ROBOTICSLAB_SPEECH:$CMAKE_PREFIX_PATH"
+
+  - mkdir -p "$TRAVIS_BUILD_DIR/build/espeakExample" && cd "$_"
+  - cmake "$TRAVIS_BUILD_DIR/examples/cpp/espeakExample" && make
 
 script:
   - echo "No unit tests available"
@@ -79,4 +80,4 @@ after_success:
   #-- Code coverage
   - if [ "$CXX" = "g++" ]; then source "$TRAVIS_BUILD_DIR/scripts/travis/coverage.sh"; fi
 
-  - make uninstall
+  - cd "$TRAVIS_BUILD_DIR/build" && make uninstall

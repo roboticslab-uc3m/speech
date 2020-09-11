@@ -1,12 +1,9 @@
-cmake_minimum_required (VERSION 2.8.11)
+cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
 
-project(espeakExample)
+project(espeakExample LANGUAGES CXX)
 
-find_package(YARP REQUIRED)
+find_package(YARP 3.2 REQUIRED COMPONENTS OS dev)
 find_package(ROBOTICSLAB_SPEECH REQUIRED)
-
-include_directories(${YARP_INCLUDE_DIRS}
-                    ${ROBOTICSLAB_SPEECH_IDL_INCLUDES})
 
 add_executable(espeakExample main.cpp
                              EspeakExample.hpp
@@ -16,6 +13,8 @@ add_executable(espeakExample main.cpp
 target_link_libraries(espeakExample YARP::YARP_OS
                                     YARP::YARP_dev
                                     YARP::YARP_init)
+
+target_include_directories(espeakExample PRIVATE ${ROBOTICSLAB_SPEECH_IDL_INCLUDES})
 
 include(GNUInstallDirs)
 
