@@ -190,7 +190,7 @@ class SpeechRecognition(object):
 #                                        + '! vader name=vad auto-threshold=true '
 #                                        + '! pocketsphinx name=asr ! fakesink')
 
-	""" Configuring the decoder and improving accuracy """
+        """ Configuring the decoder and improving accuracy """
         self.pipeline = gst.parse_launch('autoaudiosrc ! audioconvert ! audioresample '
                                         + '! pocketsphinx name=asr beam=1e-20 ! fakesink')
         asr = self.pipeline.get_by_name('asr')
