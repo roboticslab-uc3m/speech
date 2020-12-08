@@ -157,7 +157,6 @@ class DataProcessor(yarp.PortReader):
         if writer==None:
             return True
         return bottleOut.write(writer)
-        
 
 
 ##
@@ -182,13 +181,12 @@ class SpeechRecognition(object):
         self.outPort.open('/speechRecognition:o')
         self.configPort.open('/speechRecognition/rpc:s')
         self.init_gst()
-        
 
     def init_gst(self):
         """Initialize the speech components"""
-#        self.pipeline = gst.parse_launch('gconfaudiosrc ! audioconvert ! audioresample '
-#                                        + '! vader name=vad auto-threshold=true '
-#                                        + '! pocketsphinx name=asr ! fakesink')
+        #self.pipeline = gst.parse_launch('gconfaudiosrc ! audioconvert ! audioresample '
+        #                                  + '! vader name=vad auto-threshold=true '
+        #                                  + '! pocketsphinx name=asr ! fakesink')
 
         """ Configuring the decoder and improving accuracy """
         self.pipeline = gst.parse_launch('autoaudiosrc ! audioconvert ! audioresample '
@@ -254,6 +252,7 @@ class SpeechRecognition(object):
 
         self.pipeline.set_state(gst.State.PLAYING)
         return True
+
 
 yarp.Network.init()
 if yarp.Network.checkNetwork() != True:
