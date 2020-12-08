@@ -3,7 +3,8 @@
 # CopyPolicy: Released under the terms of the GNU GPL v2.0.
 
 yarp_install(FILES applications/ymanager.ini
-             DESTINATION ${ROBOTICSLAB-SPEECH_DATA_INSTALL_DIR})
+                   applications/example_speechRecognition.xml
+             DESTINATION ${ROBOTICSLAB-SPEECH_APPLICATIONS_INSTALL_DIR})
 
 ### Go through single applications
 
