@@ -3,6 +3,7 @@
 # CopyPolicy: Released under the terms of the GNU GPL v2.0.
 
 yarp_install(FILES applications/ymanager.ini
+                   applications/example_Espeak.xml
                    applications/example_speechRecognition.xml
              DESTINATION ${ROBOTICSLAB-SPEECH_APPLICATIONS_INSTALL_DIR})
 
