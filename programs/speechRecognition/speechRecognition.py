@@ -164,20 +164,17 @@ class DataProcessor(yarp.PortReader):
 # @brief Speech Recognition main class.
 class SpeechRecognition(object):
     """Based on GStreamer/PocketSphinx Demo Application"""
-    def __init__(self):
+    def __init__(self, rf):
         """Initialize a SpeechRecognition object"""
-        self.rf = yarp.ResourceFinder()
-        self.rf.setVerbose(True)
-        self.rf.setDefaultContext('speechRecognition')
-        self.rf.setDefaultConfigFile('speechRecognition.ini')
+        self.rf = rf
         self.my_lm = self.rf.findFileByName('dictionary/follow-me-english.lm')
         self.my_dic = self.rf.findFileByName('dictionary/follow-me-english.dic')
         self.my_model = self.rf.findPath('model/en-us/')
         self.outPort = yarp.Port()
-        self.configPort = yarp.RpcServer()  # Use Port() if not Python wrapper not existent!
-        self.dataProcessor = DataProcessor() 
-        self.dataProcessor.setRefToFather(self) # it pass reference to DataProcessor 
-        self.configPort.setReader(self.dataProcessor)       
+        self.configPort = yarp.RpcServer()
+        self.dataProcessor = DataProcessor()
+        self.dataProcessor.setRefToFather(self) # it pass reference to DataProcessor
+        self.configPort.setReader(self.dataProcessor)
         self.outPort.open('/speechRecognition:o')
         self.configPort.open('/speechRecognition/rpc:s')
         self.init_gst()
@@ -253,13 +250,18 @@ class SpeechRecognition(object):
         self.pipeline.set_state(gst.State.PLAYING)
         return True
 
+rf = yarp.ResourceFinder()
+rf.setVerbose(True)
+rf.setDefaultContext('speechRecognition')
+rf.setDefaultConfigFile('speechRecognition.ini')
+# rf.configure(sys.argv) # turns out to be complicated, e.g. shebang-related
 
 yarp.Network.init()
 if yarp.Network.checkNetwork() != True:
     print('[asr] error: found no yarp network (try running "yarpserver &"), bye!')
     quit()
 
-app = SpeechRecognition()
+app = SpeechRecognition(rf)
 # enter into a mainloop
 loop = GObject.MainLoop()
 loop.run()
