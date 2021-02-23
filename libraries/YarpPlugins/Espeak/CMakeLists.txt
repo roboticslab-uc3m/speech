@@ -38,8 +38,7 @@ if(NOT SKIP_Espeak)
 
     target_link_libraries(Espeak YARP::YARP_os
                                  YARP::YARP_dev
-                                 ${ESPEAK_LIBRARIES}
-                                 ROBOTICSLAB::ColorDebug)
+                                 ${ESPEAK_LIBRARIES})
 
     target_include_directories(Espeak PRIVATE ${ESPEAK_INCLUDE_DIRS}
                                               ${idl_include_dirs})

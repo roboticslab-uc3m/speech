@@ -10,8 +10,6 @@
 #include <yarp/dev/DeviceDriver.h>
 #include <yarp/dev/PolyDriver.h>
 
-#include <iostream> // only windows
-
 #include <speak_lib.h>
 
 #include <Speech_IDL.h>
