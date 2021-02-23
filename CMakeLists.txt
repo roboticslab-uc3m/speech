@@ -79,37 +79,26 @@ add_subdirectory(share)
 add_subdirectory(doc)
 add_subdirectory(examples/cpp)
 
+# Retrieve global properties.
+get_property(_exported_targets GLOBAL PROPERTY _exported_targets)
+
+if(NOT DEFINED _exported_targets)
+    set(_no_export NO_EXPORT)
+endif()
+
 # Store the package in the user registry.
 set(CMAKE_EXPORT_PACKAGE_REGISTRY ON)
 
 # Create and install config files.
 include(InstallBasicPackageFiles)
 
-# Retrieve global properties.
-get_property(_idl_includes GLOBAL PROPERTY ROBOTICSLAB_SPEECH_IDL_INCLUDES)
-get_property(_idl_sources GLOBAL PROPERTY ROBOTICSLAB_SPEECH_IDL_SOURCES)
-
-# Set exported variables (build tree).
-set(ROBOTICSLAB_SPEECH_BUILD_IDL_INCLUDE ${_idl_includes})
-set(ROBOTICSLAB_SPEECH_BUILD_IDL_SOURCE ${_idl_sources})
-
-# Set exported variables (install tree).
-set(ROBOTICSLAB_SPEECH_INSTALL_IDL_INCLUDE ${ROBOTICSLAB-SPEECH_DATA_INSTALL_DIR}/idls)
-set(ROBOTICSLAB_SPEECH_INSTALL_IDL_SOURCE "")
-
-foreach(_file ${_idl_sources})
-    get_filename_component(_filename ${_file} NAME)
-    list(APPEND ROBOTICSLAB_SPEECH_INSTALL_IDL_SOURCE ${ROBOTICSLAB-SPEECH_DATA_INSTALL_DIR_FULL}/idls/${_filename})
-endforeach()
-
 install_basic_package_files(ROBOTICSLAB_SPEECH
                             VERSION 0.1.0
                             COMPATIBILITY AnyNewerVersion
-                            NO_EXPORT
+                            ${_no_export}
+                            NO_SET_AND_CHECK_MACRO
                             NO_CHECK_REQUIRED_COMPONENTS_MACRO
-                            NAMESPACE ROBOTICSLAB::
-                            EXTRA_PATH_VARS_SUFFIX IDL_INCLUDE IDL_SOURCE
-                            CONFIG_TEMPLATE ${CMAKE_SOURCE_DIR}/cmake/templates/ROBOTICSLAB_SPEECHConfig.cmake.in)
+                            NAMESPACE ROBOTICSLAB::)
 
 # Configure and create uninstall target.
 include(AddUninstallTarget)

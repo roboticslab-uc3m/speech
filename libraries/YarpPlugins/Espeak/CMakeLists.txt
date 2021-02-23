@@ -1,5 +1,4 @@
-# Copyright: (C) 2017 Universidad Carlos III de Madrid
-# Author: Juan G. Victores & Raul de Santos Rico
+# Copyright: (C) 2021 Universidad Carlos III de Madrid
 # CopyPolicy: Released under the terms of the LGPLv2.1 or later, see LGPL.TXT
 
 if(NOT DEFINED ENABLE_Espeak OR ENABLE_Espeak)
@@ -27,39 +26,54 @@ if(NOT SKIP_Espeak)
                     HEADERS_VAR idl_headers
                     INCLUDE_DIRS_VAR idl_include_dirs)
 
+    add_library(SpeechIDL INTERFACE)
+
+    set(_idl_interface_sources)
+
+    foreach(_var_name IN ITEMS idl_sources idl_headers)
+        foreach(_var_file IN LISTS ${_var_name})
+            get_filename_component(_temp_build ${_var_file} ABSOLUTE BASE_DIR ${CMAKE_CURRENT_BINARY_DIR}/..)
+            get_filename_component(_temp_install ${_var_file} NAME)
+
+            list(APPEND _idl_interface_sources $<BUILD_INTERFACE:${_temp_build}>
+                                               $<INSTALL_INTERFACE:${ROBOTICSLAB-SPEECH_DATA_INSTALL_DIR}/idls/${_temp_install}>)
+        endforeach()
+    endforeach()
+
+    target_sources(SpeechIDL INTERFACE ${_idl_interface_sources})
+
+    target_include_directories(SpeechIDL INTERFACE $<BUILD_INTERFACE:${idl_include_dirs}>
+                                                   $<INSTALL_INTERFACE:${ROBOTICSLAB-SPEECH_DATA_INSTALL_DIR}/idls>)
+
+    yarp_install(TARGETS SpeechIDL
+                 EXPORT ROBOTICSLAB_SPEECH)
+
+    yarp_install(FILES ${idl_sources}
+                       ${idl_headers}
+             DESTINATION ${ROBOTICSLAB-SPEECH_DATA_INSTALL_DIR}/idls)
+
+    set_property(GLOBAL APPEND PROPERTY _exported_targets SpeechIDL)
+
+    add_library(ROBOTICSLAB::SpeechIDL ALIAS SpeechIDL)
+
     if(NOT YARP_VERSION VERSION_GREATER_EQUAL 3.4)
         set(CMAKE_INCLUDE_CURRENT_DIR TRUE) # yarp plugin builder needs this
     endif()
 
     yarp_add_plugin(Espeak Espeak.hpp
-                           Espeak.cpp
-                           ${idl_sources}
-                           ${idl_headers})
+                           Espeak.cpp)
 
     target_link_libraries(Espeak YARP::YARP_os
                                  YARP::YARP_dev
+                                 ROBOTICSLAB::SpeechIDL
                                  ${ESPEAK_LIBRARIES})
 
-    target_include_directories(Espeak PRIVATE ${ESPEAK_INCLUDE_DIRS}
-                                              ${idl_include_dirs})
+    target_include_directories(Espeak PRIVATE ${ESPEAK_INCLUDE_DIRS})
 
     yarp_install(TARGETS Espeak
                  LIBRARY DESTINATION ${ROBOTICSLAB-SPEECH_DYNAMIC_PLUGINS_INSTALL_DIR}
                  ARCHIVE DESTINATION ${ROBOTICSLAB-SPEECH_STATIC_PLUGINS_INSTALL_DIR}
                  YARP_INI DESTINATION ${ROBOTICSLAB-SPEECH_PLUGIN_MANIFESTS_INSTALL_DIR})
-
-    yarp_install(FILES ${idl_sources}
-                       ${idl_headers}
-                 DESTINATION ${ROBOTICSLAB-SPEECH_DATA_INSTALL_DIR}/idls)
-
-    foreach(_var_name IN ITEMS idl_sources idl_headers)
-        foreach(_var_value IN LISTS ${_var_name})
-            get_filename_component(${_var_name} ${_var_value} ABSOLUTE BASE_DIR ${CMAKE_CURRENT_BINARY_DIR}/..)
-        endforeach()
-    endforeach()
-
-    set_property(GLOBAL APPEND PROPERTY ROBOTICSLAB_SPEECH_IDL_INCLUDES ${idl_include_dirs})
-    set_property(GLOBAL APPEND PROPERTY ROBOTICSLAB_SPEECH_IDL_SOURCES ${idl_sources} ${idl_headers})
 
 else()
 
