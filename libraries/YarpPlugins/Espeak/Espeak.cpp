@@ -146,7 +146,6 @@ bool roboticslab::Espeak::setSpeed(const int16_t speed)
 
 int16_t roboticslab::Espeak::getSpeed()
 {
-    CD_DEBUG("\n");
     return espeak_GetParameter(espeakRATE, 1);
 }
 
@@ -154,7 +153,6 @@ int16_t roboticslab::Espeak::getSpeed()
 
 int16_t roboticslab::Espeak::getPitch()
 {
-    CD_DEBUG("\n");
     return espeak_GetParameter(espeakPITCH, 1);
 }
 
