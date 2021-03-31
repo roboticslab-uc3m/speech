@@ -1,7 +1,7 @@
 # https://stackoverflow.com/a/25217937
 get_directory_property(_has_parent PARENT_DIRECTORY)
 
-if(_has_parent)
+if(NOT _has_parent)
     cmake_minimum_required(VERSION 3.9)
     project(doxygen NONE)
     find_package(Doxygen REQUIRED)
