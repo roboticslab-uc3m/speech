@@ -2,7 +2,7 @@
 
 Text To Speech (TTS) and Automatic Speech Recognition (ASR).
 
-Link to Doxygen generated documentation: http://robots.uc3m.es/dox-speech
+Link to Doxygen generated documentation: https://roboticslab-uc3m.github.io/speech
 
 ## Installation
 
