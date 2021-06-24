@@ -65,7 +65,7 @@ jobs:
         path: .deps/yarp
 
     - name: Install dependencies via apt
-      run: sudo apt-get install -qq ccache libespeak-dev
+      run: sudo apt-get update && sudo apt-get install -qq ccache libespeak-dev
 
     - name: Set up CMake
       uses: jwlawson/actions-setup-cmake@v1.7
