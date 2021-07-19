@@ -2,7 +2,7 @@
 # Authors: Raul de Santos Rico & Juan Gonzalez Victores
 # CopyPolicy: Released under the terms of the GNU GPL v2.0.
 
-cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.12)
 
 project(ROBOTICSLAB_SPEECH LANGUAGES CXX)
 
@@ -37,7 +37,7 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/find-modules)
 
 # Hard dependencies.
 find_package(YCM 0.11 REQUIRED)
-find_package(YARP 3.3 REQUIRED COMPONENTS os dev
+find_package(YARP 3.4 REQUIRED COMPONENTS os dev
                                OPTIONAL_COMPONENTS idl_tools)
 
 # Soft dependencies.
