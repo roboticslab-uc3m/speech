@@ -7,55 +7,63 @@
 #include <string>
 #include <vector>
 
+#include <yarp/os/LogComponent.h>
 #include <yarp/os/LogStream.h>
 #include <yarp/os/Value.h>
 
+using namespace roboticslab;
+
+namespace
+{
+    YARP_LOG_COMPONENT(ESPK, "rl.Espeak")
+}
+
 // -----------------------------------------------------------------------------
 
-roboticslab::Espeak::Espeak()
-{   
-    path = NULL;
+Espeak::Espeak()
+{
+    path = nullptr;
     buflength = 500;
     options = 0;
     position = 0;
     position_type = POS_CHARACTER;
     end_position = 0;
     flags = espeakCHARS_AUTO | espeakENDPAUSE;
-    unique_identifier = NULL;
-    user_data = NULL;
+    unique_identifier = nullptr;
+    user_data = nullptr;
     output = AUDIO_OUTPUT_PLAYBACK;
 }
 
 // -----------------------------------------------------------------------------
 
-void roboticslab::Espeak::printError(espeak_ERROR code)
+void Espeak::printError(espeak_ERROR code)
 {
     if (code == EE_INTERNAL_ERROR)
-        yError() << "EE_INTERNAL_ERROR";
+        yCError(ESPK) << "EE_INTERNAL_ERROR";
     if (code == EE_BUFFER_FULL)
-        yError() << "EE_BUFFER_FULL";
+        yCError(ESPK) << "EE_BUFFER_FULL";
     if (code == EE_NOT_FOUND)
-        yError() << "EE_NOT_FOUND";
+        yCError(ESPK) << "EE_NOT_FOUND";
 }
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::Espeak::setLanguage(const std::string& language)
+bool Espeak::setLanguage(const std::string& language)
 {
     espeak_ERROR ret = espeak_SetVoiceByName(language.c_str());
     if ( ret != EE_OK)
     {
-        yError() << "setLanguage():" << language;
+        yCError(ESPK) << "setLanguage():" << language;
         printError(ret);
         return false;
     }
-    yInfo() << "setLanguage()" << language;
+    yCInfo(ESPK) << "setLanguage()" << language;
     return true;
 }
 
 // -----------------------------------------------------------------------------
 
-std::vector<std::string> roboticslab::Espeak::getSupportedLang()
+std::vector<std::string> Espeak::getSupportedLang()
 {
     std::vector<std::string> supportedLang;
 
@@ -91,7 +99,7 @@ std::vector<std::string> roboticslab::Espeak::getSupportedLang()
 }
 
 // -----------------------------------------------------------------------------
-bool roboticslab::Espeak::say(const std::string& text)
+bool Espeak::say(const std::string& text)
 {
     int s = text.length();
     const char* c = text.c_str();
@@ -102,94 +110,94 @@ bool roboticslab::Espeak::say(const std::string& text)
     espeak_ERROR ret = espeak_Synth( text.c_str(), text.length()+1, position, position_type, end_position, flags, unique_identifier, user_data );
     if ( ret != EE_OK)
     {
-        yError() << "say():" << text;
+        yCError(ESPK) << "say():" << text;
         printError(ret);
         return false;
     }
     espeak_Synchronize();  //-- Just for blocking
 
-    yInfo() << "say():" << text;
+    yCInfo(ESPK) << "say():" << text;
     return true;
 }
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::Espeak::setSpeed(const int16_t speed)
+bool Espeak::setSpeed(const int16_t speed)
 {
     espeak_ERROR ret = espeak_SetParameter(espeakRATE, speed, 0);
     if ( ret != EE_OK)
     {
-        yError() << "setSpeed():" << speed;
+        yCError(ESPK) << "setSpeed():" << speed;
         printError(ret);
         return false;
     }
-    yInfo() << "setSpeed():" << speed;
+    yCInfo(ESPK) << "setSpeed():" << speed;
     return true;
 }
 
 // -----------------------------------------------------------------------------
 
- bool roboticslab::Espeak::setPitch(const int16_t pitch)
+ bool Espeak::setPitch(const int16_t pitch)
  {
     espeak_ERROR ret = espeak_SetParameter(espeakPITCH, pitch, 0);
     if ( ret != EE_OK)
     {
-        yError() << "setPitch():" << pitch;
+        yCError(ESPK) << "setPitch():" << pitch;
         printError(ret);
         return false;
     }
-    yInfo() << "setPitch():" << pitch;
+    yCInfo(ESPK) << "setPitch():" << pitch;
     return true;
  }
 
  // -----------------------------------------------------------------------------
 
-int16_t roboticslab::Espeak::getSpeed()
+int16_t Espeak::getSpeed()
 {
     return espeak_GetParameter(espeakRATE, 1);
 }
 
  // -----------------------------------------------------------------------------
 
-int16_t roboticslab::Espeak::getPitch()
+int16_t Espeak::getPitch()
 {
     return espeak_GetParameter(espeakPITCH, 1);
 }
 
  // -----------------------------------------------------------------------------
 
-bool roboticslab::Espeak::play()
+bool Espeak::play()
 {
     //-- Wolud need to store previous say().
-    yWarning() << "play() not implemented, use say()";
+    yCWarning(ESPK) << "play() not implemented, use say()";
     return false;
 }
 
  // -----------------------------------------------------------------------------
 
-bool roboticslab::Espeak::stop()
+bool Espeak::stop()
 {
     espeak_ERROR ret = espeak_Cancel();
     if ( ret != EE_OK)
     {
-        yError() << "stop()";
+        yCError(ESPK) << "stop()";
         printError(ret);
         return false;
     }
-    yInfo() << "stop()";
+    yCInfo(ESPK) << "stop()";
     return true;
 }
 
 
 // ------------------- DeviceDriver Related ------------------------------------
 
-bool roboticslab::Espeak::open(yarp::os::Searchable& config)
+bool Espeak::open(yarp::os::Searchable& config)
 {
     std::string name = config.check("name",yarp::os::Value(DEFAULT_NAME),"port /name (auto append of /rpc:s)").asString();
     std::string voice = config.check("voice",yarp::os::Value(DEFAULT_VOICE),"voice").asString();
 
-    yDebug("--name: %s [%s]",name.c_str(),DEFAULT_NAME);
-    yDebug("--voice: %s [%s]",voice.c_str(),DEFAULT_VOICE);
+    yCDebug(ESPK, "--name: %s [%s]",name.c_str(),DEFAULT_NAME);
+    yCDebug(ESPK, "--voice: %s [%s]",voice.c_str(),DEFAULT_VOICE);
 
     int ret = espeak_Initialize(output, buflength, path, options);
     if(ret == EE_INTERNAL_ERROR)
@@ -204,7 +212,7 @@ bool roboticslab::Espeak::open(yarp::os::Searchable& config)
 
     if( ! rpcPort.open(name.c_str()) )
     {
-        yError() << "Cannot open port" << name;
+        yCError(ESPK) << "Cannot open port" << name;
         return false;
     }
 
@@ -213,7 +221,7 @@ bool roboticslab::Espeak::open(yarp::os::Searchable& config)
 
 // -----------------------------------------------------------------------------
 
-bool roboticslab::Espeak::close()
+bool Espeak::close()
 {
     return true;
 }
