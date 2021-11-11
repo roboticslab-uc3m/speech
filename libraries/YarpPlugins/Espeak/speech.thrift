@@ -74,5 +74,3 @@ service Speech_IDL
   bool checkSayDone();
 
 }
-
-

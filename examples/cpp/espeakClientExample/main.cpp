@@ -32,7 +32,7 @@ int main(int argc, char * argv[])
 
     yarp::os::RpcClient client;
 
-    if (!client.open("/espeakClientExample/rpc:s"))
+    if (!client.open("/espeakClientExample/rpc:c"))
     {
         yError() << "Unable to open client port" << client.getName();
         return 1;
