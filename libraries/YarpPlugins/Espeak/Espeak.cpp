@@ -18,54 +18,48 @@ namespace
     YARP_LOG_COMPONENT(ESPK, "rl.Espeak")
 }
 
-// -----------------------------------------------------------------------------
-
-Espeak::Espeak()
-{
-    path = nullptr;
-    buflength = 500;
-    options = 0;
-    position = 0;
-    position_type = POS_CHARACTER;
-    end_position = 0;
-    flags = espeakCHARS_AUTO | espeakENDPAUSE;
-    unique_identifier = nullptr;
-    user_data = nullptr;
-    output = AUDIO_OUTPUT_PLAYBACK;
-}
+constexpr auto DEFAULT_NAME = "/espeak";
+constexpr auto DEFAULT_VOICE = "mb-en1";
 
 // -----------------------------------------------------------------------------
 
-void Espeak::printError(espeak_ERROR code)
+void Espeak::printError(const std::string & caller, espeak_ERROR code) const
 {
-    if (code == EE_INTERNAL_ERROR)
-        yCError(ESPK) << "EE_INTERNAL_ERROR";
-    if (code == EE_BUFFER_FULL)
-        yCError(ESPK) << "EE_BUFFER_FULL";
-    if (code == EE_NOT_FOUND)
-        yCError(ESPK) << "EE_NOT_FOUND";
+    switch (code)
+    {
+    case EE_OK:
+        yCError(ESPK) << caller << "EE_OK";
+        break;
+    case EE_BUFFER_FULL:
+        yCError(ESPK) << caller << "EE_BUFFER_FULL";
+        break;
+    case EE_NOT_FOUND:
+        yCError(ESPK) << caller << "EE_NOT_FOUND";
+        break;
+    }
 }
 
 // -----------------------------------------------------------------------------
 
 bool Espeak::setLanguage(const std::string& language)
 {
-    espeak_ERROR ret = espeak_SetVoiceByName(language.c_str());
-    if ( ret != EE_OK)
+    yCInfo(ESPK) << "setLanguage()" << language;
+    auto ret = espeak_SetVoiceByName(language.c_str());
+
+    if (ret != EE_OK)
     {
-        yCError(ESPK) << "setLanguage():" << language;
-        printError(ret);
+        printError("setLanguage()", ret);
         return false;
     }
-    yCInfo(ESPK) << "setLanguage()" << language;
+
     return true;
 }
 
 // -----------------------------------------------------------------------------
 
-std::vector<std::string> Espeak::getSupportedLang()
+std::vector<std::string> Espeak::getSupportedLangs()
 {
-    std::vector<std::string> supportedLang;
+    std::vector<std::string> supportedLangs;
 
     //-- Does not show mbrola
     /* const espeak_VOICE** list = espeak_ListVoices(NULL);
@@ -73,7 +67,7 @@ std::vector<std::string> Espeak::getSupportedLang()
     while (list[i] != NULL)
     {
         CD_DEBUG("%s\n",list[i]->languages);
-        supportedLang.push_back(list[i]->languages);
+        supportedLangs.push_back(list[i]->languages);
         i++;
     }*/
 
@@ -85,38 +79,40 @@ std::vector<std::string> Espeak::getSupportedLang()
     while (list[i] != NULL)
     {
         CD_DEBUG("%s\n",list[i]->languages);
-        supportedLang.push_back(list[i]->languages);
+        supportedLangs.push_back(list[i]->languages);
         i++;
     }*/
 
     //-- Hard-coded for now
-    std::string mb_en1("mb-en1");
-    supportedLang.push_back(mb_en1);
-    std::string mb_es1("mb-es1");
-    supportedLang.push_back(mb_es1);
+    supportedLangs.emplace_back("mb-en1");
+    supportedLangs.emplace_back("mb-es1");
 
-    return supportedLang;
+    return supportedLangs;
 }
 
 // -----------------------------------------------------------------------------
+
 bool Espeak::say(const std::string& text)
 {
-    int s = text.length();
-    const char* c = text.c_str();
-    for(int i=0;i<s+1;i++)
+    yCInfo(ESPK) << "say()" << text;
+    const char * c = text.c_str();
+
+    for (int i = 0; i < text.length() + 1; i++)
     {
-        std::printf("i[%d] char[%c] int[%d]\n",i,c[i],(int)c[i]);
+        std::printf("i[%d] char[%c] int[%d]\n", i, c[i], (int)c[i]);
     }
-    espeak_ERROR ret = espeak_Synth( text.c_str(), text.length()+1, position, position_type, end_position, flags, unique_identifier, user_data );
-    if ( ret != EE_OK)
+
+    auto ret = espeak_Synth(text.c_str(), text.length() + 1, position, position_type, end_position, flags, unique_identifier, user_data);
+
+    if (ret != EE_OK)
     {
-        yCError(ESPK) << "say():" << text;
-        printError(ret);
+        printError("say()", ret);
         return false;
     }
-    espeak_Synchronize();  //-- Just for blocking
 
-    yCInfo(ESPK) << "say():" << text;
+    espeak_Synchronize(); //-- Just for blocking
+
+    yCInfo(ESPK) << "say() completed";
     return true;
 }
 
@@ -124,95 +120,100 @@ bool Espeak::say(const std::string& text)
 
 bool Espeak::setSpeed(const int16_t speed)
 {
-    espeak_ERROR ret = espeak_SetParameter(espeakRATE, speed, 0);
-    if ( ret != EE_OK)
+    yCInfo(ESPK) << "setSpeed()" << speed;
+
+    auto ret = espeak_SetParameter(espeakRATE, speed, 0);
+
+    if (ret != EE_OK)
     {
-        yCError(ESPK) << "setSpeed():" << speed;
-        printError(ret);
+        printError("setSpeed()", ret);
         return false;
     }
-    yCInfo(ESPK) << "setSpeed():" << speed;
+
     return true;
 }
 
 // -----------------------------------------------------------------------------
 
- bool Espeak::setPitch(const int16_t pitch)
- {
-    espeak_ERROR ret = espeak_SetParameter(espeakPITCH, pitch, 0);
-    if ( ret != EE_OK)
+bool Espeak::setPitch(const int16_t pitch)
+{
+    yCInfo(ESPK) << "setPitch()" << pitch;
+    auto ret = espeak_SetParameter(espeakPITCH, pitch, 0);
+
+    if (ret != EE_OK)
     {
-        yCError(ESPK) << "setPitch():" << pitch;
-        printError(ret);
+        printError("setPitch()", ret);
         return false;
     }
-    yCInfo(ESPK) << "setPitch():" << pitch;
-    return true;
- }
 
- // -----------------------------------------------------------------------------
+    return true;
+}
+
+// -----------------------------------------------------------------------------
 
 int16_t Espeak::getSpeed()
 {
     return espeak_GetParameter(espeakRATE, 1);
 }
 
- // -----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 
 int16_t Espeak::getPitch()
 {
     return espeak_GetParameter(espeakPITCH, 1);
 }
 
- // -----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 
 bool Espeak::play()
 {
-    //-- Wolud need to store previous say().
+    //-- Would need to store previous say().
     yCWarning(ESPK) << "play() not implemented, use say()";
     return false;
 }
 
- // -----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 
 bool Espeak::stop()
 {
-    espeak_ERROR ret = espeak_Cancel();
-    if ( ret != EE_OK)
+    yCInfo(ESPK) << "stop()";
+    auto ret = espeak_Cancel();
+
+    if (ret != EE_OK)
     {
-        yCError(ESPK) << "stop()";
-        printError(ret);
+        printError("stop()", ret);
         return false;
     }
-    yCInfo(ESPK) << "stop()";
+
     return true;
 }
-
 
 // ------------------- DeviceDriver Related ------------------------------------
 
 bool Espeak::open(yarp::os::Searchable& config)
 {
-    std::string name = config.check("name",yarp::os::Value(DEFAULT_NAME),"port /name (auto append of /rpc:s)").asString();
-    std::string voice = config.check("voice",yarp::os::Value(DEFAULT_VOICE),"voice").asString();
+    auto name = config.check("name", yarp::os::Value(DEFAULT_NAME), "port /name (auto append of /rpc:s)").asString();
+    auto voice = config.check("voice", yarp::os::Value(DEFAULT_VOICE), "voice").asString();
 
-    yCDebug(ESPK, "--name: %s [%s]",name.c_str(),DEFAULT_NAME);
-    yCDebug(ESPK, "--voice: %s [%s]",voice.c_str(),DEFAULT_VOICE);
+    yCDebug(ESPK, "--name: %s [%s]", name.c_str(), DEFAULT_NAME);
+    yCDebug(ESPK, "--voice: %s [%s]", voice.c_str(), DEFAULT_VOICE);
 
-    int ret = espeak_Initialize(output, buflength, path, options);
-    if(ret == EE_INTERNAL_ERROR)
-        return false;
-
-    if( ! setLanguage(voice) )
-        return false;
-
-    name += "/rpc:s";
-
-    this->yarp().attachAsServer(rpcPort);
-
-    if( ! rpcPort.open(name.c_str()) )
+    if (espeak_Initialize(output, buflength, path, options) == EE_INTERNAL_ERROR)
     {
-        yCError(ESPK) << "Cannot open port" << name;
+        yCError(ESPK) << "espeak_Initialize()";
+        return false;
+    }
+
+    if (!setLanguage(voice))
+    {
+        return false;
+    }
+
+    yarp().attachAsServer(rpcPort);
+
+    if (!rpcPort.open(name + "/rpc:s"))
+    {
+        yCError(ESPK) << "Cannot open port" << rpcPort.getName();
         return false;
     }
 
@@ -223,7 +224,7 @@ bool Espeak::open(yarp::os::Searchable& config)
 
 bool Espeak::close()
 {
-    return true;
+    return espeak_Terminate() == EE_OK;
 }
 
 // -----------------------------------------------------------------------------

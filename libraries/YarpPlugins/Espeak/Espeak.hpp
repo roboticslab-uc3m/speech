@@ -12,10 +12,7 @@
 
 #include <speak_lib.h>
 
-#include <Speech_IDL.h>
-
-#define DEFAULT_NAME "/espeak"
-#define DEFAULT_VOICE "mb-en1"
+#include "Speech_IDL.h"
 
 namespace roboticslab
 {
@@ -76,11 +73,9 @@ class Espeak : public yarp::dev::DeviceDriver,
 {
 public:
 
-    Espeak();
-
     bool setLanguage(const std::string& language) override;
 
-    std::vector<std::string> getSupportedLang() override;
+    std::vector<std::string> getSupportedLangs() override;
 
     bool say(const std::string& text) override;
 
@@ -103,30 +98,13 @@ public:
 
     // -------- DeviceDriver declarations.  --------
 
-    /**
-    * Open the DeviceDriver.
-    * @param config is a list of parameters for the device.
-    * Which parameters are effective for your device can vary.
-    * See \ref dev_examples "device invocation examples".
-    * If there is no example for your device,
-    * you can run the "yarpdev" program with the verbose flag
-    * set to probe what parameters the device is checking.
-    * If that fails too,
-    * you'll need to read the source code (please nag one of the
-    * yarp developers to add documentation for your device).
-    * @return true/false upon success/failure
-    */
     bool open(yarp::os::Searchable& config) override;
 
-    /**
-    * Close the DeviceDriver.
-    * @return true/false on success/failure.
-    */
     bool close() override;
 
 private:
 
-    void printError(espeak_ERROR code);
+    void printError(const std::string & caller, espeak_ERROR code) const;
 
     /*
         FROM speak_lib.h :
@@ -183,14 +161,16 @@ private:
                                 EE_INTERNAL_ERROR.
     */
 
-    espeak_POSITION_TYPE position_type;
-    espeak_AUDIO_OUTPUT output;
-    char *path;
-    int buflength, options;
-    void* user_data;
-    t_espeak_callback *synthCallback;
-    espeak_PARAMETER Param;
-    unsigned int size, position, end_position, flags, *unique_identifier;
+    espeak_POSITION_TYPE position_type {POS_CHARACTER};
+    espeak_AUDIO_OUTPUT output {AUDIO_OUTPUT_PLAYBACK};
+    char * path {nullptr};
+    int buflength {500};
+    int options {0};
+    void * user_data {nullptr};
+    unsigned int position {0};
+    unsigned int end_position {0};
+    unsigned int flags {espeakCHARS_AUTO | espeakENDPAUSE};
+    unsigned int * unique_identifier {nullptr};
 
     // YARP
     yarp::os::RpcServer rpcPort;
