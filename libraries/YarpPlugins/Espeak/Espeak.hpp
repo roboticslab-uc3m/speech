@@ -96,6 +96,8 @@ public:
         return false;
     }
 
+    bool checkSayDone() override;
+
     // -------- DeviceDriver declarations.  --------
 
     bool open(yarp::os::Searchable& config) override;

@@ -68,6 +68,11 @@ service Speech_IDL
   */
   bool stop();
 
+  /**
+   * check whether there is an ongoing speech right now
+   */
+  bool checkSayDone();
+
 }
 
 

@@ -110,8 +110,6 @@ bool Espeak::say(const std::string& text)
         return false;
     }
 
-    espeak_Synchronize(); //-- Just for blocking
-
     yCInfo(ESPK) << "say() completed";
     return true;
 }
@@ -186,6 +184,13 @@ bool Espeak::stop()
     }
 
     return true;
+}
+
+// -----------------------------------------------------------------------------
+
+bool Espeak::checkSayDone()
+{
+    return espeak_IsPlaying() != 1;
 }
 
 // ------------------- DeviceDriver Related ------------------------------------
