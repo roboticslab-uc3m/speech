@@ -2,41 +2,60 @@
 
 /**
  * @ingroup teo_examples_cpp
- * \defgroup espeakExample espeakExample
- *
- * @brief This example...
- *
- * <b>Legal</b>
- *
- * Copyright: (C) 2016 Universidad Carlos III de Madrid;
- *
- * Authors: rsantos88, jgvictores
- *
- * CopyPolicy: Released under the terms of the LGPLv2.1 or later, see license/LGPL.TXT
- *
- * <b>Building</b>
-\verbatim
-cd $ROBOTICSLAB_VISION_ROOT/example/cpp
-mkdir build; cd build; cmake ..
-make -j3
-\endverbatim
- *
- * <b>Running</b>
-\verbatim
-./espeakExample
-\endverbatim
- *
+ * @defgroup espeakExample espeakExample
  */
 
-#include "EspeakExample.hpp"
+#include <yarp/os/LogStream.h>
+#include <yarp/os/Network.h>
+#include <yarp/os/Property.h>
+#include <yarp/os/SystemClock.h>
 
-//YARP_DECLARE_PLUGINS(HeadYarp)
+#include <yarp/dev/PolyDriver.h>
+
+#include <Speech_IDL.h>
 
 int main(int argc, char **argv)
 {
-    //YARP_REGISTER_PLUGINS(HeadYarp);
+    yarp::os::Network yarp;
 
-    roboticslab::EspeakExample mod;
-    return mod.run();
+    if (!yarp::os::Network::checkNetwork())
+    {
+        yError() << "Please start a yarp name server first";
+        return 1;
+    }
+
+    yarp::os::Property options {{"device", yarp::os::Value("Espeak")}};
+    yarp::dev::PolyDriver dd;
+
+    if (!dd.open(options))
+    {
+        yError() << "Device not available";
+        return 1;
+    }
+
+    Speech_IDL * espeak;
+
+    if (!dd.view(espeak))
+    {
+        yError() << "Unable to acquire espeak interface";
+        return 1;
+    }
+
+    yInfo() << "Acquired espeak interface";
+
+    espeak->setSpeed(150); // Values 80 to 450.
+    espeak->setPitch(60); // 50 = normal
+
+    yInfo() << "Using speed" << espeak->getSpeed();
+    yInfo() << "Using pitch" << espeak->getPitch();
+
+    espeak->say("Hello, my name is Teo. I want to follow you. Please, tell me. Ok, I will follow you. Ok, I will stop following you.");
+
+    do
+    {
+        yarp::os::SystemClock::delaySystem(0.1);
+    }
+    while (!espeak->checkSayDone());
+
+    return 0;
 }
-
