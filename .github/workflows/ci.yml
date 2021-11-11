@@ -65,7 +65,7 @@ jobs:
         path: .deps/yarp
 
     - name: Install dependencies via apt
-      run: sudo apt-get update && sudo apt-get install -qq ccache libespeak-dev
+      run: sudo apt-get update && sudo apt-get install -qq ccache libespeak-dev mbrola-en1 googletest pulseaudio
 
     - name: Set up CMake
       uses: jwlawson/actions-setup-cmake@v1.7
@@ -104,6 +104,12 @@ jobs:
         cmake --build .
         sudo cmake --build . --target install
         sudo ldconfig
+
+    - name: Test main project
+      working-directory: ${{github.workspace}}/build
+      run: |
+        pulseaudio -D
+        ctest -V
 
     - name: Uninstall main project
       working-directory: ${{github.workspace}}/build

@@ -1,4 +1,2 @@
-# Copyright: Universidad Carlos III de Madrid (C) 2013
-# Authors: Juan G. Victores & Raul de Santos Rico
-
-add_subdirectory(YarpPlugins)
+add_subdirectory(SpeechIDL)
+add_subdirectory(Espeak)
