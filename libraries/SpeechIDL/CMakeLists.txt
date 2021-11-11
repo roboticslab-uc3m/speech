@@ -11,7 +11,8 @@ if(ENABLE_SpeechIDL)
                     OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}
                     SOURCES_VAR idl_sources
                     HEADERS_VAR idl_headers
-                    INCLUDE_DIRS_VAR idl_include_dirs)
+                    INCLUDE_DIRS_VAR idl_include_dirs
+                    THRIFT_NO_NAMESPACE_PREFIX)
 
     add_library(SpeechIDL INTERFACE)
 

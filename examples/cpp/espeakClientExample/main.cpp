@@ -44,7 +44,7 @@ int main(int argc, char * argv[])
         return 1;
     }
 
-    Speech_IDL espeak;
+    roboticslab::Speech_IDL espeak;
     espeak.yarp().attachAsClient(client);
 
     yInfo() << "Connected to remote Espeak server";

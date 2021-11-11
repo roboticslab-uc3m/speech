@@ -8,6 +8,8 @@
 * Speech_IDL
 */
 
+namespace yarp roboticslab
+
 service Speech_IDL
 {
 
