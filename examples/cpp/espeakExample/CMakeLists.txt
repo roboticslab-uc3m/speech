@@ -10,9 +10,7 @@ if(NOT TARGET ROBOTICSLAB::SpeechIDL)
     find_package(ROBOTICSLAB_SPEECH REQUIRED)
 endif()
 
-add_executable(espeakExample main.cpp
-                             EspeakExample.hpp
-                             EspeakExample.cpp)
+add_executable(espeakExample main.cpp)
 
 target_link_libraries(espeakExample YARP::YARP_os
                                     YARP::YARP_dev

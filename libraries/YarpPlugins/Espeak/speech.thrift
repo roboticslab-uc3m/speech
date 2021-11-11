@@ -5,7 +5,7 @@
 # speech.thrift
 
 /**
-* Speech_IDL 
+* Speech_IDL
 */
 
 service Speech_IDL
@@ -16,7 +16,7 @@ service Speech_IDL
   * @return true/false on success/failure
   */
   bool setLanguage(string language);
-  
+
   /**
   * set the speech speed
   * @return true/false on success/failure
@@ -43,9 +43,9 @@ service Speech_IDL
 
   /**
   * get the available languages
-  * @return a list of the supported language
+  * @return a list of the supported languages
   */
-  list<string> getSupportedLang();
+  list<string> getSupportedLangs();
 
   /**
   * render and play the speech
@@ -55,18 +55,23 @@ service Speech_IDL
 
  /**
   * play the previously rendered or paused speech
-  */ 
+  */
   bool play();
 
  /**
   * pause the current speech
-  */ 
+  */
   bool pause();
 
   /**
   * stop playing the current speech
-  */ 
+  */
   bool stop();
+
+  /**
+   * check whether there is an ongoing speech right now
+   */
+  bool checkSayDone();
 
 }
 
