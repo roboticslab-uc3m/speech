@@ -12,33 +12,24 @@ if(ENABLE_SpeechIDL)
                     SOURCES_VAR idl_sources
                     HEADERS_VAR idl_headers
                     INCLUDE_DIRS_VAR idl_include_dirs
+                    PLACEMENT MERGED
                     THRIFT_NO_NAMESPACE_PREFIX)
 
-    add_library(SpeechIDL INTERFACE)
+    add_library(SpeechIDL SHARED ${idl_sources} ${idl_headers})
 
-    set(_idl_interface_sources)
+    set_target_properties(SpeechIDL PROPERTIES PUBLIC_HEADER "${idl_headers}")
 
-    foreach(_var_name IN ITEMS idl_sources idl_headers)
-        foreach(_var_file IN LISTS ${_var_name})
-            get_filename_component(_temp_build ${_var_file} ABSOLUTE BASE_DIR ${CMAKE_CURRENT_BINARY_DIR}/..)
-            get_filename_component(_temp_install ${_var_file} NAME)
+    target_link_libraries(SpeechIDL PUBLIC YARP::YARP_os)
 
-            list(APPEND _idl_interface_sources $<BUILD_INTERFACE:${_temp_build}>
-                                               $<INSTALL_INTERFACE:${ROBOTICSLAB-SPEECH_DATA_INSTALL_DIR}/idls/${_temp_install}>)
-        endforeach()
-    endforeach()
+    target_include_directories(SpeechIDL PUBLIC $<BUILD_INTERFACE:${idl_include_dirs}>
+                                                $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 
-    target_sources(SpeechIDL INTERFACE ${_idl_interface_sources})
-
-    target_include_directories(SpeechIDL INTERFACE $<BUILD_INTERFACE:${idl_include_dirs}>
-                                                   $<INSTALL_INTERFACE:${ROBOTICSLAB-SPEECH_DATA_INSTALL_DIR}/idls>)
-
-    yarp_install(TARGETS SpeechIDL
-                 EXPORT ROBOTICSLAB_SPEECH)
-
-    yarp_install(FILES ${idl_sources}
-                       ${idl_headers}
-                 DESTINATION ${ROBOTICSLAB-SPEECH_DATA_INSTALL_DIR}/idls)
+    install(TARGETS SpeechIDL
+            EXPORT ROBOTICSLAB_SPEECH
+            LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+            ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+            RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+            PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
     set_property(GLOBAL APPEND PROPERTY _exported_targets SpeechIDL)
 
