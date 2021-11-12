@@ -1,11 +1,13 @@
 <application>
-<name>example Espeak App</name>
+
+    <name>example espeakServer App</name>
+
     <module>
-        <name>Espeak</name>
+        <name>espeakServer</name>
         <parameters>--name /tts</parameters>
         <node>localhost</node>
-        <deployer>yarpdev</deployer>
     </module>
+
     <module>
         <name>gnome-terminal</name>
         <parameters>-e "yarp rpc /tts/rpc:s"</parameters>
@@ -13,4 +15,3 @@
     </module>
 
 </application>
-
