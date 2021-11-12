@@ -1,16 +1,6 @@
-# Copyright: (C) 2013 iCub Facility - Istituto Italiano di Tecnologia
-# Authors: Ali Paikan
-# CopyPolicy: Released under the terms of the GNU GPL v2.0.
-#
-# speech.thrift
-
-/**
-* Speech_IDL
-*/
-
 namespace yarp roboticslab
 
-service Speech_IDL
+service SpeechIDL
 {
 
   /**
