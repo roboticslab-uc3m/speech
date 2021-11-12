@@ -18,7 +18,13 @@ namespace roboticslab
 class EspeakServer : public yarp::os::RFModule
 {
 public:
+    ~EspeakServer() override
+    { close(); }
+
     bool configure(yarp::os::ResourceFinder & rf) override;
+
+    bool close() override
+    { port.close(); return true; }
 
     bool updateModule() override
     { return true; }
