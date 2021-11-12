@@ -29,8 +29,8 @@ espeak = speech.SpeechIDL()
 espeak.yarp().attachAsClient(client)
 
 espeak.setLanguage('mb-en1')
-espeak.setSpeed(150); # Values 80 to 450.
-espeak.setPitch(60); # 50 = normal
+espeak.setSpeed(150) # Values 80 to 450.
+espeak.setPitch(60) # 50 = normal
 
 print('Using speed %d' % espeak.getSpeed())
 print('Using pitch %d' % espeak.getPitch())
