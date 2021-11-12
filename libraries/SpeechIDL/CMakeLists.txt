@@ -7,6 +7,8 @@ cmake_dependent_option(ENABLE_SpeechIDL "Enable/disable SpeechIDL library" ON
 
 if(ENABLE_SpeechIDL)
 
+    set(ALLOW_IDL_GENERATION ON CACHE BOOL "Detect changes and rebuild IDL files")
+
     yarp_idl_to_dir(INPUT_FILES speech.thrift
                     OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}
                     SOURCES_VAR idl_sources
