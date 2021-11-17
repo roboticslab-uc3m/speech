@@ -25,17 +25,17 @@ if not yarp.Network.connect(client.getName(), args.remote + '/rpc:s'):
     print('Unable to connect to remote server port %s' % args.remote)
     raise SystemExit
 
-espeak = speech.SpeechIDL()
-espeak.yarp().attachAsClient(client)
+tts = speech.TextToSpeechIDL()
+tts.yarp().attachAsClient(client)
 
-espeak.setLanguage('mb-en1')
-espeak.setSpeed(150) # Values 80 to 450.
-espeak.setPitch(60) # 50 = normal
+tts.setLanguage('mb-en1')
+tts.setSpeed(150) # Values 80 to 450.
+tts.setPitch(60) # 50 = normal
 
-print('Using speed %d' % espeak.getSpeed())
-print('Using pitch %d' % espeak.getPitch())
+print('Using speed %d' % tts.getSpeed())
+print('Using pitch %d' % tts.getPitch())
 
-espeak.say('Hello, my name is Teo. I want to follow you. Please, tell me. Ok, I will follow you. Ok, I will stop following you.')
+tts.say('Hello, my name is Teo. I want to follow you. Please, tell me. Ok, I will follow you. Ok, I will stop following you.')
 
-while not espeak.checkSayDone():
+while not tts.checkSayDone():
     time.sleep(0.1)

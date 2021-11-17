@@ -13,7 +13,7 @@
 %import(module="yarp") "yarp/os/Wire.h"
 
 %{
-#include "SpeechIDL.h"
+#include "TextToSpeechIDL.h"
 %}
 
-%include "SpeechIDL.h"
+%include "TextToSpeechIDL.h"
