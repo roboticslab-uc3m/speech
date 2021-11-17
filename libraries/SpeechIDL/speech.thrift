@@ -69,6 +69,8 @@ service SpeechRecognitionIDL
 {
     /**
      * configure a dictionary
+     * @param dictionary the dictionary to use, e.g. 'follow-me' or '20k'
+     * @param language the language to use, e.g. 'en-us' or 'es'
      * @return true/false on success/failure
      */
     bool setDictionary(string dictionary, string language);

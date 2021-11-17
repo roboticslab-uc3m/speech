@@ -1,10 +1,12 @@
 <application>
-<name>example speechRecognition App</name>
+
+    <name>example speechRecognition App</name>
+
     <module>
         <name>speechRecognition.py</name>
         <node>localhost</node>
-        <!--node>/head</node-->
     </module>
+
     <module>
         <name>gnome-terminal</name>
         <parameters>-e "yarp read ... /speechRecognition:o"</parameters>
@@ -12,4 +14,3 @@
     </module>
 
 </application>
-

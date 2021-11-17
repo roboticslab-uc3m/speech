@@ -70,21 +70,6 @@ import alsaaudio
 
 import roboticslab_speech
 
-# Workaround to translate languaje names to model names.
-# It is maybe nice to name dictionary files "<dictName>-<model>.<format>"
-# follow-me-es.lm  follow-me-en-us.lm
-model = {}
-model['english'] = 'en-us'
-model['spanish'] = 'es'
-
-def getRegionCode(languaje):
-    regionCode = ''
-    try:
-        regionCode = model[languaje]
-    except:
-        print('Invalid Region Code.')
-    return regionCode
-
 
 ##
 # @ingroup speechRecognition
@@ -100,7 +85,7 @@ class SpeechRecognitionResponder(roboticslab_speech.SpeechRecognitionIDL):
 
         lm_path = 'dictionary/%s-%s.lm' % (dictionary, language)
         dic_path = 'dictionary/%s-%s.dic' % (dictionary, language)
-        model_path = 'model/' + getRegionCode(language)
+        model_path = 'model/' + language
 
         if not self.owner.setDictionary(lm_path, dic_path, model_path):
             print('Unable to set dictionary')
@@ -146,8 +131,8 @@ class SpeechRecognition(object):
     def __init__(self, rf):
         """Initialize a SpeechRecognition object"""
         self.rf = rf
-        self.my_lm = self.rf.findFileByName('dictionary/follow-me-english.lm')
-        self.my_dic = self.rf.findFileByName('dictionary/follow-me-english.dic')
+        self.my_lm = self.rf.findFileByName('dictionary/follow-me-en-us.lm')
+        self.my_dic = self.rf.findFileByName('dictionary/follow-me-en-us.dic')
         self.my_model = self.rf.findPath('model/en-us/')
         self.outPort = yarp.BufferedPortBottle()
         self.configPort = yarp.RpcServer()
