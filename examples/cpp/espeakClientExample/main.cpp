@@ -11,7 +11,7 @@
 #include <yarp/os/RpcClient.h>
 #include <yarp/os/SystemClock.h>
 
-#include <SpeechIDL.h>
+#include <TextToSpeechIDL.h>
 
 constexpr auto DEFAULT_REMOTE_PORT = "/tts";
 
@@ -44,25 +44,25 @@ int main(int argc, char * argv[])
         return 1;
     }
 
-    roboticslab::SpeechIDL espeak;
-    espeak.yarp().attachAsClient(client);
+    roboticslab::TextToSpeechIDL tts;
+    tts.yarp().attachAsClient(client);
 
     yInfo() << "Connected to remote Espeak server";
 
-    espeak.setLanguage("mb-en1");
-    espeak.setSpeed(150); // Values 80 to 450.
-    espeak.setPitch(60); // 50 = normal
+    tts.setLanguage("mb-en1");
+    tts.setSpeed(150); // Values 80 to 450.
+    tts.setPitch(60); // 50 = normal
 
-    yInfo() << "Using speed" << espeak.getSpeed();
-    yInfo() << "Using pitch" << espeak.getPitch();
+    yInfo() << "Using speed" << tts.getSpeed();
+    yInfo() << "Using pitch" << tts.getPitch();
 
-    espeak.say("Hello, my name is Teo. I want to follow you. Please, tell me. Ok, I will follow you. Ok, I will stop following you.");
+    tts.say("Hello, my name is Teo. I want to follow you. Please, tell me. Ok, I will follow you. Ok, I will stop following you.");
 
     do
     {
         yarp::os::SystemClock::delaySystem(0.1);
     }
-    while (!espeak.checkSayDone());
+    while (!tts.checkSayDone());
 
     return 0;
 }
