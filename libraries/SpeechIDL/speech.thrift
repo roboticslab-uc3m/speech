@@ -64,3 +64,24 @@ service TextToSpeechIDL
      */
     bool checkSayDone();
 }
+
+service SpeechRecognitionIDL
+{
+    /**
+     * configure a dictionary
+     * @return true/false on success/failure
+     */
+    bool setDictionary(string dictionary, string language);
+
+    /**
+     * mute the microphone
+     * @return true/false on success/failure
+     */
+    bool muteMicrophone();
+
+    /**
+     * unmute the microphone
+     * @return true/false on success/failure
+     */
+    bool unmuteMicrophone();
+}
