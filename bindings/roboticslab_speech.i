@@ -14,6 +14,8 @@
 
 %{
 #include "TextToSpeechIDL.h"
+#include "SpeechRecognitionIDL.h"
 %}
 
 %include "TextToSpeechIDL.h"
+%include "SpeechRecognitionIDL.h"

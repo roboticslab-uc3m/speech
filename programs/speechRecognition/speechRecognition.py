@@ -13,15 +13,15 @@
 # http://cmusphinx.sourceforge.net/html/LICENSE for more information.
 #
 # @section speechRecognition_running Running (assuming correct installation)
-# 
-# First we must run a YARP name server if it is not running in our current namespace: 
-# 
+#
+# First we must run a YARP name server if it is not running in our current namespace:
+#
 # \verbatim
 # [on terminal 1] yarp server
 # \endverbatim
 #
 # Now launch the program:
-# 
+#
 # \verbatim
 # [on terminal 2] speechRecognition.py
 # \endverbatim
@@ -43,27 +43,23 @@
 # 1. gst-inspect-1.0 pocketsphinx
 #
 # 2. Check operating system sound settings
-# 
+#
 # 3. Check hardware such as cables, and physical volume controls and on/off switches
 
-from gi import pygtkcompat
-
 import gi
-import gobject
 
 gi.require_version('Gst', '1.0')
 from gi.repository import GObject, Gst
 GObject.threads_init()
 Gst.init(None)
-    
+
 gst = Gst
-    
+
+from gi import pygtkcompat
 print('Using pygtkcompat and Gst from gi')
 
-pygtkcompat.enable() 
+pygtkcompat.enable()
 pygtkcompat.enable_gtk(version='3.0')
-
-import gtk
 
 import yarp
 import os.path
@@ -72,12 +68,14 @@ import os.path
 import sys
 import alsaaudio
 
+import roboticslab_speech
+
 # Workaround to translate languaje names to model names.
 # It is maybe nice to name dictionary files "<dictName>-<model>.<format>"
 # follow-me-es.lm  follow-me-en-us.lm
 model = {}
-model["english"] = "en-us"
-model["spanish"] = "es"
+model['english'] = 'en-us'
+model['spanish'] = 'es'
 
 def getRegionCode(languaje):
     regionCode = ''
@@ -91,72 +89,52 @@ def getRegionCode(languaje):
 ##
 # @ingroup speechRecognition
 # @brief Speech Recognition callback class
-class DataProcessor(yarp.PortReader):
+class SpeechRecognitionResponder(roboticslab_speech.SpeechRecognitionIDL):
+    def __init__(self, owner):
+        super().__init__()
+        self.owner = owner
+        self.mixer = None
 
-    def setRefToFather(self,value):
-        self.refToFather = value
+    def setDictionary(self, dictionary, language):
+        print('Setting dictionary to %s (language: %s)' % (dictionary, language))
 
-    def read(self,connection):
-        bottleIn = yarp.Bottle()
-        bottleOut = yarp.Bottle()
+        lm_path = 'dictionary/%s-%s.lm' % (dictionary, language)
+        dic_path = 'dictionary/%s-%s.dic' % (dictionary, language)
+        model_path = 'model/' + getRegionCode(language)
 
-        if not connection.isValid():
-            print('Connection shutting down')
+        if not self.owner.setDictionary(lm_path, dic_path, model_path):
+            print('Unable to set dictionary')
             return False
 
-        if not bottleIn.read(connection):
-            print('Error while reading from configuration input')
+        return True
+
+    def muteMicrophone(self):
+        print('Muting microphone')
+
+        if not self._initMixer():
             return False
-            
-        if bottleIn.get(0).asString() == "help":
-            bottleOut.addString('Usage:')
-            bottleOut.addString('to configure the dictionary: [setDictionary {dictionaryName} {english|en|spanish|es}] or to configure the state of microphone: [setMic {mute|unmute}]')
 
-        # if-then-else structure for the implemented configuration options
-        elif bottleIn.get(0).asString() == 'setDictionary' and bottleIn.size() == 3:
-            lmfile = bottleIn.get(1).asString() + "-" + bottleIn.get(2).asString() + '.lm'
-            dicfile = bottleIn.get(1).asString() + "-" + bottleIn.get(2).asString() + '.dic'
-            modelfile = getRegionCode(bottleIn.get(2).asString())
+        self.mixer.setrec(0, alsaaudio.MIXER_CHANNEL_ALL)
+        return True
 
-            ok = self.refToFather.setDictionary('dictionary/'+lmfile, 'dictionary/'+dicfile, 'model/'+modelfile)
-            if ok:
-                print("Dictionary changed to %s, %s, %s" % (lmfile, dicfile, modelfile))
-                bottleOut.addString("Dictionary changed to %s, %s, %s" % (lmfile, dicfile, modelfile))
-            else:
-                print("Could not found dictionary. Check file names and directories.")
-                bottleOut.addString('Could not find dictionary. Check file names and directories.')
-        
-            
-        # Mute/unmute the mixer        
-        elif bottleIn.get(0).asString() == 'setMic' and bottleIn.size() == 2:
-            # Mixer settings
+    def unmuteMicrophone(self):
+        print('Unmuting microphone')
+
+        if not self._initMixer():
+            return False
+
+        self.mixer.setrec(1, alsaaudio.MIXER_CHANNEL_ALL)
+        return True
+
+    def _initMixer(self):
+        if self.mixer is None:
             try:
-                mixer = alsaaudio.Mixer('Capture') # Capture / Master
+                self.mixer = alsaaudio.Mixer('Capture') # Capture / Master
             except alsaaudio.ALSAAudioError:
-                print("No such mixer: %s" %sys.stderr)
-                sys.exit(1)
-    
-            channel = alsaaudio.MIXER_CHANNEL_ALL            
-            # mute/unmute
-            if bottleIn.get(1).asString() ==  'mute':
-                mixer.setrec(0, channel)
-                bottleOut.addString('microphone muted')
-                print('mic muted')
-            elif bottleIn.get(1).asString() ==  'unmute':
-                mixer.setrec(1, channel)
-                bottleOut.addString('microphone unmuted')
-                print('mic unmuted')
-            else:
-                bottleOut.addString('Error: unrecognised order. Please, select: [setMic mute] or [setMic unmute]')
+                print('No such mixer: %s' % sys.stderr)
+                return False
 
-        else:
-            print("Invalid command received: %s Write help" %bottleIn.toString())
-            bottleOut.addString('Invalid Operation: write [help] to know more information')
-            
-        writer = connection.getWriter()
-        if writer==None:
-            return True
-        return bottleOut.write(writer)
+        return True
 
 
 ##
@@ -164,19 +142,19 @@ class DataProcessor(yarp.PortReader):
 # @brief Speech Recognition main class.
 class SpeechRecognition(object):
     """Based on GStreamer/PocketSphinx Demo Application"""
+
     def __init__(self, rf):
         """Initialize a SpeechRecognition object"""
         self.rf = rf
         self.my_lm = self.rf.findFileByName('dictionary/follow-me-english.lm')
         self.my_dic = self.rf.findFileByName('dictionary/follow-me-english.dic')
         self.my_model = self.rf.findPath('model/en-us/')
-        self.outPort = yarp.Port()
+        self.outPort = yarp.BufferedPortBottle()
         self.configPort = yarp.RpcServer()
-        self.dataProcessor = DataProcessor()
-        self.dataProcessor.setRefToFather(self) # it pass reference to DataProcessor
-        self.configPort.setReader(self.dataProcessor)
+        self.dataProcessor = SpeechRecognitionResponder(self)
         self.outPort.open('/speechRecognition:o')
         self.configPort.open('/speechRecognition/rpc:s')
+        self.dataProcessor.yarp().attachAsServer(self.configPort)
         self.init_gst()
 
     def init_gst(self):
@@ -193,7 +171,7 @@ class SpeechRecognition(object):
         asr.set_property('lm', self.my_lm )
         asr.set_property('dict', self.my_dic )
         asr.set_property('hmm', self.my_model )
-        #asr.set_property('configured', "true")      
+        #asr.set_property('configured', "true")
 
         bus = self.pipeline.get_bus()
         bus.add_signal_watch()
@@ -204,20 +182,27 @@ class SpeechRecognition(object):
     def element_message(self, bus, msg):
         """Receive element messages from the bus."""
         print('---')
-        b = yarp.Bottle()
         msgtype = msg.get_structure().get_name()
-        print(msgtype) # pocketsphinx 
-        
+        print(msgtype) # pocketsphinx
+
         if msgtype != 'pocketsphinx':
             return
 
-        print("hypothesis= '%s'  confidence=%s final=%s\n" % (msg.get_structure().get_value('hypothesis'), msg.get_structure().get_value('confidence'), msg.get_structure().get_value('final')))
-        if msg.get_structure().get_value('final') is True:       
-                text = msg.get_structure().get_value('hypothesis')        
+        print("hypothesis= '%s' confidence=%s final=%s\n" % (
+            msg.get_structure().get_value('hypothesis'),
+            msg.get_structure().get_value('confidence'),
+            msg.get_structure().get_value('final')
+        ))
+
+        if msg.get_structure().get_value('final') is True:
+            text = msg.get_structure().get_value('hypothesis')
+
+            if text != '':
                 print(text.lower())
+                b = self.outPort.prepare()
+                b.clear()
                 b.addString(text.lower())
-                if text != "":
-                        self.outPort.write(b)
+                self.outPort.write()
 
     def setDictionary(self, lm, dic, hmm):
         lm = self.rf.findFileByName(lm)
@@ -241,7 +226,7 @@ class SpeechRecognition(object):
         asr.set_property('hmm', self.my_model )
 
         print('-------------------------------')
-        print("Dictionary changed successfully (%s) (%s) (%s)"%(self.my_lm,self.my_dic,self.my_model))
+        print('Dictionary changed successfully (%s) (%s) (%s)' % (self.my_lm, self.my_dic, self.my_model))
 
         bus = self.pipeline.get_bus()
         bus.add_signal_watch()
@@ -251,17 +236,17 @@ class SpeechRecognition(object):
         return True
 
 rf = yarp.ResourceFinder()
-rf.setVerbose(True)
 rf.setDefaultContext('speechRecognition')
 rf.setDefaultConfigFile('speechRecognition.ini')
-# rf.configure(sys.argv) # turns out to be complicated, e.g. shebang-related
 
 yarp.Network.init()
-if yarp.Network.checkNetwork() != True:
-    print('[asr] error: found no yarp network (try running "yarpserver &"), bye!')
-    quit()
+
+if not yarp.Network.checkNetwork():
+    print('[asr] error: found no yarp network (try running "yarpserver &")')
+    raise SystemExit
 
 app = SpeechRecognition(rf)
+
 # enter into a mainloop
 loop = GObject.MainLoop()
 loop.run()
