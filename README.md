@@ -17,7 +17,7 @@ Information of how to launch or configure it:
 Read the [development manual](doc/speech-development-manual.md) if you want to build a new language model
 
 ##### More examples:
-To see how other programs call to `speechRecognition` and  `Espeak` and configure it by yarp, you can see this part of the [follow-me](https://github.com/roboticslab-uc3m/follow-me/blob/master/programs/followMeDialogueManager/FollowMeDialogueManager.cpp#L10-L100)  code.
+To see how other programs call to `speechRecognition` and  `Espeak` and configure it by yarp, check the [teo-follow-me](https://github.com/roboticslab-uc3m/teo-follow-me/blob/master/programs/followMeDialogueManager/FollowMeDialogueManager.cpp) demonstration.
 
 ## Contributing
 
