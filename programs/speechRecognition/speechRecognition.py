@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 ##
 # @ingroup speech-programs
@@ -219,6 +219,7 @@ class SpeechRecognition(object):
 
         self.pipeline.set_state(gst.State.PLAYING)
         return True
+
 
 rf = yarp.ResourceFinder()
 rf.setDefaultContext('speechRecognition')

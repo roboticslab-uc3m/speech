@@ -3,7 +3,7 @@
     <name>example speechRecognition App</name>
 
     <module>
-        <name>speechRecognition.py</name>
+        <name>speechRecognition</name>
         <node>localhost</node>
     </module>
 
