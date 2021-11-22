@@ -13,6 +13,7 @@
 // avoid issues with some macros, e.g. YARP_os_API, YARP_DEPRECATED_MSG
 %include "yarp/conf/api.h"
 %include "yarp/os/api.h"
+%include "yarp/os/Type.h" // avoid SWIG memory leaks due to a missing destructor
 
 // we need this to preserve the inheritance chain: SpeechIDL < Wire < PortReader
 %import(module="yarp") "yarp/os/PortReader.h"
