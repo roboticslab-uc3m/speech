@@ -6,19 +6,19 @@ service TextToSpeechIDL
      * set the speech langauge
      * @return true/false on success/failure
      */
-    bool setLanguage(string language);
+    bool setLanguage(1: string language);
 
     /**
      * set the speech speed
      * @return true/false on success/failure
      */
-    bool setSpeed(i16 speed);
+    bool setSpeed(1: i16 speed);
 
     /**
      * set the speech pitch
      * @return true/false on success/failure
      */
-    bool setPitch(i16 pitch);
+    bool setPitch(1: i16 pitch);
 
     /**
      * get the speech speed
@@ -42,7 +42,7 @@ service TextToSpeechIDL
      * render and play the speech
      * @return true/false on success/failure
      */
-    bool say(string text);
+    bool say(1: string text);
 
     /**
      * play the previously rendered or paused speech
@@ -73,7 +73,7 @@ service SpeechRecognitionIDL
      * @param language the language to use, e.g. 'en-us' or 'es'
      * @return true/false on success/failure
      */
-    bool setDictionary(string dictionary, string language);
+    bool setDictionary(1: string dictionary, 2: string language);
 
     /**
      * mute the microphone

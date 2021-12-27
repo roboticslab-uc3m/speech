@@ -2,8 +2,6 @@
 
 #include "Espeak.hpp"
 
-#include <cstdio>
-
 #include <string>
 #include <vector>
 
@@ -143,10 +141,9 @@ bool Espeak::say(const std::string & text)
 
 // -----------------------------------------------------------------------------
 
-bool Espeak::setSpeed(const int16_t speed)
+bool Espeak::setSpeed(const std::int16_t speed)
 {
     yCInfo(ESPK) << "setSpeed()" << speed;
-
     auto ret = espeak_SetParameter(espeakRATE, speed, 0);
 
     if (ret != EE_OK)
@@ -160,7 +157,7 @@ bool Espeak::setSpeed(const int16_t speed)
 
 // -----------------------------------------------------------------------------
 
-bool Espeak::setPitch(const int16_t pitch)
+bool Espeak::setPitch(const std::int16_t pitch)
 {
     yCInfo(ESPK) << "setPitch()" << pitch;
     auto ret = espeak_SetParameter(espeakPITCH, pitch, 0);
@@ -176,14 +173,14 @@ bool Espeak::setPitch(const int16_t pitch)
 
 // -----------------------------------------------------------------------------
 
-int16_t Espeak::getSpeed()
+std::int16_t Espeak::getSpeed()
 {
     return espeak_GetParameter(espeakRATE, 1);
 }
 
 // -----------------------------------------------------------------------------
 
-int16_t Espeak::getPitch()
+std::int16_t Espeak::getPitch()
 {
     return espeak_GetParameter(espeakPITCH, 1);
 }

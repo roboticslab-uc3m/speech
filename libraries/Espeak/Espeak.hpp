@@ -32,13 +32,13 @@ public:
 
     bool say(const std::string & text) override;
 
-    bool setSpeed(const int16_t speed) override;
+    bool setSpeed(const std::int16_t speed) override;
 
-    bool setPitch(const int16_t pitch) override;
+    bool setPitch(const std::int16_t pitch) override;
 
-    int16_t getSpeed() override;
+    std::int16_t getSpeed() override;
 
-    int16_t getPitch() override;
+    std::int16_t getPitch() override;
 
     bool play() override;
 
