@@ -22,14 +22,17 @@ TEST_F(EspeakTest, EspeakBasicConfig)
 {
     auto speed = 100;
     ASSERT_TRUE(espeak.setSpeed(speed));
-    ASSERT_EQ(espeak.getSpeed(), speed);
+    ASSERT_TRUE(espeak.getSpeed().ret);
+    ASSERT_EQ(espeak.getSpeed().param, speed);
 
     auto pitch = 69;
     ASSERT_TRUE(espeak.setPitch(pitch));
-    ASSERT_EQ(espeak.getPitch(), pitch);
+    ASSERT_TRUE(espeak.getPitch().ret);
+    ASSERT_EQ(espeak.getPitch().param, pitch);
 
     auto languages = espeak.getSupportedLangs();
-    ASSERT_NE(languages.size(), 0);
+    ASSERT_TRUE(languages.ret);
+    ASSERT_NE(languages.string_list.size(), 0);
 
     ASSERT_TRUE(espeak.checkSayDone());
 }

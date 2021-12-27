@@ -18,6 +18,7 @@
 // we need this to preserve the inheritance chain: SpeechIDL < Wire < PortReader
 %import(module="yarp") "yarp/os/PortReader.h"
 %import(module="yarp") "yarp/os/Wire.h"
+%import(module="yarp") "yarp/os/idl/WirePortable.h"
 
 %{
 #include "yarp/os/Type.h" // incomplete type due to a forward declaration in PortReader.h
@@ -25,5 +26,7 @@
 #include "SpeechRecognitionIDL.h"
 %}
 
+%include "return_int_param.h"
+%include "return_string_list.h"
 %include "TextToSpeechIDL.h"
 %include "SpeechRecognitionIDL.h"

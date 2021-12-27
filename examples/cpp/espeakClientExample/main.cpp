@@ -53,8 +53,8 @@ int main(int argc, char * argv[])
     tts.setSpeed(150); // Values 80 to 450.
     tts.setPitch(60); // 50 = normal
 
-    yInfo() << "Using speed" << tts.getSpeed();
-    yInfo() << "Using pitch" << tts.getPitch();
+    yInfo() << "Using speed" << tts.getSpeed().param;
+    yInfo() << "Using pitch" << tts.getPitch().param;
 
     tts.say("Hello, my name is Teo. I want to follow you. Please, tell me. Ok, I will follow you. Ok, I will stop following you.");
 

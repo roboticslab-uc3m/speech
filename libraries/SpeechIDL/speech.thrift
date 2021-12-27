@@ -1,5 +1,15 @@
 namespace yarp roboticslab
 
+struct return_int_param {
+    1: bool ret = false;
+    2: i32 param = 0;
+}
+
+struct return_string_list {
+    1: bool ret = false;
+    2: list<string> string_list;
+}
+
 service TextToSpeechIDL
 {
     /**
@@ -12,31 +22,31 @@ service TextToSpeechIDL
      * set the speech speed
      * @return true/false on success/failure
      */
-    bool setSpeed(1: i16 speed);
+    bool setSpeed(1: i32 speed);
 
     /**
      * set the speech pitch
      * @return true/false on success/failure
      */
-    bool setPitch(1: i16 pitch);
+    bool setPitch(1: i32 pitch);
 
     /**
      * get the speech speed
-     * @return the speed
+     * @return struct {bool ret, i32 param}
      */
-    i16 getSpeed();
+    return_int_param getSpeed();
 
     /**
      * get the speech pitch
-     * @return the pitch
+     * @return struct {bool ret, i32 param}
      */
-    i16 getPitch();
+    return_int_param getPitch();
 
     /**
      * get the available languages
-     * @return a list of the supported languages
+     * @return struct {bool ret, list<string> string_list}
      */
-    list<string> getSupportedLangs();
+    return_string_list getSupportedLangs();
 
     /**
      * render and play the speech

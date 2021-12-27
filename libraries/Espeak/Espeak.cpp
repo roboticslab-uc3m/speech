@@ -77,7 +77,7 @@ bool Espeak::setLanguage(const std::string & language)
 
 // -----------------------------------------------------------------------------
 
-std::vector<std::string> Espeak::getSupportedLangs()
+return_string_list Espeak::getSupportedLangs()
 {
     std::vector<std::string> supportedLangs;
 
@@ -107,7 +107,7 @@ std::vector<std::string> Espeak::getSupportedLangs()
     supportedLangs.emplace_back("mb-en1");
     supportedLangs.emplace_back("mb-es1");
 
-    return supportedLangs;
+    return {true, supportedLangs};
 }
 
 // -----------------------------------------------------------------------------
@@ -141,7 +141,7 @@ bool Espeak::say(const std::string & text)
 
 // -----------------------------------------------------------------------------
 
-bool Espeak::setSpeed(const std::int16_t speed)
+bool Espeak::setSpeed(int speed)
 {
     yCInfo(ESPK) << "setSpeed()" << speed;
     auto ret = espeak_SetParameter(espeakRATE, speed, 0);
@@ -157,7 +157,7 @@ bool Espeak::setSpeed(const std::int16_t speed)
 
 // -----------------------------------------------------------------------------
 
-bool Espeak::setPitch(const std::int16_t pitch)
+bool Espeak::setPitch(int pitch)
 {
     yCInfo(ESPK) << "setPitch()" << pitch;
     auto ret = espeak_SetParameter(espeakPITCH, pitch, 0);
@@ -173,16 +173,16 @@ bool Espeak::setPitch(const std::int16_t pitch)
 
 // -----------------------------------------------------------------------------
 
-std::int16_t Espeak::getSpeed()
+return_int_param Espeak::getSpeed()
 {
-    return espeak_GetParameter(espeakRATE, 1);
+    return {true, espeak_GetParameter(espeakRATE, 1)};
 }
 
 // -----------------------------------------------------------------------------
 
-std::int16_t Espeak::getPitch()
+return_int_param Espeak::getPitch()
 {
-    return espeak_GetParameter(espeakPITCH, 1);
+    return {true, espeak_GetParameter(espeakPITCH, 1)};
 }
 
 // -----------------------------------------------------------------------------

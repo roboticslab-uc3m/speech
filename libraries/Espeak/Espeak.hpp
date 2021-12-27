@@ -28,17 +28,17 @@ public:
 
     bool setLanguage(const std::string & language) override;
 
-    std::vector<std::string> getSupportedLangs() override;
+    return_string_list getSupportedLangs() override;
 
     bool say(const std::string & text) override;
 
-    bool setSpeed(const std::int16_t speed) override;
+    bool setSpeed(int speed) override;
 
-    bool setPitch(const std::int16_t pitch) override;
+    bool setPitch(int pitch) override;
 
-    std::int16_t getSpeed() override;
+    return_int_param getSpeed() override;
 
-    std::int16_t getPitch() override;
+    return_int_param getPitch() override;
 
     bool play() override;
 

@@ -18,8 +18,8 @@ int main(int argc, char * argv[])
     espeak.setSpeed(150); // Values 80 to 450.
     espeak.setPitch(60); // 50 = normal
 
-    yInfo() << "Using speed" << espeak.getSpeed();
-    yInfo() << "Using pitch" << espeak.getPitch();
+    yInfo() << "Using speed" << espeak.getSpeed().param;
+    yInfo() << "Using pitch" << espeak.getPitch().param;
 
     espeak.say("Hello, my name is Teo. I want to follow you. Please, tell me. Ok, I will follow you. Ok, I will stop following you.");
 
