@@ -23,7 +23,7 @@
 # Now launch the program:
 #
 # \verbatim
-# [on terminal 2] speechRecognition.py
+# [on terminal 2] speechRecognition
 # \endverbatim
 #
 # You can launch a 3rd terminal to read what is published via YARP port:
@@ -32,10 +32,15 @@
 # [on terminal 3] yarp read ...  /speechRecognition:o
 # \endverbatim
 #
-# or you can send commands to configure the speech-recognition. To know how to do that, use "help":
+# or you can send commands to configure the speech recognition app. To know how to do that, use "help":
 # \verbatim
 # [on terminal 4] yarp rpc /speechRecognition/rpc:s
 # [on terminal 4] >>help
+# \endverbatim
+#
+# For instance, you can load the 20k words Spanish dictionary with:
+# \verbatim
+# [on terminal 4] >>setDictionary 20k es
 # \endverbatim
 #
 # @section speechRecognition_troubleshooting Troubleshooting
