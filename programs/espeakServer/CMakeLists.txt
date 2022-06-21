@@ -11,7 +11,6 @@ if(ENABLE_espeakServer)
                                        YARP::YARP_init
                                        ROBOTICSLAB::Espeak)
 
-    install(TARGETS espeakServer
-            DESTINATION ${CMAKE_INSTALL_BINDIR})
+    install(TARGETS espeakServer)
 
 endif()

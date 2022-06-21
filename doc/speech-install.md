@@ -2,9 +2,9 @@
 
 ## Install the Software dependencies
 
-- [Install CMake 3.12+](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-cmake.md)
+- [Install CMake 3.16+](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-cmake.md)
 - [Install YCM 0.11+](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-ycm.md)
-- [Install YARP 3.5+](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-yarp.md)
+- [Install YARP 3.6+](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-yarp.md)
 with [Python bindings](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-yarp.md#install-python-bindings), the latter for `speechRecognition.py` (ASR)
 - [Install eSpeak with MBROLA Voices](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-espeak-mbrola.md) of `Espeak` (TTS)
 - [Install gstreamer with pocketsphinx](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-gstreamer-pocketsphinx.md) for `speechRecognition.py` (ASR)

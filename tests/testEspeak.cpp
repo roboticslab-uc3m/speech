@@ -5,7 +5,7 @@
 
 #include "Espeak.hpp"
 
-namespace roboticslab
+namespace roboticslab::test
 {
 
 /**
@@ -66,4 +66,4 @@ TEST_F(EspeakTest, EspeakSayLong)
     ASSERT_TRUE(espeak.checkSayDone());
 }
 
-}// namespace roboticslab
+} // namespace roboticslab::test
