@@ -102,7 +102,7 @@ class TextToSpeechResponder(roboticslab_speech.TextToSpeechIDL):
 def get_args(argv=None):
     parser = argparse.ArgumentParser(prog='speechSynthesis', description="TTS service running a Mimic 3 engine")
     parser.add_argument("--voice", "-v", help="Name of voice (expected in <voices-dir>/<language>)", required=True)
-    parser.add_argument("--speaker", "-s", help="Name or number of speaker (default: first speaker)", required=True)
+    parser.add_argument("--speaker", "-s", help="Name or number of speaker (default: first speaker)")
     parser.add_argument("--noise-scale", type=float, help="Noise scale [0-1], default is 0.667")
     parser.add_argument("--length-scale", type=float, help="Length scale (1.0 is default speed, 0.5 is 2x faster)")
     parser.add_argument("--noise-w", type=float, help="Variation in cadence [0-1], default is 0.8")
