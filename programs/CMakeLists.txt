@@ -1,2 +1,3 @@
 add_subdirectory(espeakServer)
 add_subdirectory(speechRecognition)
+add_subdirectory(speechSynthesis)
