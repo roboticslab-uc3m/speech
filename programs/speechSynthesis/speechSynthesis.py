@@ -35,7 +35,12 @@ class TextToSpeechResponder(roboticslab_speech.TextToSpeechIDL):
             # different voice
             self.engine.voice = language
 
-        return True
+        if self.engine.voice not in list(self.getSupportedLangs()):
+            print('Voice not available: %s' % self.engine.voice)
+            return False
+        else:
+            print('Loaded voice: %s (speaker: %s)' % (self.engine.voice, self.engine.speaker or 'default'))
+            return True
 
     def setSpeed(self, speed):
         return False
@@ -50,7 +55,10 @@ class TextToSpeechResponder(roboticslab_speech.TextToSpeechIDL):
         return 0
 
     def getSupportedLangs(self):
-        return False
+        all_voices = sorted(list(self.engine.get_voices()), key=lambda v: v.key)
+        local_voices = filter(lambda v: not v.location.startswith('http'), all_voices)
+        self.available_voices = [v.key for v in local_voices]
+        return yarp.SVector(self.available_voices)
 
     def say(self, text):
         self.engine.begin_utterance()
