@@ -16,7 +16,7 @@ import mimic3_tts
 import yarp
 import roboticslab_speech
 
-PLAY_PROGRAMS = ["paplay", "play -q", "aplay -q"]
+PLAY_PROGRAMS = ['paplay', 'play -q', 'aplay -q']
 
 class TextToSpeechResponder(roboticslab_speech.TextToSpeechIDL):
     def __init__(self, engine):
@@ -111,13 +111,14 @@ class TextToSpeechResponder(roboticslab_speech.TextToSpeechIDL):
                         break
 
 def get_args(argv=None):
-    parser = argparse.ArgumentParser(prog='speechSynthesis', description="TTS service running a Mimic 3 engine")
-    parser.add_argument("--voice", "-v", help="Name of voice (expected in <voices-dir>/<language>)", required=True)
-    parser.add_argument("--speaker", "-s", help="Name or number of speaker (default: first speaker)")
-    parser.add_argument("--noise-scale", type=float, help="Noise scale [0-1], default is 0.667")
-    parser.add_argument("--length-scale", type=float, help="Length scale (1.0 is default speed, 0.5 is 2x faster)")
-    parser.add_argument("--noise-w", type=float, help="Variation in cadence [0-1], default is 0.8")
-    parser.add_argument("--cuda", action="store_true", help="Use Onnx CUDA execution provider (requires onnxruntime-gpu)")
+    parser = argparse.ArgumentParser(prog='speechSynthesis', description='TTS service running a Mimic 3 engine')
+    parser.add_argument('--voice', '-v', help='Name of voice (expected in <voices-dir>/<language>)', required=True)
+    parser.add_argument('--speaker', '-s', help='Name or number of speaker (default: first speaker)')
+    parser.add_argument('--noise-scale', type=float, help='Noise scale [0-1], default is 0.667')
+    parser.add_argument('--length-scale', type=float, help='Length scale (1.0 is default speed, 0.5 is 2x faster)')
+    parser.add_argument('--noise-w', type=float, help='Variation in cadence [0-1], default is 0.8')
+    parser.add_argument('--cuda', action='store_true', help='Use Onnx CUDA execution provider (requires onnxruntime-gpu)')
+    parser.add_argument('--port', '-p', default='/speechSynthesis', help='YARP port prefix')
     return parser.parse_args(args=argv)
 
 def make_tts(args):
@@ -143,16 +144,12 @@ if not yarp.Network.checkNetwork():
     print('YARP network not found')
     raise SystemExit
 
-rf = yarp.ResourceFinder()
-rf.setDefaultContext('speechSynthesis')
-rf.setDefaultConfigFile('speechSynthesis.ini')
-
 args = get_args()
 tts = make_tts(args)
 rpc = yarp.RpcServer()
 processor = TextToSpeechResponder(tts)
 
-if not rpc.open('/speechSynthesis/rpc:s'):
+if not rpc.open(args.port + '/rpc:s'):
     print('Cannot open port %s' % rpc.getName())
     raise SystemExit
 
