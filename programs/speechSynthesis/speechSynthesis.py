@@ -77,7 +77,10 @@ class TextToSpeechResponder(roboticslab_speech.TextToSpeechIDL):
         return super().pause()
 
     def stop(self):
-        return super().stop()
+        if self.p:
+            self.p.terminate()
+
+        return True
 
     def checkSayDone(self):
         return not self.is_playing
@@ -104,7 +107,13 @@ class TextToSpeechResponder(roboticslab_speech.TextToSpeechIDL):
 
                         play_cmd.append(wav_file.name)
                         self.is_playing = True
-                        subprocess.check_output(play_cmd)
+
+                        with subprocess.Popen(play_cmd) as self.p:
+                            try:
+                                self.p.wait()
+                            except: # e.g. on keyboard interrupt
+                                self.p.kill()
+
                         self.is_playing = False
                         break
 
