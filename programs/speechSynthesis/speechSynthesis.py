@@ -23,7 +23,7 @@ class TextToSpeechResponder(roboticslab_speech.TextToSpeechIDL):
         super().__init__()
         self.engine = engine
         self.result_queue = queue.Queue(maxsize=5)
-        self.result_thread = threading.Thread(target=self.__process_result, daemon=True)
+        self.result_thread = threading.Thread(target=self._process_result, daemon=True)
         self.result_thread.start()
         self.is_playing = False
 
@@ -47,15 +47,13 @@ class TextToSpeechResponder(roboticslab_speech.TextToSpeechIDL):
         return True
 
     def setPitch(self, pitch):
-        print('setPitch() not implemented')
-        return False
+        return super().setPitch(pitch)
 
     def getSpeed(self):
         return int(self.engine.rate * 100)
 
     def getPitch(self):
-        print('getPitch() not implemented')
-        return 0
+        return super().getPitch()
 
     def getSupportedLangs(self):
         all_voices = sorted(list(self.engine.get_voices()), key=lambda v: v.key)
@@ -84,7 +82,7 @@ class TextToSpeechResponder(roboticslab_speech.TextToSpeechIDL):
     def checkSayDone(self):
         return not self.is_playing
 
-    def __process_result(self):
+    def _process_result(self):
         while True:
             result = self.result_queue.get()
 
