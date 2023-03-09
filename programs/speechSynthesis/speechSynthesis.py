@@ -22,10 +22,11 @@ class TextToSpeechResponder(roboticslab_speech.TextToSpeechIDL):
     def __init__(self, engine):
         super().__init__()
         self.engine = engine
+        self.is_playing = False
+        self.p = None
         self.result_queue = queue.Queue(maxsize=5)
         self.result_thread = threading.Thread(target=self._process_result, daemon=True)
         self.result_thread.start()
-        self.is_playing = False
 
     def setLanguage(self, language):
         if language.startswith('#'):
@@ -58,8 +59,8 @@ class TextToSpeechResponder(roboticslab_speech.TextToSpeechIDL):
     def getSupportedLangs(self):
         all_voices = sorted(list(self.engine.get_voices()), key=lambda v: v.key)
         local_voices = filter(lambda v: not v.location.startswith('http'), all_voices)
-        self.available_voices = [v.key for v in local_voices]
-        return yarp.SVector(self.available_voices)
+        available_voices = [v.key for v in local_voices]
+        return yarp.SVector(available_voices)
 
     def say(self, text):
         self.engine.begin_utterance()
@@ -94,56 +95,56 @@ class TextToSpeechResponder(roboticslab_speech.TextToSpeechIDL):
 
             wav_bytes = result.to_wav_bytes()
 
-            if wav_bytes:
-                with tempfile.NamedTemporaryFile(mode='wb+', suffix='.wav') as wav_file:
-                    wav_file.write(wav_bytes)
-                    wav_file.seek(0)
+            if not wav_bytes:
+                continue
 
-                    for play_program in reversed(PLAY_PROGRAMS):
-                        play_cmd = shlex.split(play_program)
+            with tempfile.NamedTemporaryFile(mode='wb+', suffix='.wav') as wav_file:
+                wav_file.write(wav_bytes)
+                wav_file.seek(0)
 
-                        if not shutil.which(play_cmd[0]):
-                            continue
+                for play_program in reversed(PLAY_PROGRAMS):
+                    play_cmd = shlex.split(play_program)
 
-                        play_cmd.append(wav_file.name)
-                        self.is_playing = True
+                    if not shutil.which(play_cmd[0]):
+                        continue
 
-                        with subprocess.Popen(play_cmd) as self.p:
-                            try:
-                                self.p.wait()
-                            except: # e.g. on keyboard interrupt
-                                self.p.kill()
+                    play_cmd.append(wav_file.name)
+                    self.is_playing = True
 
-                        self.is_playing = False
-                        break
+                    with subprocess.Popen(play_cmd) as self.p:
+                        try:
+                            self.p.wait()
+                        except: # e.g. on keyboard interrupt
+                            self.p.kill()
 
-def get_args(argv=None):
-    parser = argparse.ArgumentParser(prog='speechSynthesis', description='TTS service running a Mimic 3 engine')
-    parser.add_argument('--voice', '-v', help='Name of voice (expected in <voices-dir>/<language>)', required=True)
-    parser.add_argument('--speaker', '-s', help='Name or number of speaker (default: first speaker)')
-    parser.add_argument('--noise-scale', type=float, help='Noise scale [0-1], default is 0.667')
-    parser.add_argument('--length-scale', type=float, help='Length scale (1.0 is default speed, 0.5 is 2x faster)')
-    parser.add_argument('--noise-w', type=float, help='Variation in cadence [0-1], default is 0.8')
-    parser.add_argument('--cuda', action='store_true', help='Use Onnx CUDA execution provider (requires onnxruntime-gpu)')
-    parser.add_argument('--port', '-p', default='/speechSynthesis', help='YARP port prefix')
-    return parser.parse_args(args=argv)
+                    self.is_playing = False
+                    break
 
-def make_tts(args):
-    tts = mimic3_tts.Mimic3TextToSpeechSystem(
-        mimic3_tts.Mimic3Settings(
-            length_scale=args.length_scale,
-            noise_scale=args.noise_scale,
-            noise_w=args.noise_w,
-            use_cuda=args.cuda,
-        )
+parser = argparse.ArgumentParser(prog='speechSynthesis', description='TTS service running a Mimic 3 engine')
+parser.add_argument('--voice', '-v', help='Name of voice (expected in <voices-dir>/<language>)', required=True)
+parser.add_argument('--speaker', '-s', help='Name or number of speaker (default: first speaker)')
+parser.add_argument('--noise-scale', type=float, help='Noise scale [0-1], default is 0.667')
+parser.add_argument('--length-scale', type=float, help='Length scale (1.0 is default speed, 0.5 is 2x faster)')
+parser.add_argument('--noise-w', type=float, help='Variation in cadence [0-1], default is 0.8')
+parser.add_argument('--cuda', action='store_true', help='Use Onnx CUDA execution provider (requires onnxruntime-gpu)')
+parser.add_argument('--port', '-p', default='/speechSynthesis', help='YARP port prefix')
+
+args =  parser.parse_args()
+
+tts = mimic3_tts.Mimic3TextToSpeechSystem(
+    mimic3_tts.Mimic3Settings(
+        length_scale=args.length_scale,
+        noise_scale=args.noise_scale,
+        noise_w=args.noise_w,
+        use_cuda=args.cuda,
     )
+)
 
-    tts.voice = args.voice
-    tts.speaker = args.speaker
+tts.voice = args.voice
+tts.speaker = args.speaker
 
-    print('Preloading voice: %s' % args.voice)
-    tts.preload_voice(args.voice)
-    return tts
+print('Preloading voice: %s' % args.voice)
+tts.preload_voice(args.voice)
 
 yarp.Network.init()
 
@@ -151,8 +152,6 @@ if not yarp.Network.checkNetwork():
     print('YARP network not found')
     raise SystemExit
 
-args = get_args()
-tts = make_tts(args)
 rpc = yarp.RpcServer()
 processor = TextToSpeechResponder(tts)
 
