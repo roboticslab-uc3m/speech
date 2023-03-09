@@ -1,6 +1,6 @@
-# Speech recognition software
+# Speech recognition
 
-### How to launch
+## How to launch
 
 1. First, follow the steps described on [installation instructions](doc/speech-install.md)
 2. Be sure you have a microphone connected to your computer.
@@ -10,7 +10,7 @@ In that case, run `alsamixer` on the bash,  press `F6`, select your Sound Card (
 5. Try to say some orders of  `follow-me`  demo using the microphone and check if `speechRecognition` detects the words.
 6. The final result in lower case comes out through a yarp port. You can read from the output port writing `yarp read ... /speechRecognition:o`.
 
-### How to configure it
+## How to configure it
 
 Once `speechRecognition.py` has started, connect it to the yarp configuration dictionary port and change the language to use.
 For example, if you want to change to waiter Spanish orders, put:
