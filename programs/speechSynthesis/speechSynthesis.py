@@ -43,15 +43,18 @@ class TextToSpeechResponder(roboticslab_speech.TextToSpeechIDL):
             return True
 
     def setSpeed(self, speed):
-        return False
+        self.engine.rate = float(speed) / 100
+        return True
 
     def setPitch(self, pitch):
+        print('setPitch() not implemented')
         return False
 
     def getSpeed(self):
-        return 0
+        return int(self.engine.rate * 100)
 
     def getPitch(self):
+        print('getPitch() not implemented')
         return 0
 
     def getSupportedLangs(self):
