@@ -130,7 +130,7 @@ parser.add_argument('--noise-w', type=float, help='Variation in cadence [0-1], d
 parser.add_argument('--cuda', action='store_true', help='Use Onnx CUDA execution provider (requires onnxruntime-gpu)')
 parser.add_argument('--port', '-p', default='/speechSynthesis', help='YARP port prefix')
 
-args =  parser.parse_args()
+args = parser.parse_args()
 
 tts = mimic3_tts.Mimic3TextToSpeechSystem(
     mimic3_tts.Mimic3Settings(

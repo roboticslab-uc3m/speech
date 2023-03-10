@@ -2,7 +2,7 @@
 
 ## How to launch
 
-1. First, follow the steps described on [installation instructions](doc/speech-install.md)
+1. First, follow the steps described on [installation instructions](/doc/speech-install.md)
 2. Be sure you have a microphone connected to your computer.
 3. Configure the input device selecting the microphone. You can use the  default `sound settings` of Ubuntu and select the input device. This requires using the Ubuntu interface. If you want to configure it remotely (by ssh), you can use the `alsamixer` software.
 In that case, run `alsamixer` on the bash,  press `F6`, select your Sound Card (e.g HDA Intel PCH), press `F4` and select your `Input Source (Front Mic)`. You can turn the input level up/down too.
