@@ -40,6 +40,7 @@ class TextToSpeechResponder(roboticslab_speech.TextToSpeechIDL):
             print('Voice not available: %s' % self.engine.voice)
             return False
         else:
+            self.engine.preload_voice(self.engine.voice)
             print('Loaded voice: %s (speaker: %s)' % (self.engine.voice, self.engine.speaker or 'default'))
             return True
 
