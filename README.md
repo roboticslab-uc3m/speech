@@ -12,7 +12,7 @@ Installation instructions for installing from source can be found [here](doc/spe
 
 Information of how to launch or configure it:
 1. [Speech recognition](programs/speechRecognition/README.md)
-2. [Espeak](libraries/YarpPlugins/Espeak/README.md)
+2. [Espeak](programs/espeakServer/README.md)
 
 Read the [development manual](doc/speech-development-manual.md) if you want to build a new language model
 
