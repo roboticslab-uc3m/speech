@@ -1,25 +1,45 @@
 # Speech recognition
 
-## How to launch
+## Installation and usage
 
-1. First, follow the steps described on [installation instructions](/doc/speech-install.md)
-2. Be sure you have a microphone connected to your computer.
-3. Configure the input device selecting the microphone. You can use the  default `sound settings` of Ubuntu and select the input device. This requires using the Ubuntu interface. If you want to configure it remotely (by ssh), you can use the `alsamixer` software.
-In that case, run `alsamixer` on the bash,  press `F6`, select your Sound Card (e.g HDA Intel PCH), press `F4` and select your `Input Source (Front Mic)`. You can turn the input level up/down too.
-4. Run `speechRecognition.py`. By default it uses the `follow-me-en-us.dic` dictionary.  If you want to: know, change or add new dictionary words, you can find them in: `speech/share/speechRecognition/dictionary/` directory.
-5. Try to say some orders of  `follow-me`  demo using the microphone and check if `speechRecognition` detects the words.
-6. The final result in lower case comes out through a yarp port. You can read from the output port writing `yarp read ... /speechRecognition:o`.
-
-## How to configure it
-
-Once `speechRecognition.py` has started, connect it to the yarp configuration dictionary port and change the language to use.
-For example, if you want to change to waiter Spanish orders, put:
+This is a Python 3 application that requires the `sounddevice` package to grab live frames from a mic. Install it with:
 
 ```bash
-yarp rpc /speechRecognition/rpc:s
-setDictionary waiter es
+pip install sounddevice
 ```
 
-## Troubleshooting
+Depending on the selected backend, additional dependencies might be required (see below).
 
-Some pointers on muting/unmuting the microphone have been collected in [#13](https://github.com/roboticslab-uc3m/speech/issues/13).
+Launch the program with `--help` to see available options. You can display and select the preferred input device with `--list-devices` and `--device`, respectively (otherwise the system default will be chosen).
+
+This application opens two YARP ports: an `<prefix>/rpc:s` port that allows to request a dictionary/model change and to mute/unmute the microphone, and a `<prefix>/result:o` port that broadcasts the transcribed text. The default prefix is `/speechRecognition`, but it can be changed with the `--prefix` option.
+
+## PocketSphinx backend
+
+Install the `pocketsphinx` package with:
+
+```bash
+pip install pocketsphinx
+```
+
+Then, launch the program with the `--backend pocketsphinx --dictionary xxx --language xxx` options. The dictionary and language combo relies on the adequate dictionary and model files being installed (check [share/speechRecognition](/share/speechRecognition/)). For example, to use the waiter Spanish orders dictionary, put:
+
+```bash
+speechRecognition --backend pocketsphinx --dictionary waiter --language es
+```
+
+## Vosk (Kaldi) backend
+
+Install the `vosk` package with:
+
+```bash
+pip install vosk
+```
+
+Then, launch the program with the `--backend vosk --model xxx` options. Model files are downloaded on demand from the [Vosk website](https://alphacephei.com/vosk/models). For example, to use the ~50 MB Spanish model, put:
+
+```bash
+speechRecognition --backend vosk --model small-es-0.42
+```
+
+To list and download the desired models offline and test the Vosk engine, you can use the `vosk-transcriber` application.

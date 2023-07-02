@@ -2,17 +2,8 @@
 
 ##
 # @ingroup speech-programs
-# \defgroup speechRecognition speechRecognition.py
+# @defgroup speechRecognition speechRecognition.py
 # @brief Provides basic ASR capabilities.
-#
-# @section speechRecognition_legal Legal
-#
-# Copyright: 2016-present (c) edits by Santiago Morante, Juan G Victores and Raul de Santos; past-2008 (c) Carnegie Mellon University.
-#
-# CopyPolicy: You may modify and redistribute this file under the same terms as the CMU Sphinx system. See
-# http://cmusphinx.sourceforge.net/html/LICENSE for more information.
-#
-# @section speechRecognition_running Running (assuming correct installation)
 #
 # First we must run a YARP name server if it is not running in our current namespace:
 #
@@ -20,224 +11,282 @@
 # [on terminal 1] yarp server
 # \endverbatim
 #
-# Now launch the program:
+# Now launch the program (use --help for a list of options):
 #
-# \verbatim
-# [on terminal 2] speechRecognition
-# \endverbatim
+# @verbatim
+# [on terminal 2] speechRecognition --backend vosk --model es-0.42
+# @endverbatim
 #
 # You can launch a 3rd terminal to read what is published via YARP port:
 #
-# \verbatim
-# [on terminal 3] yarp read ...  /speechRecognition:o
-# \endverbatim
+# @verbatim
+# [on terminal 3] yarp read ...  /speechRecognition/result:o
+# @endverbatim
 #
 # or you can send commands to configure the speech recognition app. To know how to do that, use "help":
-# \verbatim
+# @verbatim
 # [on terminal 4] yarp rpc /speechRecognition/rpc:s
 # [on terminal 4] >>help
-# \endverbatim
+# @endverbatim
 #
-# For instance, you can load the 20k words Spanish dictionary with:
-# \verbatim
+# For instance, you can load the 20k words Spanish dictionary for the PocketSphinx backend with:
+# @verbatim
 # [on terminal 4] >>setDictionary 20k es
-# \endverbatim
-#
-# @section speechRecognition_troubleshooting Troubleshooting
-#
-# 1. gst-inspect-1.0 pocketsphinx
-#
-# 2. Check operating system sound settings
-#
-# 3. Check hardware such as cables, and physical volume controls and on/off switches
+# @endverbatim
 
-import gi
+# borrowed from https://github.com/alphacep/vosk-api/blob/12f29a3/python/example/test_microphone.py
+# and https://github.com/cmusphinx/pocketsphinx/blob/b16c631/examples/live.py
 
-gi.require_version('Gst', '1.0')
-from gi.repository import GObject, Gst
-GObject.threads_init()
-Gst.init(None)
-
-gst = Gst
-
-from gi import pygtkcompat
-print('Using pygtkcompat and Gst from gi')
-
-pygtkcompat.enable()
-pygtkcompat.enable_gtk(version='3.0')
-
-import yarp
-import os.path
-
-# For alsaaudio
-import sys
-import alsaaudio
-
+import argparse
+import json
+import queue
 import roboticslab_speech
+import sounddevice as sd
+import yarp
 
+from abc import ABC, abstractmethod
+from pocketsphinx import Endpointer, Decoder
+from vosk import Model, KaldiRecognizer
 
-##
-# @ingroup speechRecognition
-# @brief Speech Recognition callback class
+class ResponderFactory(ABC):
+    @abstractmethod
+    def create(self, stream):
+        pass
+
+class PocketSphinxResponderFactory(ResponderFactory):
+    def __init__(self, device, dictionary, language, rf):
+        self.device = device
+        self.dictionary = dictionary
+        self.language = language
+        self.rf = rf
+
+    def create(self, stream):
+        return PocketSphinxSpeechRecognitionResponder(stream, self.device, self.dictionary, self.language, self.rf)
+
+class VoskResponderFactory(ResponderFactory):
+    def __init__(self, device, model):
+        self.device = device
+        self.model = model
+
+    def create(self, stream):
+        return VoskSpeechRecognitionResponder(stream, self.device, self.model)
+
 class SpeechRecognitionResponder(roboticslab_speech.SpeechRecognitionIDL):
-    def __init__(self, owner):
+    def __init__(self, stream, device):
         super().__init__()
-        self.owner = owner
-        self.mixer = None
+        self.stream = stream
+        device_info = sd.query_devices(device, 'input')
+        # soundfile expects an int, sounddevice provides a float:
+        self.sample_rate = int(device_info['default_samplerate'])
 
     def setDictionary(self, dictionary, language):
-        print('Setting dictionary to %s (language: %s)' % (dictionary, language))
+        self.stream.abort()
 
-        lm_path = 'dictionary/%s-%s.lm' % (dictionary, language)
-        dic_path = 'dictionary/%s-%s.dic' % (dictionary, language)
-        model_path = 'model/' + language
+        try:
+            return self._setDictionaryInternal(dictionary, language)
+        finally:
+            self.stream.start()
 
-        if not self.owner.setDictionary(lm_path, dic_path, model_path):
-            print('Unable to set dictionary')
-            return False
-
-        return True
+    @abstractmethod
+    def _setDictionaryInternal(self, dictionary, language):
+        pass
 
     def muteMicrophone(self):
         print('Muting microphone')
-
-        if not self._initMixer():
-            return False
-
-        self.mixer.setrec(0, alsaaudio.MIXER_CHANNEL_ALL)
+        self.stream.abort()
         return True
 
     def unmuteMicrophone(self):
         print('Unmuting microphone')
-
-        if not self._initMixer():
-            return False
-
-        self.mixer.setrec(1, alsaaudio.MIXER_CHANNEL_ALL)
+        self.stream.start()
         return True
 
-    def _initMixer(self):
-        if self.mixer is None:
-            try:
-                self.mixer = alsaaudio.Mixer('Capture') # Capture / Master
-            except alsaaudio.ALSAAudioError:
-                print('No such mixer: %s' % sys.stderr)
-                return False
+    @abstractmethod
+    def transcribe(self, frame):
+        pass
 
-        return True
-
-
-##
-# @ingroup speechRecognition
-# @brief Speech Recognition main class.
-class SpeechRecognition(object):
-    """Based on GStreamer/PocketSphinx Demo Application"""
-
-    def __init__(self, rf):
-        """Initialize a SpeechRecognition object"""
+class PocketSphinxSpeechRecognitionResponder(SpeechRecognitionResponder):
+    def __init__(self, stream, device, dictionary, language, rf):
+        super().__init__(stream, device)
         self.rf = rf
-        self.my_lm = self.rf.findFileByName('dictionary/follow-me-en-us.lm')
-        self.my_dic = self.rf.findFileByName('dictionary/follow-me-en-us.dic')
-        self.my_model = self.rf.findPath('model/en-us/')
-        self.outPort = yarp.BufferedPortBottle()
-        self.configPort = yarp.RpcServer()
-        self.dataProcessor = SpeechRecognitionResponder(self)
-        self.outPort.open('/speechRecognition:o')
-        self.configPort.open('/speechRecognition/rpc:s')
-        self.dataProcessor.yarp().attachAsServer(self.configPort)
-        self.init_gst()
 
-    def init_gst(self):
-        """Initialize the speech components"""
-        #self.pipeline = gst.parse_launch('gconfaudiosrc ! audioconvert ! audioresample '
-        #                                  + '! vader name=vad auto-threshold=true '
-        #                                  + '! pocketsphinx name=asr ! fakesink')
+        if not self._setDictionaryInternal(dictionary, language):
+            raise Exception('Unable to load dictionary')
 
-        """ Configuring the decoder and improving accuracy """
-        self.pipeline = gst.parse_launch('autoaudiosrc ! audioconvert ! audioresample '
-                                        + '! pocketsphinx name=asr beam=1e-20 ! fakesink')
-        asr = self.pipeline.get_by_name('asr')
-        # asr.connect('result', self.asr_result) (it's not running with Gstreamer 1.0)
-        asr.set_property('lm', self.my_lm )
-        asr.set_property('dict', self.my_dic )
-        asr.set_property('hmm', self.my_model )
-        #asr.set_property('configured', "true")
+    def _setDictionaryInternal(self, dictionary, language):
+        print('Setting dictionary to %s (language: %s)' % (dictionary, language))
 
-        bus = self.pipeline.get_bus()
-        bus.add_signal_watch()
-        bus.connect('message::element', self.element_message) # new
+        lm = self.rf.findFileByName('dictionary/%s-%s.lm' % (dictionary, language))
+        dic = self.rf.findFileByName('dictionary/%s-%s.dic' % (dictionary, language))
+        model = self.rf.findFileByName('model/%s' % language)
 
-        self.pipeline.set_state(gst.State.PLAYING)
-
-    def element_message(self, bus, msg):
-        """Receive element messages from the bus."""
-        print('---')
-        msgtype = msg.get_structure().get_name()
-        print(msgtype) # pocketsphinx
-
-        if msgtype != 'pocketsphinx':
-            return
-
-        print("hypothesis= '%s' confidence=%s final=%s\n" % (
-            msg.get_structure().get_value('hypothesis'),
-            msg.get_structure().get_value('confidence'),
-            msg.get_structure().get_value('final')
-        ))
-
-        if msg.get_structure().get_value('final') is True:
-            text = msg.get_structure().get_value('hypothesis')
-
-            if text != '':
-                print(text.lower())
-                b = self.outPort.prepare()
-                b.clear()
-                b.addString(text.lower())
-                self.outPort.write()
-
-    def setDictionary(self, lm, dic, hmm):
-        lm = self.rf.findFileByName(lm)
-        dic = self.rf.findFileByName(dic)
-        model = self.rf.findFileByName(hmm)
-
-        if lm == '' or dic == '' or model == '':
+        if not lm or not dic or not model:
+            print('Unable to find dictionary')
             return False
 
-        self.my_lm = lm
-        self.my_dic = dic
-        self.my_model = model
+        self.lm, self.dic, self.model = lm, dic, model
+        self.ep = Endpointer(sample_rate=self.sample_rate)
 
-        self.pipeline.set_state(gst.State.NULL)
-        self.pipeline = gst.parse_launch('autoaudiosrc ! audioconvert ! audioresample '
-                                         + '! pocketsphinx name=asr beam=1e-20 ! fakesink')
+        self.decoder = Decoder(
+            hmm=self.model,
+            lm=self.lm,
+            dict=self.dic,
+            samprate=self.ep.sample_rate,
+            #loglevel='INFO' # might be a bit too noisy
+        )
 
-        asr = self.pipeline.get_by_name('asr')
-        asr.set_property('lm', self.my_lm)
-        asr.set_property('dict', self.my_dic)
-        asr.set_property('hmm', self.my_model )
-
-        print('-------------------------------')
-        print('Dictionary changed successfully (%s) (%s) (%s)' % (self.my_lm, self.my_dic, self.my_model))
-
-        bus = self.pipeline.get_bus()
-        bus.add_signal_watch()
-        bus.connect('message::element', self.element_message)
-
-        self.pipeline.set_state(gst.State.PLAYING)
         return True
 
+    def transcribe(self, frame):
+        prev_in_speech = self.ep.in_speech
+        speech = self.ep.process(frame)
 
-rf = yarp.ResourceFinder()
-rf.setDefaultContext('speechRecognition')
-rf.setDefaultConfigFile('speechRecognition.ini')
+        if speech is not None:
+            if not prev_in_speech:
+                self.decoder.start_utt()
+
+            self.decoder.process_raw(speech)
+            hyp = self.decoder.hyp()
+
+            if not self.ep.in_speech:
+                self.decoder.end_utt()
+                return False, self.decoder.hyp().hypstr
+            elif hyp is not None:
+                # partial result
+                return True, hyp.hypstr
+        return False, None
+
+class VoskSpeechRecognitionResponder(SpeechRecognitionResponder):
+    def __init__(self, stream, device, model):
+        super().__init__(stream, device)
+
+        if model is None:
+            self.model = Model(lang='en-us')
+        else:
+            self.model = Model(model_name='vosk-model-' + model)
+
+        self.rec = KaldiRecognizer(self.model, self.sample_rate)
+
+    def _setDictionaryInternal(self, dictionary, language):
+        try:
+            if dictionary is not None and str(dictionary):
+                print('Setting dictionary to %s' % dictionary)
+                self.model = Model(model_name='vosk-model-' + dictionary)
+            elif language is not None and str(language):
+                print('Setting language to %s' % language)
+                self.model = Model(lang=language)
+            else:
+                print('No dictionary or language specified')
+                return False
+        except SystemExit:
+            print('Dictionary or language not available')
+            return False
+
+        self.rec = KaldiRecognizer(self.model, self.sample_rate)
+        return True
+
+    def transcribe(self, frame):
+        if self.rec.AcceptWaveform(frame):
+            return (False, json.loads(self.rec.Result())['text'])
+        else:
+            return (True, json.loads(self.rec.PartialResult())['partial'])
+
+def int_or_str(text):
+    """Helper function for argument parsing."""
+    try:
+        return int(text)
+    except ValueError:
+        return text
+
+BACKENDS = ['pocketsphinx', 'vosk']
+
+parser = argparse.ArgumentParser(description='YARP service that transforms live microphone input into transcribed text', add_help=False)
+parser.add_argument('--list-devices', action='store_true', help='list available audio devices and exit')
+parser.add_argument('--list-backends', action='store_true', help='list available ASR backends and exit')
+args, remaining = parser.parse_known_args()
+
+if args.list_devices:
+    print(sd.query_devices())
+    raise SystemExit
+elif args.list_backends:
+    print('\n'.join(BACKENDS))
+    raise SystemExit
+
+parser = argparse.ArgumentParser(description=parser.description, formatter_class=argparse.ArgumentDefaultsHelpFormatter, parents=[parser])
+parser.add_argument('--backend', '-b', type=str, required=True, help='ASR backend engine')
+parser.add_argument('--device', '-d', type=int_or_str, help='input device (numeric ID or substring)')
+parser.add_argument('--dictionary', type=str, help='(only --backend pocketsphinx) dictionary, e.g. follow-me')
+parser.add_argument('--language', type=str, help='(only --backend pocketsphinx) language, e.g. en-us')
+parser.add_argument('--model', type=str, help='(only --backend vosk) model, e.g. es-0.42')
+parser.add_argument('--prefix', '-p', type=str, default='/speechRecognition', help='YARP port prefix')
+parser.add_argument('--context', type=str, default='speechRecognition', help='YARP context directory')
+parser.add_argument('--from', type=str, dest='ini', default='speechRecognition.ini', help='YARP configuration (.ini) file')
+args = parser.parse_args(remaining)
 
 yarp.Network.init()
 
-if not yarp.Network.checkNetwork():
-    print('[asr] error: found no yarp network (try running "yarpserver &")')
+rf = yarp.ResourceFinder()
+rf.setDefaultContext(args.context)
+rf.setDefaultConfigFile(args.ini)
+
+if args.backend == 'pocketsphinx':
+    if args.dictionary is None or args.language is None:
+        print('Dictionary and language must be specified for PocketSphinx')
+        raise SystemExit
+
+    responder_factory = PocketSphinxResponderFactory(args.device, args.dictionary, args.language, rf)
+elif args.backend == 'vosk':
+    if args.model is None:
+        print('Model must be specified for Vosk')
+        raise SystemExit
+
+    responder_factory = VoskResponderFactory(args.device, args.model)
+else:
+    print('Backend not available, must be one of: %s' % ', '.join(BACKENDS))
     raise SystemExit
 
-app = SpeechRecognition(rf)
+if not yarp.Network.checkNetwork():
+    print('No YARP network available')
+    raise SystemExit
 
-# enter into a mainloop
-loop = GObject.MainLoop()
-loop.run()
+asrPort = yarp.BufferedPortBottle()
+configPort = yarp.RpcServer()
+
+if not asrPort.open(args.prefix + '/result:o'):
+    print('Unable to open output port')
+    raise SystemExit
+
+if not configPort.open(args.prefix + '/rpc:s'):
+    print('Unable to open RPC port')
+    raise SystemExit
+
+try:
+    q = queue.Queue()
+
+    with sd.RawInputStream(blocksize=8000, #int(2880 / 2), #FIXME: hardcoded for pocketpshinx, vosk used to have 8000 here
+                           device=args.device,
+                           dtype='int16',
+                           channels=1,
+                           callback=lambda indata, frames, time, status: q.put(bytes(indata))) as stream:
+        responder = responder_factory.create(stream)
+        responder.yarp().attachAsServer(configPort)
+
+        while True:
+            frame = q.get()
+            isPartial, transcription = responder.transcribe(frame)
+
+            if transcription:
+                if not isPartial:
+                    print('result: %s' % transcription)
+                    b = asrPort.prepare()
+                    b.clear()
+                    b.addString(transcription)
+                    asrPort.write()
+                else:
+                    print('partial: %s' % transcription)
+except KeyboardInterrupt:
+    asrPort.interrupt()
+    asrPort.close()
+    configPort.interrupt()
+    configPort.close()
+    parser.exit(0)
