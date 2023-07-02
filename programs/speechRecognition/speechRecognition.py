@@ -1,55 +1,38 @@
 #!/usr/bin/env python3
 
-# ##
-# # @ingroup speech-programs
-# # \defgroup speechRecognition speechRecognition.py
-# # @brief Provides basic ASR capabilities.
-# #
-# # @section speechRecognition_legal Legal
-# #
-# # Copyright: 2016-present (c) edits by Santiago Morante, Juan G Victores and Raul de Santos; past-2008 (c) Carnegie Mellon University.
-# #
-# # CopyPolicy: You may modify and redistribute this file under the same terms as the CMU Sphinx system. See
-# # http://cmusphinx.sourceforge.net/html/LICENSE for more information.
-# #
-# # @section speechRecognition_running Running (assuming correct installation)
-# #
-# # First we must run a YARP name server if it is not running in our current namespace:
-# #
-# # \verbatim
-# # [on terminal 1] yarp server
-# # \endverbatim
-# #
-# # Now launch the program:
-# #
-# # \verbatim
-# # [on terminal 2] speechRecognition
-# # \endverbatim
-# #
-# # You can launch a 3rd terminal to read what is published via YARP port:
-# #
-# # \verbatim
-# # [on terminal 3] yarp read ...  /speechRecognition:o
-# # \endverbatim
-# #
-# # or you can send commands to configure the speech recognition app. To know how to do that, use "help":
-# # \verbatim
-# # [on terminal 4] yarp rpc /speechRecognition/rpc:s
-# # [on terminal 4] >>help
-# # \endverbatim
-# #
-# # For instance, you can load the 20k words Spanish dictionary with:
-# # \verbatim
-# # [on terminal 4] >>setDictionary 20k es
-# # \endverbatim
-# #
-# # @section speechRecognition_troubleshooting Troubleshooting
-# #
-# # 1. gst-inspect-1.0 pocketsphinx
-# #
-# # 2. Check operating system sound settings
-# #
-# # 3. Check hardware such as cables, and physical volume controls and on/off switches
+##
+# @ingroup speech-programs
+# @defgroup speechRecognition speechRecognition.py
+# @brief Provides basic ASR capabilities.
+#
+# First we must run a YARP name server if it is not running in our current namespace:
+#
+# \verbatim
+# [on terminal 1] yarp server
+# \endverbatim
+#
+# Now launch the program (use --help for a list of options):
+#
+# @verbatim
+# [on terminal 2] speechRecognition --backend vosk --model es-0.42
+# @endverbatim
+#
+# You can launch a 3rd terminal to read what is published via YARP port:
+#
+# @verbatim
+# [on terminal 3] yarp read ...  /speechRecognition/result:o
+# @endverbatim
+#
+# or you can send commands to configure the speech recognition app. To know how to do that, use "help":
+# @verbatim
+# [on terminal 4] yarp rpc /speechRecognition/rpc:s
+# [on terminal 4] >>help
+# @endverbatim
+#
+# For instance, you can load the 20k words Spanish dictionary for the PocketSphinx backend with:
+# @verbatim
+# [on terminal 4] >>setDictionary 20k es
+# @endverbatim
 
 # borrowed from https://github.com/alphacep/vosk-api/blob/12f29a3/python/example/test_microphone.py
 # and https://github.com/cmusphinx/pocketsphinx/blob/b16c631/examples/live.py
@@ -235,7 +218,7 @@ parser.add_argument('--device', '-d', type=int_or_str, help='input device (numer
 parser.add_argument('--dictionary', type=str, help='(only --backend pocketsphinx) dictionary, e.g. follow-me')
 parser.add_argument('--language', type=str, help='(only --backend pocketsphinx) language, e.g. en-us')
 parser.add_argument('--model', type=str, help='(only --backend vosk) model, e.g. es-0.42')
-parser.add_argument('--port', '-p', type=str, default='/speechRecognition', help='YARP port prefix')
+parser.add_argument('--prefix', '-p', type=str, default='/speechRecognition', help='YARP port prefix')
 parser.add_argument('--context', type=str, default='speechRecognition', help='YARP context directory')
 parser.add_argument('--from', type=str, dest='ini', default='speechRecognition.ini', help='YARP configuration (.ini) file')
 args = parser.parse_args(remaining)
@@ -269,11 +252,11 @@ if not yarp.Network.checkNetwork():
 asrPort = yarp.BufferedPortBottle()
 configPort = yarp.RpcServer()
 
-if not asrPort.open(args.port + '/result:o'):
+if not asrPort.open(args.prefix + '/result:o'):
     print('Unable to open output port')
     raise SystemExit
 
-if not configPort.open(args.port + '/rpc:s'):
+if not configPort.open(args.prefix + '/rpc:s'):
     print('Unable to open RPC port')
     raise SystemExit
 
