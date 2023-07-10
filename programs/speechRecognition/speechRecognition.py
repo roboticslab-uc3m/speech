@@ -45,8 +45,6 @@ import sounddevice as sd
 import yarp
 
 from abc import ABC, abstractmethod
-from pocketsphinx import Endpointer, Decoder
-from vosk import Model, KaldiRecognizer
 
 class ResponderFactory(ABC):
     @abstractmethod
@@ -114,6 +112,7 @@ class PocketSphinxSpeechRecognitionResponder(SpeechRecognitionResponder):
             raise Exception('Unable to load dictionary')
 
     def _setDictionaryInternal(self, dictionary, language):
+        from pocketsphinx import Endpointer, Decoder
         print('Setting dictionary to %s (language: %s)' % (dictionary, language))
 
         lm = self.rf.findFileByName('dictionary/%s-%s.lm' % (dictionary, language))
@@ -160,14 +159,12 @@ class VoskSpeechRecognitionResponder(SpeechRecognitionResponder):
     def __init__(self, stream, device, model):
         super().__init__(stream, device)
 
-        if model is None:
-            self.model = Model(lang='en-us')
-        else:
-            self.model = Model(model_name='vosk-model-' + model)
-
-        self.rec = KaldiRecognizer(self.model, self.sample_rate)
+        if not self._setDictionaryInternal(model, None):
+            raise Exception('Unable to load dictionary')
 
     def _setDictionaryInternal(self, dictionary, language):
+        from vosk import Model, KaldiRecognizer
+
         try:
             if dictionary is not None and str(dictionary):
                 print('Setting dictionary to %s' % dictionary)
@@ -263,7 +260,7 @@ if not configPort.open(args.prefix + '/rpc:s'):
 try:
     q = queue.Queue()
 
-    with sd.RawInputStream(blocksize=8000, #int(2880 / 2), #FIXME: hardcoded for pocketpshinx, vosk used to have 8000 here
+    with sd.RawInputStream(blocksize=int(2880 / 2), # FIXME: hardcoded for pocketpshinx, vosk used to have 8000 here
                            device=args.device,
                            dtype='int16',
                            channels=1,
