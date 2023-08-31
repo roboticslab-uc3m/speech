@@ -2,8 +2,8 @@
 
 // enable polymorphism in Python-derived classes
 %module(directors="1") "roboticslab_speech"
-%feature("director") roboticslab::TextToSpeechIDL;
-%feature("director") roboticslab::SpeechRecognitionIDL;
+%feature("director") roboticslab::SpeechSynthesis;
+%feature("director") roboticslab::SpeechRecognition;
 
 // correctly handle std::int16_t and std::vector<std::string> (in help() method)
 %include "stdint.i"
@@ -21,9 +21,9 @@
 
 %{
 #include "yarp/os/Type.h" // incomplete type due to a forward declaration in PortReader.h
-#include "TextToSpeechIDL.h"
-#include "SpeechRecognitionIDL.h"
+#include "SpeechSynthesis.h"
+#include "SpeechRecognition.h"
 %}
 
-%include "TextToSpeechIDL.h"
-%include "SpeechRecognitionIDL.h"
+%include "SpeechSynthesis.h"
+%include "SpeechRecognition.h"

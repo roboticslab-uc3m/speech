@@ -3,7 +3,7 @@
 #ifndef __ESPEAK_HPP__
 #define __ESPEAK_HPP__
 
-#include "TextToSpeechIDL.h"
+#include "SpeechSynthesis.h"
 
 namespace roboticslab
 {
@@ -16,9 +16,9 @@ namespace roboticslab
 
 /**
  * @ingroup Espeak
- * @brief Implements TextToSpeechIDL.
+ * @brief Implements SpeechSynthesis.
  */
-class Espeak : public TextToSpeechIDL
+class Espeak : public SpeechSynthesis
 {
 public:
 

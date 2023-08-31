@@ -1,6 +1,6 @@
 namespace yarp roboticslab
 
-service TextToSpeechIDL
+service SpeechSynthesis
 {
     /**
      * set the speech langauge
@@ -65,7 +65,7 @@ service TextToSpeechIDL
     bool checkSayDone();
 }
 
-service SpeechRecognitionIDL
+service SpeechRecognition
 {
     /**
      * configure a dictionary

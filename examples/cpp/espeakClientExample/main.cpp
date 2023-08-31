@@ -11,7 +11,7 @@
 #include <yarp/os/RpcClient.h>
 #include <yarp/os/SystemClock.h>
 
-#include <TextToSpeechIDL.h>
+#include <SpeechSynthesis.h>
 
 constexpr auto DEFAULT_REMOTE_PORT = "/tts";
 
@@ -44,7 +44,7 @@ int main(int argc, char * argv[])
         return 1;
     }
 
-    roboticslab::TextToSpeechIDL tts;
+    roboticslab::SpeechSynthesis tts;
     tts.yarp().attachAsClient(client);
 
     yInfo() << "Connected to remote Espeak server";

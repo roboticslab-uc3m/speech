@@ -18,7 +18,7 @@ import roboticslab_speech
 
 PLAY_PROGRAMS = ['paplay', 'play -q', 'aplay -q']
 
-class TextToSpeechResponder(roboticslab_speech.TextToSpeechIDL):
+class TextToSpeechResponder(roboticslab_speech.SpeechSynthesis):
     def __init__(self, engine):
         super().__init__()
         self.engine = engine

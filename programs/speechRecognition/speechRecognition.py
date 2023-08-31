@@ -46,12 +46,12 @@ import yarp
 
 from abc import ABC, abstractmethod
 
-class ResponderFactory(ABC):
+class TranscriberFactory(ABC):
     @abstractmethod
     def create(self, stream):
         pass
 
-class PocketSphinxResponderFactory(ResponderFactory):
+class PocketSphinxTranscriberFactory(TranscriberFactory):
     def __init__(self, device, dictionary, language, rf):
         self.device = device
         self.dictionary = dictionary
@@ -59,17 +59,17 @@ class PocketSphinxResponderFactory(ResponderFactory):
         self.rf = rf
 
     def create(self, stream):
-        return PocketSphinxSpeechRecognitionResponder(stream, self.device, self.dictionary, self.language, self.rf)
+        return PocketSphinxSpeechRecognitionTranscriber(stream, self.device, self.dictionary, self.language, self.rf)
 
-class VoskResponderFactory(ResponderFactory):
+class VoskTranscriberFactory(TranscriberFactory):
     def __init__(self, device, model):
         self.device = device
         self.model = model
 
     def create(self, stream):
-        return VoskSpeechRecognitionResponder(stream, self.device, self.model)
+        return VoskSpeechRecognitionTranscriber(stream, self.device, self.model)
 
-class SpeechRecognitionResponder(roboticslab_speech.SpeechRecognitionIDL):
+class SpeechRecognitionTranscriber(roboticslab_speech.SpeechRecognition):
     def __init__(self, stream, device):
         super().__init__()
         self.stream = stream
@@ -103,7 +103,7 @@ class SpeechRecognitionResponder(roboticslab_speech.SpeechRecognitionIDL):
     def transcribe(self, frame):
         pass
 
-class PocketSphinxSpeechRecognitionResponder(SpeechRecognitionResponder):
+class PocketSphinxSpeechRecognitionTranscriber(SpeechRecognitionTranscriber):
     def __init__(self, stream, device, dictionary, language, rf):
         super().__init__(stream, device)
         self.rf = rf
@@ -155,7 +155,7 @@ class PocketSphinxSpeechRecognitionResponder(SpeechRecognitionResponder):
                 return True, hyp.hypstr
         return False, None
 
-class VoskSpeechRecognitionResponder(SpeechRecognitionResponder):
+class VoskSpeechRecognitionTranscriber(SpeechRecognitionTranscriber):
     def __init__(self, stream, device, model):
         super().__init__(stream, device)
 
@@ -231,13 +231,13 @@ if args.backend == 'pocketsphinx':
         print('Dictionary and language must be specified for PocketSphinx')
         raise SystemExit
 
-    responder_factory = PocketSphinxResponderFactory(args.device, args.dictionary, args.language, rf)
+    transcriber_factory = PocketSphinxTranscriberFactory(args.device, args.dictionary, args.language, rf)
 elif args.backend == 'vosk':
     if args.model is None:
         print('Model must be specified for Vosk')
         raise SystemExit
 
-    responder_factory = VoskResponderFactory(args.device, args.model)
+    transcriber_factory = VoskTranscriberFactory(args.device, args.model)
 else:
     print('Backend not available, must be one of: %s' % ', '.join(BACKENDS))
     raise SystemExit
@@ -265,12 +265,12 @@ try:
                            dtype='int16',
                            channels=1,
                            callback=lambda indata, frames, time, status: q.put(bytes(indata))) as stream:
-        responder = responder_factory.create(stream)
-        responder.yarp().attachAsServer(configPort)
+        transcriber = transcriber_factory.create(stream)
+        transcriber.yarp().attachAsServer(configPort)
 
         while True:
             frame = q.get()
-            isPartial, transcription = responder.transcribe(frame)
+            isPartial, transcription = transcriber.transcribe(frame)
 
             if transcription:
                 if not isPartial:

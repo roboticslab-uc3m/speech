@@ -25,7 +25,7 @@ if not yarp.Network.connect(client.getName(), args.remote + '/rpc:s'):
     print('Unable to connect to remote server port %s' % args.remote)
     raise SystemExit
 
-tts = speech.TextToSpeechIDL()
+tts = speech.SpeechSynthesis()
 tts.yarp().attachAsClient(client)
 
 tts.setLanguage('mb-en1')
