@@ -218,7 +218,7 @@ parser.add_argument('--device', '-d', type=int_or_str, help='input device (numer
 parser.add_argument('--dictionary', type=str, help='(only --backend pocketsphinx) dictionary, e.g. follow-me')
 parser.add_argument('--language', type=str, help='(only --backend pocketsphinx) language, e.g. en-us')
 parser.add_argument('--model', type=str, help='(only --backend vosk) model, e.g. es-0.42')
-parser.add_argument('--prefix', '-p', type=str, default='/speechRecognition', help='YARP port prefix')
+parser.add_argument('--port', '-p', type=str, default='/speechRecognition', help='YARP port prefix')
 parser.add_argument('--context', type=str, default='speechRecognition', help='YARP context directory')
 parser.add_argument('--from', type=str, dest='ini', default='speechRecognition.ini', help='YARP configuration (.ini) file')
 args = parser.parse_args(remaining)
@@ -252,11 +252,11 @@ if not yarp.Network.checkNetwork():
 asrPort = yarp.BufferedPortBottle()
 configPort = yarp.RpcServer()
 
-if not asrPort.open(args.prefix + '/result:o'):
+if not asrPort.open(args.port + '/result:o'):
     print('Unable to open output port')
     raise SystemExit
 
-if not configPort.open(args.prefix + '/rpc:s'):
+if not configPort.open(args.port + '/rpc:s'):
     print('Unable to open RPC port')
     raise SystemExit
 

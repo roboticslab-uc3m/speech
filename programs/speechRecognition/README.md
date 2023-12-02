@@ -12,7 +12,7 @@ Depending on the selected backend, additional dependencies might be required (se
 
 Launch the program with `--help` to see available options. You can display and select the preferred input device with `--list-devices` and `--device`, respectively (otherwise the system default will be chosen).
 
-This application opens two YARP ports: an `<prefix>/rpc:s` port that allows to request a dictionary/model change and to mute/unmute the microphone, and a `<prefix>/result:o` port that broadcasts the transcribed text. The default prefix is `/speechRecognition`, but it can be changed with the `--prefix` option.
+This application opens two YARP ports: an `<prefix>/rpc:s` port that allows to request a dictionary/model change and to mute/unmute the microphone, and a `<prefix>/result:o` port that broadcasts the transcribed text. The default prefix is `/speechRecognition`, but it can be changed with the `--port` option.
 
 ## PocketSphinx backend
 
