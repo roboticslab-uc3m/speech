@@ -4,3 +4,4 @@ yarp_install(FILES applications/ymanager.ini
              DESTINATION ${ROBOTICSLAB-SPEECH_APPLICATIONS_INSTALL_DIR})
 
 add_subdirectory(speechRecognition)
+add_subdirectory(speechSynthesis)
