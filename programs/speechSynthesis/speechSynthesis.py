@@ -1,181 +1,231 @@
 #!/usr/bin/env python3
 
-# adapted from https://github.com/MycroftAI/mimic3/blob/be72c18/mimic3_tts/__main__.py
-
 import argparse
-import queue
-import signal
-import shlex
-import shutil
-import subprocess
-import tempfile
-import threading
-import time
-
-import mimic3_tts
-import yarp
 import roboticslab_speech
+import sounddevice as sd
+import yarp
 
-PLAY_PROGRAMS = ['paplay', 'play -q', 'aplay -q']
+from abc import ABC, abstractmethod
 
-class TextToSpeechResponder(roboticslab_speech.SpeechSynthesis):
-    def __init__(self, engine):
+class SynthesizerFactory(ABC):
+    @abstractmethod
+    def create(self, player):
+        pass
+
+class PiperSynthesizerFactory(SynthesizerFactory):
+    def __init__(self, model, use_cuda, rf):
+        self.model = model
+        self.use_cuda = use_cuda
+        self.rf = rf
+
+    def create(self, player):
+        return PiperSynthesizer(player, self.model, self.use_cuda, self.rf)
+
+class SpeechSynthesizer(roboticslab_speech.SpeechSynthesis):
+    def __init__(self, player):
         super().__init__()
-        self.engine = engine
-        self.is_playing = False
-        self.p = None
-        self.result_queue = queue.Queue(maxsize=5)
-        self.result_thread = threading.Thread(target=self._process_result, daemon=True)
-        self.result_thread.start()
+        self._player = player
 
-    def setLanguage(self, language):
-        if language.startswith('#'):
-            # same voice, different speaker
-            self.engine.speaker = language[1:]
-        else:
-            # different voice
-            self.engine.voice = language
+    def say(self, text):
+        print('saying: %s' % text)
+        self._player.set_generator(self._get_generator(text))
+        return True
 
-        if self.engine.voice not in list(self.getSupportedLangs()):
-            print('Voice not available: %s' % self.engine.voice)
-            return False
-        else:
-            self.engine.preload_voice(self.engine.voice)
-            print('Loaded voice: %s (speaker: %s)' % (self.engine.voice, self.engine.speaker or 'default'))
-            return True
+    def play(self):
+        self._player.resume()
+        print('resumed')
+        return True
+
+    def pause(self):
+        self._player.pause()
+        print('paused')
+        return True
+
+    def stop(self):
+        self._player.clear_generator()
+        print('stopped')
+        return True
+
+    def checkSayDone(self):
+        return not self._player.is_playing()
 
     def setSpeed(self, speed):
-        self.engine.rate = float(speed) / 100
-        return True
+        return super().setSpeed(speed)
 
     def setPitch(self, pitch):
         return super().setPitch(pitch)
 
     def getSpeed(self):
-        return int(self.engine.rate * 100)
+        return super().getSpeed()
 
     def getPitch(self):
         return super().getPitch()
 
+    @abstractmethod
+    def get_sample_rate(self):
+        pass
+
+    @abstractmethod
+    def _get_generator(self, text):
+        pass
+
+class PiperSynthesizer(SpeechSynthesizer):
+    def __init__(self, player, model, use_cuda, rf):
+        super().__init__(player)
+        self._rf = rf
+        self._use_cuda = use_cuda
+        self._voice = self._load_model(model)
+
+    def _load_model(self, model):
+        from piper import PiperVoice
+
+        if not model.endswith('.onnx'):
+            model += '.onnx'
+
+        path = rf.findFileByName(model)
+        return PiperVoice.load(path, use_cuda=self._use_cuda)
+
+    def get_sample_rate(self):
+        return self._voice.config.sample_rate
+
+    def _get_generator(self, text):
+        return self._voice.synthesize_stream_raw(text)
+
+    def setLanguage(self, language):
+        try:
+            self._voice = self._load_model(language)
+            print('switched language to %s' % language)
+            return True
+        except IOError as e:
+            print(e)
+            return False
+
     def getSupportedLangs(self):
-        all_voices = sorted(list(self.engine.get_voices()), key=lambda v: v.key)
-        local_voices = filter(lambda v: not v.location.startswith('http'), all_voices)
-        available_voices = [v.key for v in local_voices]
-        return yarp.SVector(available_voices)
+        from pathlib import Path
+        path = Path(self._rf.findFile('from'))
+        return yarp.SVector([f.stem for f in path.parent.iterdir() if f.is_file() and f.name.endswith('.onnx')])
 
-    def say(self, text):
-        self.engine.begin_utterance()
-        self.engine.speak_text(text)
+def int_or_str(text):
+    """Helper function for argument parsing."""
+    try:
+        return int(text)
+    except ValueError:
+        return text
 
-        for result in self.engine.end_utterance():
-            self.result_queue.put(result)
+BACKENDS = ['piper']
 
-        return True
+parser = argparse.ArgumentParser(description='YARP service that transforms text into live audio output', add_help=False)
+parser.add_argument('--list-devices', action='store_true', help='list available audio devices and exit')
+parser.add_argument('--list-backends', action='store_true', help='list available TTS backends and exit')
+args, remaining = parser.parse_known_args()
 
-    def play(self):
-        return super().play()
+if args.list_devices:
+    print(sd.query_devices())
+    raise SystemExit
+elif args.list_backends:
+    print('\n'.join(BACKENDS))
+    raise SystemExit
 
-    def pause(self):
-        return super().pause()
-
-    def stop(self):
-        if self.p:
-            self.p.terminate()
-
-        return True
-
-    def checkSayDone(self):
-        return not self.is_playing
-
-    def _process_result(self):
-        while True:
-            result = self.result_queue.get()
-
-            if result is None:
-                break
-
-            wav_bytes = result.to_wav_bytes()
-
-            if not wav_bytes:
-                continue
-
-            with tempfile.NamedTemporaryFile(mode='wb+', suffix='.wav') as wav_file:
-                wav_file.write(wav_bytes)
-                wav_file.seek(0)
-
-                for play_program in reversed(PLAY_PROGRAMS):
-                    play_cmd = shlex.split(play_program)
-
-                    if not shutil.which(play_cmd[0]):
-                        continue
-
-                    play_cmd.append(wav_file.name)
-                    self.is_playing = True
-
-                    with subprocess.Popen(play_cmd) as self.p:
-                        try:
-                            self.p.wait()
-                        except: # e.g. on keyboard interrupt
-                            self.p.kill()
-
-                    self.is_playing = False
-                    break
-
-parser = argparse.ArgumentParser(prog='speechSynthesis', description='TTS service running a Mimic 3 engine')
-parser.add_argument('--voice', '-v', help='Name of voice (expected in <voices-dir>/<language>)', required=True)
-parser.add_argument('--speaker', '-s', help='Name or number of speaker (default: first speaker)')
-parser.add_argument('--noise-scale', type=float, help='Noise scale [0-1], default is 0.667')
-parser.add_argument('--length-scale', type=float, help='Length scale (1.0 is default speed, 0.5 is 2x faster)')
-parser.add_argument('--noise-w', type=float, help='Variation in cadence [0-1], default is 0.8')
-parser.add_argument('--cuda', action='store_true', help='Use Onnx CUDA execution provider (requires onnxruntime-gpu)')
-parser.add_argument('--port', '-p', default='/speechSynthesis', help='YARP port prefix')
-
-args = parser.parse_args()
-
-tts = mimic3_tts.Mimic3TextToSpeechSystem(
-    mimic3_tts.Mimic3Settings(
-        length_scale=args.length_scale,
-        noise_scale=args.noise_scale,
-        noise_w=args.noise_w,
-        use_cuda=args.cuda,
-    )
-)
-
-tts.voice = args.voice
-tts.speaker = args.speaker
-
-print('Preloading voice: %s' % args.voice)
-tts.preload_voice(args.voice)
+parser = argparse.ArgumentParser(description=parser.description, formatter_class=argparse.ArgumentDefaultsHelpFormatter, parents=[parser])
+parser.add_argument('--backend', '-b', type=str, required=True, help='ASR backend engine')
+parser.add_argument('--device', '-d', type=int_or_str, help='input device (numeric ID or substring)')
+parser.add_argument('--model', type=str, required=True, help='model, e.g. es_ES-davefx-medium')
+parser.add_argument('--cuda', action='store_true', help='use ONNX CUDA execution provider (requires onnxruntime-gpu)')
+parser.add_argument('--prefix', '-p', type=str, default='/speechSynthesis', help='YARP port prefix')
+parser.add_argument('--context', type=str, default='speechSynthesis', help='YARP context directory')
+parser.add_argument('--from', type=str, dest='ini', default='speechSynthesis.ini', help='YARP configuration (.ini) file')
+args = parser.parse_args(remaining)
 
 yarp.Network.init()
 
+rf = yarp.ResourceFinder()
+rf.setDefaultContext(args.context)
+rf.setDefaultConfigFile(args.ini)
+
+if args.backend == 'piper':
+    synthesizer_factory = PiperSynthesizerFactory(args.model, args.cuda, rf)
+else:
+    print('Backend not available, must be one of: %s' % ', '.join(BACKENDS))
+    raise SystemExit
+
 if not yarp.Network.checkNetwork():
-    print('YARP network not found')
+    print('No YARP network available')
     raise SystemExit
 
 rpc = yarp.RpcServer()
-processor = TextToSpeechResponder(tts)
 
-if not rpc.open(args.port + '/rpc:s'):
-    print('Cannot open port %s' % rpc.getName())
+if not rpc.open(args.prefix + '/rpc:s'):
+    print('Unable to open RPC port')
     raise SystemExit
 
-processor.yarp().attachAsServer(rpc)
+class CallbackPlayer:
+    def __init__(self):
+        self._generator = None
+        self._queued_generator = None
+        self._is_paused = False
 
-quitRequested = False
+    def set_generator(self, generator):
+        self._generator = generator
+        self._queued_generator = None
+        self._is_paused = False
 
-def askToStop():
-    global quitRequested
-    quitRequested = True
+    def clear_generator(self):
+        self._generator = None
+        self._queued_generator = None
+        self._is_paused = False
 
-signal.signal(signal.SIGINT, lambda signal, frame: askToStop())
-signal.signal(signal.SIGTERM, lambda signal, frame: askToStop())
+    def pause(self):
+        self._is_paused = True
 
-while not quitRequested:
-    time.sleep(0.1)
+    def resume(self):
+        self._is_paused = False
 
-rpc.interrupt()
-rpc.close()
+    def is_playing(self):
+        return self._generator is not None and not self._is_paused
 
-processor.result_queue.put(None)
-processor.result_thread.join()
+    def callback(self, outdata, frames, time, status):
+        # https://stackoverflow.com/a/62609827
+
+        if self.is_playing():
+            try:
+                raw = next(self._generator)
+
+                if len(outdata) > len(raw):
+                    outdata[:len(raw)] = raw
+                    outdata[len(raw):] = b'\x00' * (len(outdata) - len(raw))
+                elif len(outdata) < len(raw):
+                    outdata[:] = raw[:len(outdata)]
+                    self._queued_generator = self._generator
+                    self._generator = iter([raw[len(outdata):]])
+                else:
+                    outdata[:] = raw
+
+                return
+            except StopIteration:
+                if self._queued_generator is not None:
+                    self._generator = self._queued_generator
+                    self._queued_generator = None
+                else:
+                    self.clear_generator()
+
+        outdata[:] = b'\x00' * len(outdata)
+
+try:
+    player = CallbackPlayer()
+    synthesizer = synthesizer_factory.create(player)
+
+    with sd.RawOutputStream(samplerate=synthesizer.get_sample_rate(),
+                            blocksize=1024,
+                            device=args.device,
+                            dtype='int16',
+                            channels=1,
+                            callback=player.callback) as stream:
+        synthesizer.yarp().attachAsServer(rpc)
+
+        while True:
+            import time
+            time.sleep(0.1)
+except KeyboardInterrupt:
+    rpc.interrupt()
+    rpc.close()
+    parser.exit(0)
