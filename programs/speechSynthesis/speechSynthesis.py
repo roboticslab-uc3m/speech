@@ -161,18 +161,18 @@ if not rpc.open(args.prefix + '/rpc:s'):
 class CallbackPlayer:
     def __init__(self):
         self._generator = None
-        self._queued_generator = None
         self._is_paused = False
+        self._buffer = bytearray()
 
     def set_generator(self, generator):
         self._generator = generator
-        self._queued_generator = None
         self._is_paused = False
+        self._buffer.clear()
 
     def clear_generator(self):
         self._generator = None
-        self._queued_generator = None
         self._is_paused = False
+        self._buffer.clear()
 
     def pause(self):
         self._is_paused = True
@@ -188,25 +188,21 @@ class CallbackPlayer:
 
         if self.is_playing():
             try:
-                raw = next(self._generator)
+                if len(self._buffer) == 0:
+                    self._buffer = bytearray(next(self._generator))
 
-                if len(outdata) > len(raw):
-                    outdata[:len(raw)] = raw
-                    outdata[len(raw):] = b'\x00' * (len(outdata) - len(raw))
-                elif len(outdata) < len(raw):
-                    outdata[:] = raw[:len(outdata)]
-                    self._queued_generator = self._generator
-                    self._generator = iter([raw[len(outdata):]])
+                if len(outdata) >= len(self._buffer):
+                    outdata[:len(self._buffer)] = self._buffer
+                    outdata[len(self._buffer):] = b'\x00' * (len(outdata) - len(self._buffer))
+                    self._buffer.clear()
                 else:
-                    outdata[:] = raw
+                    # print('len(outdata) < len(raw)')
+                    outdata[:] = self._buffer[:len(outdata)]
+                    self._buffer = self._buffer[len(outdata):]
 
                 return
             except StopIteration:
-                if self._queued_generator is not None:
-                    self._generator = self._queued_generator
-                    self._queued_generator = None
-                else:
-                    self.clear_generator()
+                self.clear_generator()
 
         outdata[:] = b'\x00' * len(outdata)
 
