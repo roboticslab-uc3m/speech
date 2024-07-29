@@ -36,9 +36,7 @@ To see how other programs call to `speechRecognition` and  `Espeak` and configur
 
 ## Status
 
-[![CI (Linux)](https://github.com/roboticslab-uc3m/speech/workflows/Continuous%20Integration/badge.svg)](https://github.com/roboticslab-uc3m/speech/actions)
-
-[![Coverage Status](https://coveralls.io/repos/roboticslab-uc3m/speech/badge.svg)](https://coveralls.io/r/roboticslab-uc3m/speech)
+[![Continuous Integration](https://github.com/roboticslab-uc3m/speech/actions/workflows/ci.yml/badge.svg)](https://github.com/roboticslab-uc3m/speech/actions/workflows/ci.yml)
 
 [![Issues](https://img.shields.io/github/issues/roboticslab-uc3m/speech.svg?label=Issues)](https://github.com/roboticslab-uc3m/speech/issues)
 
