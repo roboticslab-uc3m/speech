@@ -9,7 +9,7 @@
 #include <yarp/os/LogStream.h>
 #include <yarp/os/Value.h>
 
-#include <speak_lib.h>
+#include <espeak/speak_lib.h>
 
 using namespace roboticslab;
 

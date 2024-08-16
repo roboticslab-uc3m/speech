@@ -10,10 +10,7 @@
 #
 # Espeak::Espeak      - Espeak library (old API)
 
-find_path(ESPEAK_INCLUDE_DIR NAMES speak_lib.h
-                             HINTS ENV ESPEAK_DIR
-                             PATH_SUFFIXES espeak)
-
+find_path(ESPEAK_INCLUDE_DIR NAMES speak_lib.h)
 find_library(ESPEAK_LIBRARY NAMES espeak libespeak)
 
 include(FindPackageHandleStandardArgs)
