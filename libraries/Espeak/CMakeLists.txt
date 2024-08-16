@@ -14,11 +14,10 @@ if(ENABLE_Espeak)
 
     target_link_libraries(Espeak PUBLIC ROBOTICSLAB::SpeechIDL
                                  PRIVATE YARP::YARP_os
-                                         ${ESPEAK_LIBRARIES})
+                                         Espeak::Espeak)
 
     target_include_directories(Espeak PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-                                             $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
-                                      PRIVATE ${ESPEAK_INCLUDE_DIRS})
+                                             $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 
     install(TARGETS Espeak
             EXPORT ROBOTICSLAB_SPEECH)
