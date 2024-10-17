@@ -72,7 +72,7 @@ jobs:
         path: .deps/swig
 
     - name: Install dependencies via apt
-      run: sudo apt-get install -qq ccache libespeak-dev mbrola-en1 googletest pulseaudio
+      run: sudo apt-get update && sudo apt-get install -qq ccache libespeak-dev mbrola-en1 googletest pulseaudio
 
     - name: Set up CMake
       uses: jwlawson/actions-setup-cmake@v2
