@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.16..3.28)
+cmake_minimum_required(VERSION 3.19..3.28)
 
 project(ROBOTICSLAB_SPEECH LANGUAGES CXX)
 
@@ -27,8 +27,8 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/find-modules)
 
 # Hard dependencies.
 find_package(YCM 0.11 REQUIRED)
-find_package(YARP 3.8 REQUIRED COMPONENTS os dev
-                               OPTIONAL_COMPONENTS idl_tools)
+find_package(YARP 3.10 REQUIRED COMPONENTS os dev
+                                OPTIONAL_COMPONENTS idl_tools)
 
 # Soft dependencies.
 find_package(Espeak QUIET)

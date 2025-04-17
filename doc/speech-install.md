@@ -2,9 +2,9 @@
 
 ## Install the Software dependencies
 
-- [Install CMake 3.16+](https://github.com/roboticslab-uc3m/installation-guides/blob/master/docs/install-cmake.md)
+- [Install CMake 3.19+](https://github.com/roboticslab-uc3m/installation-guides/blob/master/docs/install-cmake.md)
 - [Install YCM 0.11+](https://github.com/roboticslab-uc3m/installation-guides/blob/master/docs/install-ycm.md)
-- [Install YARP 3.8+](https://github.com/roboticslab-uc3m/installation-guides/blob/master/docs/install-yarp.md)
+- [Install YARP 3.10+](https://github.com/roboticslab-uc3m/installation-guides/blob/master/docs/install-yarp.md)
 with [Python bindings](https://github.com/roboticslab-uc3m/installation-guides/blob/master/docs/install-yarp.md#install-python-bindings), the latter for `speechRecognition.py` (ASR)
 - [Install eSpeak with MBROLA Voices](https://github.com/roboticslab-uc3m/installation-guides/blob/master/docs/install-espeak-mbrola.md) of `Espeak` (TTS)
 
@@ -21,13 +21,7 @@ make -j$(nproc) # Compile
 sudo make install  # Install :-)
 ```
 
-You may want to (from the same build dir):
-
-```bash
-echo "export ROBOTICSLAB_SPEECH_DIR=`pwd`" >> ~/.bashrc
-```
-
-For additional SPEECH options use `ccmake` instead of `cmake`.
+For additional options, use `ccmake` instead of `cmake`.
 
 ## Troubleshooting selecting default soundcard
 
@@ -49,7 +43,7 @@ This is a way set default sound output card using PulseAudio (not ALSA).
 
 2. Set defaults (you can add these lines in the `~/.profile` file to save this configuration by default):
 
-```bash
-pactl set-default-source alsa_output.usb-C-Media_Electronics_Inc._USB_PnP_Sound_Device-00.analog-stereo.monitor
-pactl set-default-sink alsa_output.usb-C-Media_Electronics_Inc._USB_PnP_Sound_Device-00.analog-stereo
-```
+   ```bash
+   pactl set-default-source alsa_output.usb-C-Media_Electronics_Inc._USB_PnP_Sound_Device-00.analog-stereo.monitor
+   pactl set-default-sink alsa_output.usb-C-Media_Electronics_Inc._USB_PnP_Sound_Device-00.analog-stereo
+   ```
