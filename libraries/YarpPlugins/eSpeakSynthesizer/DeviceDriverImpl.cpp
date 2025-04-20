@@ -27,13 +27,11 @@ bool eSpeakSynthesizer::open(yarp::os::Searchable & config)
     const auto * version = espeak_Info(nullptr);
     yCInfo(ESS) << "eSpeak version:" << version;
 
-    if ((sampleRate = espeak_Initialize(AUDIO_OUTPUT_SYNCHRONOUS, m_bufLength, nullptr, 0)) == EE_INTERNAL_ERROR)
+    if (espeak_Initialize(AUDIO_OUTPUT_SYNCHRONOUS, m_bufLength, nullptr, 0) == EE_INTERNAL_ERROR)
     {
         yCError(ESS) << "espeak_Initialize() failed";
         return false;
     }
-
-    yCInfo(ESS) << "Sample rate:" << sampleRate << "Hz";
 
     if (!m_voice.empty() && !setVoice(m_voice))
     {

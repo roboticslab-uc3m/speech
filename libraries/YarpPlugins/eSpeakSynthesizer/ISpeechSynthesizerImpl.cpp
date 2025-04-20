@@ -267,7 +267,8 @@ bool eSpeakSynthesizer::synthesize(const std::string & text, yarp::sig::Sound & 
 {
     yCInfo(ESS) << "Synthesizing:" << text;
 
-    sound.setFrequency(sampleRate);
+    // espeak_Initialize() returs 22050 Hz, but it's misleading
+    sound.setFrequency(16000);
 
     auto callback = [&sound](short * wav, int numSamples, espeak_EVENT * events)
     {

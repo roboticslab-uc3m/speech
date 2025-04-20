@@ -55,7 +55,6 @@ public:
 
 private:
     bool isVoiceSet {false};
-    int sampleRate {0};
 };
 
 #endif // __ESPEAK_SYNTHESIZER_HPP__
