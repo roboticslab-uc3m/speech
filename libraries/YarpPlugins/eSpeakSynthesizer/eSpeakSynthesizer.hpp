@@ -8,6 +8,8 @@
 #include <yarp/dev/DeviceDriver.h>
 #include <yarp/dev/ISpeechSynthesizer.h>
 
+#include "eSpeakSynthesizer_ParamsParser.h"
+
 /**
  * @ingroup YarpPlugins
  * @defgroup eSpeakSynthesizer
@@ -20,7 +22,8 @@
  * @brief The eSpeakSynthesizer class implements ISpeechSynthesizer.
  */
 class eSpeakSynthesizer : public yarp::dev::DeviceDriver,
-                          public yarp::dev::ISpeechSynthesizer
+                          public yarp::dev::ISpeechSynthesizer,
+                          public eSpeakSynthesizer_ParamsParser
 {
 public:
     // -- ISpeechSynthesizer declarations. Implementation in ISpeechSynthesizerImpl.cpp --
@@ -49,6 +52,9 @@ public:
     // -------- DeviceDriver declarations. Implementation in DeviceDriverImpl.cpp --------
     bool open(yarp::os::Searchable & config) override;
     bool close() override;
+
+private:
+    bool isVoiceSet {false};
 };
 
 #endif // __ESPEAK_SYNTHESIZER_HPP__

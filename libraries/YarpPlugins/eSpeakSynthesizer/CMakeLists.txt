@@ -8,7 +8,8 @@ yarp_prepare_plugin(eSpeakSynthesizer
                     INCLUDE eSpeakSynthesizer.hpp
                     DEFAULT ON
                     DEPENDS Espeak_FOUND
-                    EXTRA_CONFIG WRAPPER=speechSynthesizer_nws_yarp)
+                    EXTRA_CONFIG WRAPPER=speechSynthesizer_nws_yarp
+                    GENERATE_PARSER)
 
 if(NOT SKIP_eSpeakSynthesizer)
 
@@ -17,6 +18,8 @@ if(NOT SKIP_eSpeakSynthesizer)
     target_sources(eSpeakSynthesizer PRIVATE eSpeakSynthesizer.hpp
                                              DeviceDriverImpl.cpp
                                              ISpeechSynthesizerImpl.cpp
+                                             eSpeakSynthesizer_ParamsParser.h
+                                             eSpeakSynthesizer_ParamsParser.cpp
                                              LogComponent.hpp
                                              LogComponent.cpp)
 

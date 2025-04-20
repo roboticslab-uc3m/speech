@@ -47,13 +47,25 @@ bool eSpeakSynthesizer::setLanguage(const std::string & language)
     yCInfo(ESS) << "Setting language to:" << language;
     espeak_VOICE voice_spec = {};
     voice_spec.languages = language.c_str();
+
+    if (espeak_SetVoiceByProperties(&voice_spec) == EE_OK)
+    {
+        isVoiceSet = true;
 #if YARP_VERSION_COMPARE(>=, 3, 11, 0)
-    return espeak_SetVoiceByProperties(&voice_spec) == EE_OK
-        ? yarp::dev::ReturnValue::return_code::return_value_ok
-        : yarp::dev::ReturnValue::return_code::return_value_error_generic;
+        return yarp::dev::ReturnValue::return_code::return_value_ok;
 #else
-    return espeak_SetVoiceByProperties(&voice_spec) == EE_OK;
+        return true;
 #endif
+    }
+    else
+    {
+        yCError(ESS) << "Failed to set language:" << language;
+#if YARP_VERSION_COMPARE(>=, 3, 11, 0)
+        return yarp::dev::ReturnValue::return_code::return_value_error_generic;
+#else
+        return false;
+#endif
+    }
 }
 
 // -----------------------------------------------------------------------------
@@ -64,13 +76,25 @@ yarp::dev::ReturnValue eSpeakSynthesizer::getLanguage(std::string & language)
 bool eSpeakSynthesizer::getLanguage(std::string & language)
 #endif
 {
-    const auto * voice = espeak_GetCurrentVoice();
-    language = voice->languages;
+    if (isVoiceSet)
+    {
+        const auto * voice = espeak_GetCurrentVoice();
+        language = voice->languages;
 #if YARP_VERSION_COMPARE(>=, 3, 11, 0)
     return yarp::dev::ReturnValue::return_code::return_value_ok;
 #else
     return true;
 #endif
+    }
+    else
+    {
+        yCError(ESS) << "No voice set";
+#if YARP_VERSION_COMPARE(>=, 3, 11, 0)
+        return yarp::dev::ReturnValue::return_code::return_value_error_not_ready;
+#else
+        return false;
+#endif
+    }
 }
 
 // -----------------------------------------------------------------------------
@@ -82,13 +106,25 @@ bool eSpeakSynthesizer::setVoice(const std::string & voice_name)
 #endif
 {
     yCInfo(ESS) << "Setting voice to:" << voice_name;
+
+    if (espeak_SetVoiceByName(voice_name.c_str()) == EE_OK)
+    {
+        isVoiceSet = true;
 #if YARP_VERSION_COMPARE(>=, 3, 11, 0)
-    return espeak_SetVoiceByName(voice_name.c_str()) == EE_OK
-        ? yarp::dev::ReturnValue::return_code::return_value_ok
-        : yarp::dev::ReturnValue::return_code::return_value_error_generic;
+        return yarp::dev::ReturnValue::return_code::return_value_ok;
 #else
-    return espeak_SetVoiceByName(voice_name.c_str()) == EE_OK;
+        return true;
 #endif
+    }
+    else
+    {
+        yCError(ESS) << "Failed to set voice:" << voice_name;
+#if YARP_VERSION_COMPARE(>=, 3, 11, 0)
+        return yarp::dev::ReturnValue::return_code::return_value_error_generic;
+#else
+        return false;
+#endif
+    }
 }
 
 // -----------------------------------------------------------------------------
@@ -99,13 +135,25 @@ yarp::dev::ReturnValue eSpeakSynthesizer::getVoice(std::string & voice_name)
 bool eSpeakSynthesizer::getVoice(std::string & voice_name)
 #endif
 {
-    const auto * voice = espeak_GetCurrentVoice();
-    voice_name = voice->name;
+    if (isVoiceSet)
+    {
+        const auto * voice = espeak_GetCurrentVoice();
+        voice_name = voice->name;
 #if YARP_VERSION_COMPARE(>=, 3, 11, 0)
     return yarp::dev::ReturnValue::return_code::return_value_ok;
 #else
     return true;
 #endif
+    }
+    else
+    {
+        yCError(ESS) << "No voice set";
+#if YARP_VERSION_COMPARE(>=, 3, 11, 0)
+        return yarp::dev::ReturnValue::return_code::return_value_error_not_ready;
+#else
+        return false;
+#endif
+    }
 }
 
 // -----------------------------------------------------------------------------

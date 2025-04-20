@@ -12,14 +12,32 @@
 
 bool eSpeakSynthesizer::open(yarp::os::Searchable & config)
 {
+    if (!parseParams(config))
+    {
+        yCError(ESS) << "Failed to parse parameters";
+        return false;
+    }
+
+    const auto * version = espeak_Info(nullptr);
+    yCInfo(ESS) << "eSpeak version:" << version;
+
     espeak_AUDIO_OUTPUT output = AUDIO_OUTPUT_PLAYBACK;
     int buflength = 500;
     char * path = nullptr;
     int options = 0;
 
-    if (espeak_Initialize(output, buflength, path, options) == EE_INTERNAL_ERROR)
+    auto ret = espeak_Initialize(output, buflength, path, options);
+
+    if (ret == EE_INTERNAL_ERROR)
     {
         yCError(ESS) << "espeak_Initialize() failed";
+        return false;
+    }
+
+    yCInfo(ESS) << "Sample rate:" << ret << "Hz";
+
+    if (!m_voice.empty() && !setVoice(m_voice))
+    {
         return false;
     }
 
