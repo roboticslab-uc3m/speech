@@ -8,7 +8,7 @@
 // This is an automatically generated file. Please do not edit it.
 // It will be re-generated if the cmake flag ALLOW_DEVICE_PARAM_PARSER_GERNERATION is ON.
 
-// Generated on: Sun Apr 20 19:21:57 2025
+// Generated on: Sun Apr 20 21:17:42 2025
 
 
 #ifndef ESPEAKSYNTHESIZER_PARAMSPARSER_H
@@ -23,13 +23,14 @@
 * This class is the parameters parser for class eSpeakSynthesizer.
 *
 * These are the used parameters:
-* | Group name | Parameter name | Type   | Units | Default Value | Required | Description      | Notes |
-* |:----------:|:--------------:|:------:|:-----:|:-------------:|:--------:|:----------------:|:-----:|
-* | -          | voice          | string | -     | -             | 0        | voice identifier | -     |
+* | Group name | Parameter name | Type   | Units | Default Value | Required | Description             | Notes    |
+* |:----------:|:--------------:|:------:|:-----:|:-------------:|:--------:|:-----------------------:|:--------:|
+* | -          | voice          | string | -     | -             | 0        | voice identifier        | -        |
+* | -          | bufLength      | int    | ms    | 0             | 0        | length of sound buffers | 0: 60 ms |
 *
 * The device can be launched by yarpdev using one of the following examples (with and without all optional parameters):
 * \code{.unparsed}
-* yarpdev --device eSpeakSynthesizer --voice <optional_value>
+* yarpdev --device eSpeakSynthesizer --voice <optional_value> --bufLength 0
 * \endcode
 *
 * \code{.unparsed}
@@ -56,8 +57,10 @@ public:
     const parser_version_type m_parser_version = {};
 
     const std::string m_voice_defaultValue = {""};
+    const std::string m_bufLength_defaultValue = {"0"};
 
     std::string m_voice = {}; //This default value of this string is an empty string. It is highly recommended to provide a suggested value also for optional string parameters.
+    int m_bufLength = {0};
 
     bool          parseParams(const yarp::os::Searchable & config) override;
     std::string   getDeviceClassName() const override { return m_device_classname; }

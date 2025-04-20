@@ -3,6 +3,7 @@
 #include "eSpeakSynthesizer.hpp"
 
 #include <algorithm> // std::clamp
+#include <functional> // std::function
 
 #include <yarp/os/LogStream.h>
 
@@ -33,6 +34,34 @@ namespace
     inline double libToUserPitch(int libPitch)
     {
         return static_cast<double>(libPitch) / 100.0;
+    }
+
+    // https://caiorss.github.io/C-Cpp-Notes/passing-lambda.html
+
+    using SynthCallback = std::function<t_espeak_callback>;
+
+    SynthCallback & getCallback()
+    {
+        // Global variable, its lifetimes corresponds to the program lifetime.
+        static SynthCallback callback;
+        return callback;
+    };
+
+    void setCallback(SynthCallback func)
+    {
+        auto & callback = getCallback();
+        callback = func;
+    }
+
+    int callbackAdapter(short * wav, int numSamples, espeak_EVENT * events)
+    {
+        return getCallback()(wav, numSamples, events);
+    }
+
+    void wrapperToSetSynthCallback(SynthCallback func)
+    {
+        setCallback(func);
+        espeak_SetSynthCallback(&callbackAdapter);
     }
 }
 
@@ -236,10 +265,41 @@ yarp::dev::ReturnValue eSpeakSynthesizer::synthesize(const std::string & text, y
 bool eSpeakSynthesizer::synthesize(const std::string & text, yarp::sig::Sound & sound)
 #endif
 {
+    yCInfo(ESS) << "Synthesizing:" << text;
+
+    sound.setFrequency(sampleRate);
+
+    auto callback = [&sound](short * wav, int numSamples, espeak_EVENT * events)
+    {
+        yarp::sig::Sound chunk;
+        chunk.setFrequency(sound.getFrequency());
+        chunk.resize(numSamples);
+
+        for (int i = 0; i < numSamples; i++)
+        {
+            chunk.set(wav[i], i);
+        }
+
+        sound += chunk;
+        return 0;
+    };
+
+    wrapperToSetSynthCallback(callback);
+
+    if (espeak_Synth(text.c_str(), 0, 0, POS_CHARACTER, 0, espeakCHARS_AUTO | espeakENDPAUSE, nullptr, nullptr) != EE_OK)
+    {
+        yCError(ESS) << "Failed to synthesize text";
 #if YARP_VERSION_COMPARE(>=, 3, 11, 0)
-    return yarp::dev::ReturnValue::return_code::return_value_error_not_implemented_by_device;
+        return yarp::dev::ReturnValue::return_code::return_value_error_generic;
+    #else
+        return false;
+    #endif
+    }
+
+#if YARP_VERSION_COMPARE(>=, 3, 11, 0)
+    return yarp::dev::ReturnValue::return_code::return_value_ok;
 #else
-    return false;
+    return true;
 #endif
 }
 

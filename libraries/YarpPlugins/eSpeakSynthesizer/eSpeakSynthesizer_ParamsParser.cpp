@@ -8,7 +8,7 @@
 // This is an automatically generated file. Please do not edit it.
 // It will be re-generated if the cmake flag ALLOW_DEVICE_PARAM_PARSER_GERNERATION is ON.
 
-// Generated on: Sun Apr 20 19:21:57 2025
+// Generated on: Sun Apr 20 21:17:42 2025
 
 
 #include "eSpeakSynthesizer_ParamsParser.h"
@@ -29,6 +29,7 @@ std::vector<std::string> eSpeakSynthesizer_ParamsParser::getListOfParams() const
 {
     std::vector<std::string> params;
     params.push_back("voice");
+    params.push_back("bufLength");
     return params;
 }
 
@@ -55,6 +56,20 @@ bool      eSpeakSynthesizer_ParamsParser::parseParams(const yarp::os::Searchable
             yCInfo(eSpeakSynthesizerParamsCOMPONENT) << "Parameter 'voice' using DEFAULT value:" << m_voice;
         }
         prop_check.unput("voice");
+    }
+
+    //Parser of parameter bufLength
+    {
+        if (config.check("bufLength"))
+        {
+            m_bufLength = config.find("bufLength").asInt64();
+            yCInfo(eSpeakSynthesizerParamsCOMPONENT) << "Parameter 'bufLength' using value:" << m_bufLength;
+        }
+        else
+        {
+            yCInfo(eSpeakSynthesizerParamsCOMPONENT) << "Parameter 'bufLength' using DEFAULT value:" << m_bufLength;
+        }
+        prop_check.unput("bufLength");
     }
 
     /*
@@ -94,9 +109,10 @@ std::string      eSpeakSynthesizer_ParamsParser::getDocumentationOfDeviceParams(
     doc = doc + std::string("\n");
     doc = doc + std::string("This is the list of the parameters accepted by the device:\n");
     doc = doc + std::string("'voice': voice identifier\n");
+    doc = doc + std::string("'bufLength': length of sound buffers\n");
     doc = doc + std::string("\n");
     doc = doc + std::string("Here are some examples of invocation command with yarpdev, with all params:\n");
-    doc = doc + " yarpdev --device eSpeakSynthesizer --voice <optional_value>\n";
+    doc = doc + " yarpdev --device eSpeakSynthesizer --voice <optional_value> --bufLength 0\n";
     doc = doc + std::string("Using only mandatory params:\n");
     doc = doc + " yarpdev --device eSpeakSynthesizer\n";
     doc = doc + std::string("=============================================\n\n");    return doc;
