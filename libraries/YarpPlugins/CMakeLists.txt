@@ -1,1 +1,2 @@
 add_subdirectory(eSpeakSynthesizer)
+add_subdirectory(PiperSynthesizer)
