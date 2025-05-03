@@ -24,7 +24,7 @@ bool VoskTranscription::open(yarp::os::Searchable & config)
     }
 
     yarp::os::ResourceFinder rf;
-    rf.setDefaultContext("VoskSynthesizer");
+    rf.setDefaultContext("VoskTranscription");
 
     auto modelFullPath = rf.findFileByName(m_modelPath);
 
