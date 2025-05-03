@@ -3,7 +3,11 @@
 #ifndef __VOSK_TRANSCRIPTION_HPP__
 #define __VOSK_TRANSCRIPTION_HPP__
 
+#include <string>
+
 #include <yarp/conf/version.h>
+
+#include <yarp/os/ResourceFinder.h>
 
 #include <yarp/dev/DeviceDriver.h>
 #include <yarp/dev/ISpeechTranscription.h>
@@ -44,8 +48,12 @@ public:
     bool close() override;
 
 private:
+    yarp::os::ResourceFinder rf;
+    std::string modelName;
+
     VoskModel * model {nullptr};
     VoskRecognizer * recognizer {nullptr};
+
     int sampleRate {0};
 };
 

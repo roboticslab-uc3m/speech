@@ -3,7 +3,6 @@
 #include "VoskTranscription.hpp"
 
 #include <yarp/os/LogStream.h>
-#include <yarp/os/ResourceFinder.h>
 
 #include "LogComponent.hpp"
 
@@ -17,30 +16,10 @@ bool VoskTranscription::open(yarp::os::Searchable & config)
         return false;
     }
 
-    if (m_modelPath.empty())
-    {
-        yCError(VOSK) << "Model path is empty";
-        return false;
-    }
-
-    yarp::os::ResourceFinder rf;
     rf.setDefaultContext("VoskTranscription");
 
-    auto modelFullPath = rf.findFileByName(m_modelPath);
-
-    if (modelFullPath.empty())
+    if (!m_modelPath.empty() && !setLanguage(m_modelPath))
     {
-        yCError(VOSK) << "Model file not found:" << m_modelPath;
-        return false;
-    }
-
-    yCInfo(VOSK) << "Loading model from:" << modelFullPath;
-
-    model = vosk_model_new(modelFullPath.c_str());
-
-    if (model == nullptr)
-    {
-        yCError(VOSK) << "Failed to load model from:" << modelFullPath;
         return false;
     }
 

@@ -18,10 +18,46 @@ yarp::dev::ReturnValue VoskTranscription::setLanguage(const std::string & langua
 bool VoskTranscription::setLanguage(const std::string & language)
 #endif
 {
+    yCInfo(VOSK) << "Setting language model:" << language;
+
+    auto modelFullPath = rf.findFileByName(language);
+
+    if (modelFullPath.empty())
+    {
+        yCError(VOSK) << "Model file not found";
 #if YARP_VERSION_COMPARE(>=, 3, 11, 0)
-    return yarp::dev::ReturnValue::return_code::return_value_error_not_implemented_by_device;
+        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
 #else
-    return false;
+        return false;
+#endif
+    }
+
+    yCInfo(VOSK) << "Loading model from:" << modelFullPath;
+
+    model = vosk_model_new(modelFullPath.c_str());
+
+    if (!model)
+    {
+        yCError(VOSK) << "Failed to load model";
+#if YARP_VERSION_COMPARE(>=, 3, 11, 0)
+        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+#else
+        return false;
+#endif
+    }
+
+    modelName = language;
+
+    if (recognizer)
+    {
+        vosk_recognizer_free(recognizer);
+        recognizer = nullptr;
+    }
+
+#if YARP_VERSION_COMPARE(>=, 3, 11, 0)
+    return yarp::dev::ReturnValue::return_code::return_value_ok;
+#else
+    return true;
 #endif
 }
 
@@ -33,10 +69,22 @@ yarp::dev::ReturnValue VoskTranscription::getLanguage(std::string & language)
 bool VoskTranscription::getLanguage(std::string & language)
 #endif
 {
+    if (modelName.empty())
+    {
+        yCError(VOSK) << "Language model not set";
 #if YARP_VERSION_COMPARE(>=, 3, 11, 0)
-    return yarp::dev::ReturnValue::return_code::return_value_error_not_implemented_by_device;
+        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
 #else
-    return false;
+        return false;
+#endif
+    }
+
+    language = modelName;
+
+#if YARP_VERSION_COMPARE(>=, 3, 11, 0)
+    return yarp::dev::ReturnValue::return_code::return_value_ok;
+#else
+    return true;
 #endif
 }
 
@@ -48,9 +96,19 @@ yarp::dev::ReturnValue VoskTranscription::transcribe(const yarp::sig::Sound & so
 bool VoskTranscription::transcribe(const yarp::sig::Sound & sound, std::string & transcription, double & score)
 #endif
 {
-    if (sampleRate != sound.getFrequency())
+    if (!model)
     {
-        yCInfo(VOSK) << "Setting new sample rate:" << sound.getFrequency() << "Hz";
+        yCError(VOSK) << "Model is not loaded";
+#if YARP_VERSION_COMPARE(>=, 3, 11, 0)
+        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+#else
+        return false;
+#endif
+    }
+
+    if (!recognizer || sampleRate != sound.getFrequency())
+    {
+        yCInfo(VOSK) << "Configuring new recognizer with sample rate:" << sound.getFrequency() << "Hz";
 
         if (recognizer)
         {
