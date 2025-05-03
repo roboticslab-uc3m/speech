@@ -8,7 +8,7 @@
 // This is an automatically generated file. Please do not edit it.
 // It will be re-generated if the cmake flag ALLOW_DEVICE_PARAM_PARSER_GERNERATION is ON.
 
-// Generated on: Fri May  2 22:04:10 2025
+// Generated on: Sat May  3 01:25:21 2025
 
 
 #include "VoskTranscription_ParamsParser.h"
@@ -29,7 +29,6 @@ std::vector<std::string> VoskTranscription_ParamsParser::getListOfParams() const
 {
     std::vector<std::string> params;
     params.push_back("modelPath");
-    params.push_back("sampleRate");
     params.push_back("useGPU");
     return params;
 }
@@ -57,23 +56,6 @@ bool      VoskTranscription_ParamsParser::parseParams(const yarp::os::Searchable
             yCInfo(VoskTranscriptionParamsCOMPONENT) << "Parameter 'modelPath' using DEFAULT value:" << m_modelPath;
         }
         prop_check.unput("modelPath");
-    }
-
-    //Parser of parameter sampleRate
-    {
-        if (config.check("sampleRate"))
-        {
-            m_sampleRate = config.find("sampleRate").asFloat32();
-            yCInfo(VoskTranscriptionParamsCOMPONENT) << "Parameter 'sampleRate' using value:" << m_sampleRate;
-        }
-        else
-        {
-            yCError(VoskTranscriptionParamsCOMPONENT) << "Mandatory parameter 'sampleRate' not found!";
-            yCError(VoskTranscriptionParamsCOMPONENT) << "Description of the parameter: audio sample rate";
-            yCError(VoskTranscriptionParamsCOMPONENT) << "Remember: Units for this parameter are: 'Hz'";
-            return false;
-        }
-        prop_check.unput("sampleRate");
     }
 
     //Parser of parameter useGPU
@@ -127,12 +109,11 @@ std::string      VoskTranscription_ParamsParser::getDocumentationOfDeviceParams(
     doc = doc + std::string("\n");
     doc = doc + std::string("This is the list of the parameters accepted by the device:\n");
     doc = doc + std::string("'modelPath': path to model directory\n");
-    doc = doc + std::string("'sampleRate': audio sample rate\n");
     doc = doc + std::string("'useGPU': use GPU (if supported)\n");
     doc = doc + std::string("\n");
     doc = doc + std::string("Here are some examples of invocation command with yarpdev, with all params:\n");
-    doc = doc + " yarpdev --device VoskTranscription --modelPath <optional_value> --sampleRate 0 --useGPU 0\n";
+    doc = doc + " yarpdev --device VoskTranscription --modelPath <optional_value> --useGPU 0\n";
     doc = doc + std::string("Using only mandatory params:\n");
-    doc = doc + " yarpdev --device VoskTranscription --sampleRate 0\n";
+    doc = doc + " yarpdev --device VoskTranscription\n";
     doc = doc + std::string("=============================================\n\n");    return doc;
 }

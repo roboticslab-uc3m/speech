@@ -48,6 +48,30 @@ yarp::dev::ReturnValue VoskTranscription::transcribe(const yarp::sig::Sound & so
 bool VoskTranscription::transcribe(const yarp::sig::Sound & sound, std::string & transcription, double & score)
 #endif
 {
+    if (sampleRate != sound.getFrequency())
+    {
+        yCInfo(VOSK) << "Setting new sample rate:" << sound.getFrequency() << "Hz";
+
+        if (recognizer)
+        {
+            vosk_recognizer_free(recognizer);
+            recognizer = nullptr;
+        }
+
+        sampleRate = sound.getFrequency();
+        recognizer = vosk_recognizer_new(model, sampleRate);
+
+        if (recognizer == nullptr)
+        {
+            yCError(VOSK) << "Failed to create recognizer";
+#if YARP_VERSION_COMPARE(>=, 3, 11, 0)
+            return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+#else
+            return false;
+#endif
+        }
+    }
+
     std::vector<short> samples(sound.getSamples());
 
     for (auto i = 0; i < samples.size(); i++)

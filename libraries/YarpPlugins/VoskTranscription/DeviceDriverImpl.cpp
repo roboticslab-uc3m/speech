@@ -44,20 +44,6 @@ bool VoskTranscription::open(yarp::os::Searchable & config)
         return false;
     }
 
-    if (m_sampleRate <= 0)
-    {
-        yCError(VOSK) << "Sample rate is not set or invalid";
-        return false;
-    }
-
-    recognizer = vosk_recognizer_new(model, m_sampleRate);
-
-    if (recognizer == nullptr)
-    {
-        yCError(VOSK) << "Failed to create recognizer";
-        return false;
-    }
-
     if (m_useGPU)
     {
         vosk_gpu_init();

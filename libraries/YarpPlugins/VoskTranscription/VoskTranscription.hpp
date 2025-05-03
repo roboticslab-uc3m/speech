@@ -46,6 +46,7 @@ public:
 private:
     VoskModel * model {nullptr};
     VoskRecognizer * recognizer {nullptr};
+    int sampleRate {0};
 };
 
 #endif // __VOSK_TRANSCRIPTION_HPP__
