@@ -1,5 +1,5 @@
-if(NOT piper_FOUND AND (NOT DEFINED ENABLE_PiperSynthesizer OR ENABLE_PiperSynthesizer))
-    message(WARNING "piper package not found, disabling PiperSynthesizer")
+if(NOT Piper_FOUND AND (NOT DEFINED ENABLE_PiperSynthesizer OR ENABLE_PiperSynthesizer))
+    message(WARNING "Piper package not found, disabling PiperSynthesizer")
 endif()
 
 yarp_prepare_plugin(PiperSynthesizer
@@ -7,7 +7,7 @@ yarp_prepare_plugin(PiperSynthesizer
                     TYPE PiperSynthesizer
                     INCLUDE PiperSynthesizer.hpp
                     DEFAULT ON
-                    DEPENDS piper_FOUND
+                    DEPENDS Piper_FOUND
                     EXTRA_CONFIG WRAPPER=speechSynthesizer_nws_yarp
                     GENERATE_PARSER)
 
@@ -25,7 +25,7 @@ if(NOT SKIP_PiperSynthesizer)
 
     target_link_libraries(PiperSynthesizer YARP::YARP_os
                                            YARP::YARP_dev
-                                           piper::piper_lib)
+                                           Piper::piper_lib)
 
     target_compile_definitions(PiperSynthesizer PRIVATE _PIPER_DATA_DIR="${PIPER_DATA_DIR}")
 

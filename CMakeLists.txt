@@ -32,7 +32,7 @@ find_package(YARP 3.10 REQUIRED COMPONENTS os dev
 
 # Soft dependencies.
 find_package(Espeak QUIET)
-find_package(piper 1.2 QUIET)
+find_package(Piper 1.2 QUIET)
 find_package(Vosk QUIET)
 find_package(GTestSources 1.8 QUIET)
 find_package(SWIG 3.0.12 QUIET)
