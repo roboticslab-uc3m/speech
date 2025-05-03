@@ -2,6 +2,10 @@
 
 #include "PiperSynthesizer.hpp"
 
+#include <cstdint>
+
+#include <vector>
+
 #include <yarp/os/LogStream.h>
 
 #include "LogComponent.hpp"
@@ -136,10 +140,27 @@ bool PiperSynthesizer::synthesize(const std::string & text, yarp::sig::Sound & s
 {
     yCInfo(PIPER) << "Synthesizing:" << text;
 
+    piper::SynthesisResult result;
+    std::vector<std::int16_t> audioBuffer;
+
+    sound.setFrequency(voice.synthesisConfig.sampleRate);
+
+    piper::textToAudio(piperConfig, voice, text, audioBuffer, result, [&audioBuffer, &sound]()
+    {
+        sound.resize(audioBuffer.size());
+
+        for (int i = 0; i < audioBuffer.size(); i++)
+        {
+            sound.set(audioBuffer[i], i);
+        }
+    });
+
+    yCDebug(PIPER, "Real-time factor: %f (infer=%f sec, audio=%f sec)", result.realTimeFactor, result.inferSeconds, result.audioSeconds);
+
 #if YARP_VERSION_COMPARE(>=, 3, 11, 0)
-    return yarp::dev::ReturnValue::return_code::return_value_error_not_implemented_by_device;
+    return yarp::dev::ReturnValue::return_code::return_value_ok;
 #else
-    return false;
+    return true;
 #endif
 }
 
