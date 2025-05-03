@@ -3,6 +3,11 @@ if(ENABLE_PiperSynthesizer)
                  DESTINATION ${ROBOTICSLAB-SPEECH_CONTEXTS_INSTALL_DIR})
 endif()
 
+if(ENABLE_VoskTranscription)
+    yarp_install(DIRECTORY VoskTranscription
+                 DESTINATION ${ROBOTICSLAB-SPEECH_CONTEXTS_INSTALL_DIR})
+endif()
+
 if(ENABLE_speechRecognition)
     yarp_install(DIRECTORY speechRecognition
                  DESTINATION ${ROBOTICSLAB-SPEECH_CONTEXTS_INSTALL_DIR})
