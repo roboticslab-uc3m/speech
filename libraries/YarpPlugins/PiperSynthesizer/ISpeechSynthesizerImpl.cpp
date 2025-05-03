@@ -7,6 +7,7 @@
 #include <vector>
 
 #include <yarp/os/LogStream.h>
+#include <yarp/os/ResourceFinder.h>
 
 #include "LogComponent.hpp"
 
@@ -18,6 +19,16 @@ yarp::dev::ReturnValue PiperSynthesizer::setLanguage(const std::string & languag
 bool PiperSynthesizer::setLanguage(const std::string & language)
 #endif
 {
+    yarp::os::ResourceFinder rf;
+    rf.setDefaultContext("PiperSynthesizer");
+
+    const auto b = rf.findPaths("en_US-lessac-medium.onnx");
+
+    for (auto i = 0; i < b.size(); i++)
+    {
+        yCInfo(PIPER) << "Found:" << b.get(i).toString();
+    }
+
 #if YARP_VERSION_COMPARE(>=, 3, 11, 0)
     return yarp::dev::ReturnValue::return_code::return_value_error_not_implemented_by_device;
 #else
@@ -33,10 +44,12 @@ yarp::dev::ReturnValue PiperSynthesizer::getLanguage(std::string & language)
 bool PiperSynthesizer::getLanguage(std::string & language)
 #endif
 {
+    language = voice.phonemizeConfig.eSpeak.voice;
+
 #if YARP_VERSION_COMPARE(>=, 3, 11, 0)
-    return yarp::dev::ReturnValue::return_code::return_value_error_not_implemented_by_device;
+    return yarp::dev::ReturnValue::return_code::return_value_ok;
 #else
-    return false;
+    return true;
 #endif
 }
 

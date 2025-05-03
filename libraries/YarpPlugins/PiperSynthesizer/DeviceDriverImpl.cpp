@@ -106,6 +106,18 @@ bool PiperSynthesizer::open(yarp::os::Searchable & config)
         yCInfo(PIPER) << "Using Tashkeel model path:" << piperConfig.tashkeelModelPath.value();
     }
 
+    yCInfo(PIPER) << "Using eSpeak language code:" << voice.phonemizeConfig.eSpeak.voice;
+    yCInfo(PIPER) << "Using dataset:" << voice.modelConfig.dataset;
+    yCInfo(PIPER) << "Using quality:" << voice.synthesisConfig.quality;
+
+    // log language config
+    yCInfo(PIPER) << "Using code:" << voice.languageConfig.code;
+    yCInfo(PIPER) << "Using family:" << voice.languageConfig.family;
+    yCInfo(PIPER) << "Using region:" << voice.languageConfig.region;
+    yCInfo(PIPER) << "Using name_native:" << voice.languageConfig.nameNative;
+    yCInfo(PIPER) << "Using name_english:" << voice.languageConfig.nameEnglish;
+    yCInfo(PIPER) << "Using country_english:" << voice.languageConfig.countryEnglish;
+
     piper::initialize(piperConfig);
 
     voice.synthesisConfig.noiseScale = m_noiseScale;
