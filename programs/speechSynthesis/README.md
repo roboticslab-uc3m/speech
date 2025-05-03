@@ -16,7 +16,7 @@ All voice data is stored in Hugging Face: <https://huggingface.co/rhasspy/piper-
 
 By default, `speechSynthesis` assumes `--context speechSynthesis --from speechSynthesis.ini`, i.e. it will spawn a `ResourceFinder` instance and look for a `speechSynthesis.ini` placed in a `speechSynthesis/` directory following the [YARP data directory specification](https://www.yarp.it/latest/yarp_data_dirs.html). These default context and configuration file can be modified via command line arguments, although it shouldn't be necessary. Voice models need to be downloaded either manually or via `piper` into the sibling directory of the .ini configuration file.
 
-It is advised to import the `speechSynthesis` context after installating the speech repository:
+It is advised to import the `speechSynthesis` context after installing the speech repository:
 
 ```bash
 yarp-config context --import speechSynthesis
