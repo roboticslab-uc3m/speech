@@ -8,6 +8,8 @@
 #include <yarp/dev/DeviceDriver.h>
 #include <yarp/dev/ISpeechTranscription.h>
 
+#include <vosk_api.h>
+
 #include "VoskTranscription_ParamsParser.h"
 
 /**
@@ -40,6 +42,10 @@ public:
     // -------- DeviceDriver declarations. Implementation in DeviceDriverImpl.cpp --------
     bool open(yarp::os::Searchable & config) override;
     bool close() override;
+
+private:
+    VoskModel * model {nullptr};
+    VoskRecognizer * recognizer {nullptr};
 };
 
 #endif // __VOSK_TRANSCRIPTION_HPP__

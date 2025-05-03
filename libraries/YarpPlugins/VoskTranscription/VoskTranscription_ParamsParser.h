@@ -8,7 +8,7 @@
 // This is an automatically generated file. Please do not edit it.
 // It will be re-generated if the cmake flag ALLOW_DEVICE_PARAM_PARSER_GERNERATION is ON.
 
-// Generated on: Fri May  2 21:07:01 2025
+// Generated on: Fri May  2 22:04:10 2025
 
 
 #ifndef VOSKTRANSCRIPTION_PARAMSPARSER_H
@@ -23,16 +23,19 @@
 * This class is the parameters parser for class VoskTranscription.
 *
 * These are the used parameters:
-* | Group name | Parameter name | Type | Units | Default Value | Required | Description | Notes |
-* |:----------:|:--------------:|:----:|:-----:|:-------------:|:--------:|:-----------:|:-----:|
+* | Group name | Parameter name | Type   | Units | Default Value | Required | Description             | Notes |
+* |:----------:|:--------------:|:------:|:-----:|:-------------:|:--------:|:-----------------------:|:-----:|
+* | -          | modelPath      | string | -     | -             | 0        | path to model directory | -     |
+* | -          | sampleRate     | float  | Hz    | 0             | 1        | audio sample rate       | -     |
+* | -          | useGPU         | bool   | -     | 0             | 0        | use GPU (if supported)  | -     |
 *
 * The device can be launched by yarpdev using one of the following examples (with and without all optional parameters):
 * \code{.unparsed}
-* yarpdev --device VoskTranscription
+* yarpdev --device VoskTranscription --modelPath <optional_value> --sampleRate 0 --useGPU 0
 * \endcode
 *
 * \code{.unparsed}
-* yarpdev --device VoskTranscription
+* yarpdev --device VoskTranscription --sampleRate 0
 * \endcode
 *
 */
@@ -54,7 +57,13 @@ public:
     };
     const parser_version_type m_parser_version = {};
 
+    const std::string m_modelPath_defaultValue = {""};
+    const std::string m_sampleRate_defaultValue = {"0"};
+    const std::string m_useGPU_defaultValue = {"0"};
 
+    std::string m_modelPath = {}; //This default value of this string is an empty string. It is highly recommended to provide a suggested value also for optional string parameters.
+    float m_sampleRate = {0};
+    bool m_useGPU = {0};
 
     bool          parseParams(const yarp::os::Searchable & config) override;
     std::string   getDeviceClassName() const override { return m_device_classname; }

@@ -2,7 +2,11 @@
 
 #include "VoskTranscription.hpp"
 
+#include <vector>
+
 #include <yarp/os/LogStream.h>
+
+#include <json.h>
 
 #include "LogComponent.hpp"
 
@@ -44,10 +48,46 @@ yarp::dev::ReturnValue VoskTranscription::transcribe(const yarp::sig::Sound & so
 bool VoskTranscription::transcribe(const yarp::sig::Sound & sound, std::string & transcription, double & score)
 #endif
 {
+    std::vector<short> samples(sound.getSamples());
+
+    for (auto i = 0; i < samples.size(); i++)
+    {
+        samples[i] = sound.get(i);
+    }
+
+    switch (vosk_recognizer_accept_waveform_s(recognizer, samples.data(), samples.size()))
+    {
+    case 1:
+    {
+        auto result = vosk_recognizer_result(recognizer);
+        auto parsed = json::JSON::Load(result);
+        transcription = parsed["text"].ToString();
+        yCDebug(VOSK) << "Result:" << transcription;
+        break;
+    }
+    case 0:
+    {
+        auto result = vosk_recognizer_partial_result(recognizer);
+        auto parsed = json::JSON::Load(result);
+        auto partial = parsed["partial"].ToString();
+        yCDebug(VOSK) << "Partial result:" << partial;
+        transcription = ""; // signalize an incomplete transcription
+        break;
+    }
+    case -1:
+    default:
+        yCError(VOSK) << "Failed to accept waveform";
 #if YARP_VERSION_COMPARE(>=, 3, 11, 0)
-    return yarp::dev::ReturnValue::return_code::return_value_error_not_implemented_by_device;
+        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
 #else
-    return false;
+        return false;
+#endif
+    }
+
+#if YARP_VERSION_COMPARE(>=, 3, 11, 0)
+    return yarp::dev::ReturnValue::return_code::return_value_ok;
+#else
+    return true;
 #endif
 }
 
