@@ -94,7 +94,12 @@ bool VoskTranscription::transcribe(const yarp::sig::Sound & sound, std::string &
         auto result = vosk_recognizer_partial_result(recognizer);
         auto parsed = json::JSON::Load(result);
         auto partial = parsed["partial"].ToString();
-        yCDebug(VOSK) << "Partial result:" << partial;
+
+        if (!partial.empty())
+        {
+            yCDebug(VOSK) << "Partial result:" << partial;
+        }
+
         transcription = ""; // signalize an incomplete transcription
         break;
     }
