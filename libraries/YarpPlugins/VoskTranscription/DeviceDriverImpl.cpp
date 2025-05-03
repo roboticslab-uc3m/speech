@@ -16,8 +16,6 @@ bool VoskTranscription::open(yarp::os::Searchable & config)
         return false;
     }
 
-    rf.setDefaultContext("VoskTranscription");
-
     if (!m_modelPath.empty() && !setLanguage(m_modelPath))
     {
         return false;

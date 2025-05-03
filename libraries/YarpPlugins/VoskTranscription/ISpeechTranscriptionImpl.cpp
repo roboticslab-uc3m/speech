@@ -5,6 +5,7 @@
 #include <vector>
 
 #include <yarp/os/LogStream.h>
+#include <yarp/os/ResourceFinder.h>
 
 #include <json.h>
 
@@ -19,6 +20,9 @@ bool VoskTranscription::setLanguage(const std::string & language)
 #endif
 {
     yCInfo(VOSK) << "Setting language model:" << language;
+
+    yarp::os::ResourceFinder rf;
+    rf.setDefaultContext("VoskTranscription");
 
     auto modelFullPath = rf.findFileByName(language);
 
