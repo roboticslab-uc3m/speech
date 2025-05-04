@@ -64,6 +64,14 @@
         <name>chatCompletion</name>
         <parameters></parameters>
         <node>localhost</node>
+        <dependencies>
+            <port timeout="5.0">/player/audio:i</port>
+            <port timeout="5.0">/recorder/audio:o</port>
+            <port timeout="5.0">/wakeword/result:o</port>
+            <port timeout="5.0">/tts/sound:o</port>
+            <port timeout="5.0">/asr/sound:i</port>
+            <port timeout="5.0">/llm/rpc:i</port>
+        </dependencies>
     </module>
 
     <connection>
