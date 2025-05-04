@@ -18,6 +18,11 @@ if(ENABLE_speechSynthesis)
                  DESTINATION ${ROBOTICSLAB-SPEECH_CONTEXTS_INSTALL_DIR})
 endif()
 
+if(ENABLE_wakeWord)
+    yarp_install(DIRECTORY contexts/wakeWord
+                 DESTINATION ${ROBOTICSLAB-SPEECH_CONTEXTS_INSTALL_DIR})
+endif()
+
 yarp_install(FILES applications/ymanager.ini
                    applications/example_espeakServer.xml
                    applications/example_speechRecognition.xml
