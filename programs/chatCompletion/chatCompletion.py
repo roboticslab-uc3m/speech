@@ -3,9 +3,10 @@
 ##
 # @ingroup speech-programs
 # @defgroup chatCompletion chatCompletion.py
-# @brief Starts a chat session with a LLM-GPT service.
+# @brief Starts a chat session with an LLM-GPT service.
 
 import argparse
+import time
 import yarp
 
 VOCAB_OK = yarp.encode('ok')
@@ -104,7 +105,77 @@ def set_recorder_state(*, on):
     recorder_rpc.write(yarp.Bottle('start' if on == True else 'stop'), response)
     return response.size() > 0 and response.get(0).asString() == 'ok'
 
+def main_loop():
+    # 1. disable speaker, enable microphone
+    print('1. Disabling speaker, enabling microphone')
+    set_player_state(on=False)
+    set_recorder_state(on=True)
 
+    # 2. wait for wakeword
+    print('2. Waiting for wakeword')
+
+    while True:
+        wakeword_bottle = wakeword_port.read(False)
+
+        if wakeword_bottle is not None:
+            print(f'Wakeword detected: {wakeword_bottle.toString()}')
+            break
+
+        time.sleep(0.1)
+
+    # 3. disable microphone, enable speaker
+    print('3. Disabling microphone, enabling speaker')
+    set_recorder_state(on=False)
+    set_player_state(on=True)
+
+    # 4. acknowledge readiness through TTS
+    print('4. Signaling readiness through TTS')
+    sound = yarp.Sound()
+    tts.synthesize('I am ready to listen', sound)
+    time.sleep(sound.getDuration())
+
+    # 5. disable microphone, enable speaker
+    print('5. Disabling microphone, enabling speaker')
+    set_recorder_state(on=False)
+    set_player_state(on=True)
+
+    # 6. wait for ASR
+    print('6. Waiting for ASR')
+
+    while True:
+        asr_bottle = asr_port.read(False)
+
+        if asr_bottle is not None and asr_bottle.size() > 0 and len(asr_bottle.get(0).asString()) > 0:
+            question = asr_bottle.get(0).asString()
+            print(f'ASR result: {question}')
+            break
+
+        time.sleep(0.1)
+
+    # 7. disable speaker, disable microphone
+    print('7. Disabling speaker, disabling microphone')
+    set_player_state(on=False)
+    set_recorder_state(on=False)
+
+    # 8. send ASR result to LLM
+    print('8. Sending ASR result to LLM')
+    answer = yarp.SVector(1) # FIXME: should be a LLM_Message, but its bindings are missing
+    llm.ask(question, answer)
+
+    # 9. enable speaker, disable microphone
+    print('9. Enabling speaker, disabling microphone')
+    set_player_state(on=True)
+    set_recorder_state(on=False)
+
+    # 10. send LLM result to TTS
+    print('10. Sending LLM result to TTS')
+    tts.synthesize(answer[0], sound)
+    time.sleep(sound.getDuration())
+
+try:
+    while True: main_loop()
+except KeyboardInterrupt:
+    print('Keyboard interrupt received, stopping...')
 
 tts_device.close()
 llm_device.close()
