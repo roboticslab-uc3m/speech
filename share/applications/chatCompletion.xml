@@ -1,0 +1,84 @@
+<application>
+
+    <name>chatCompletion App</name>
+
+    <module>
+        <name>deviceBundler</name>
+        <parameters>
+            --wrapper_device AudioPlayerWrapper
+            --attached_device portaudioPlayer
+            --playback_network_buffer_size 0.1
+            --AUDIO_BASE::samples 320000
+            --start 0
+            --name /player
+        </parameters>
+        <node>localhost</node>
+        <deployer>yarpdev</deployer>
+    </module>
+
+    <module>
+        <name>deviceBundler</name>
+        <parameters>
+            --wrapper_device AudioRecorderWrapper
+            --attached_device portaudioRecorder
+            --min_samples_over_network 1280
+            --max_samples_over_network 1280
+            --AUDIO_BASE::rate 16000
+            --AUDIO_BASE::samples 6400
+            --AUDIO_BASE::channels 1
+            --start 0
+            --name /recorder
+        </parameters>
+        <node>localhost</node>
+        <deployer>yarpdev</deployer>
+    </module>
+
+    <module>
+        <name>wakeWord</name>
+        <parameters>--model hey-teo.onnx --prefix /wakeword</parameters>
+        <node>localhost</node>
+    </module>
+
+    <module>
+        <name>PiperSynthesizer</name>
+        <parameters>--modelPath en_US-lessac-medium.onnx --name /tts</parameters>
+        <node>localhost</node>
+        <deployer>yarpdev</deployer>
+    </module>
+
+    <module>
+        <name>VoskTranscription</name>
+        <parameters>--modelPath vosk-model-small-en-us-0.15 --name /asr</parameters>
+        <node>localhost</node>
+        <deployer>yarpdev</deployer>
+    </module>
+
+    <module>
+        <name>LlamaGPT</name>
+        <parameters>--modelPath DeepSeek-R1-Distill-Qwen-1.5B-BF16.gguf --tokens 500 --name /llm</parameters>
+        <node>localhost</node>
+        <deployer>yarpdev</deployer>
+    </module>
+
+    <module>
+        <name>chatCompletion</name>
+        <parameters></parameters>
+        <node>localhost</node>
+    </module>
+
+    <connection>
+        <from>/tts/sound:o</from>
+        <to>/player/audio:i</to>
+    </connection>
+
+    <connection>
+        <from>/recorder/audio:o</from>
+        <to>/asr/sound:i</to>
+    </connection>
+
+    <connection>
+        <from>/recorder/audio:o</from>
+        <to>/wakeword/sound:i</to>
+    </connection>
+
+</application>

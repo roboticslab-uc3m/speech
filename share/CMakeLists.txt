@@ -29,6 +29,7 @@ if(ENABLE_wakeWord)
 endif()
 
 yarp_install(FILES applications/ymanager.ini
+                   applications/chatCompletion.xml
                    applications/example_espeakServer.xml
                    applications/example_speechRecognition.xml
              DESTINATION ${ROBOTICSLAB-SPEECH_APPLICATIONS_INSTALL_DIR})
