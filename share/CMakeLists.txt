@@ -1,3 +1,8 @@
+if(ENABLE_LlamaGPT)
+    yarp_install(DIRECTORY contexts/LlamaGPT
+                 DESTINATION ${ROBOTICSLAB-SPEECH_CONTEXTS_INSTALL_DIR})
+endif()
+
 if(ENABLE_PiperSynthesizer)
     yarp_install(DIRECTORY contexts/PiperSynthesizer
                  DESTINATION ${ROBOTICSLAB-SPEECH_CONTEXTS_INSTALL_DIR})
