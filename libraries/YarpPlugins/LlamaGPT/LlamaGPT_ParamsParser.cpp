@@ -8,7 +8,7 @@
 // This is an automatically generated file. Please do not edit it.
 // It will be re-generated if the cmake flag ALLOW_DEVICE_PARAM_PARSER_GERNERATION is ON.
 
-// Generated on: Sun May  4 12:15:40 2025
+// Generated on: Sun May  4 13:22:26 2025
 
 
 #include "LlamaGPT_ParamsParser.h"
@@ -29,6 +29,10 @@ std::vector<std::string> LlamaGPT_ParamsParser::getListOfParams() const
 {
     std::vector<std::string> params;
     params.push_back("modelPath");
+    params.push_back("ngl");
+    params.push_back("tokens");
+    params.push_back("prompt");
+    params.push_back("promptPath");
     return params;
 }
 
@@ -55,6 +59,62 @@ bool      LlamaGPT_ParamsParser::parseParams(const yarp::os::Searchable & config
             yCInfo(LlamaGPTParamsCOMPONENT) << "Parameter 'modelPath' using DEFAULT value:" << m_modelPath;
         }
         prop_check.unput("modelPath");
+    }
+
+    //Parser of parameter ngl
+    {
+        if (config.check("ngl"))
+        {
+            m_ngl = config.find("ngl").asInt64();
+            yCInfo(LlamaGPTParamsCOMPONENT) << "Parameter 'ngl' using value:" << m_ngl;
+        }
+        else
+        {
+            yCInfo(LlamaGPTParamsCOMPONENT) << "Parameter 'ngl' using DEFAULT value:" << m_ngl;
+        }
+        prop_check.unput("ngl");
+    }
+
+    //Parser of parameter tokens
+    {
+        if (config.check("tokens"))
+        {
+            m_tokens = config.find("tokens").asInt64();
+            yCInfo(LlamaGPTParamsCOMPONENT) << "Parameter 'tokens' using value:" << m_tokens;
+        }
+        else
+        {
+            yCInfo(LlamaGPTParamsCOMPONENT) << "Parameter 'tokens' using DEFAULT value:" << m_tokens;
+        }
+        prop_check.unput("tokens");
+    }
+
+    //Parser of parameter prompt
+    {
+        if (config.check("prompt"))
+        {
+            m_prompt = config.find("prompt").asString();
+            yCInfo(LlamaGPTParamsCOMPONENT) << "Parameter 'prompt' using value:" << m_prompt;
+        }
+        else
+        {
+            yCInfo(LlamaGPTParamsCOMPONENT) << "Parameter 'prompt' using DEFAULT value:" << m_prompt;
+        }
+        prop_check.unput("prompt");
+    }
+
+    //Parser of parameter promptPath
+    {
+        if (config.check("promptPath"))
+        {
+            m_promptPath = config.find("promptPath").asString();
+            yCInfo(LlamaGPTParamsCOMPONENT) << "Parameter 'promptPath' using value:" << m_promptPath;
+        }
+        else
+        {
+            yCInfo(LlamaGPTParamsCOMPONENT) << "Parameter 'promptPath' using DEFAULT value:" << m_promptPath;
+        }
+        prop_check.unput("promptPath");
     }
 
     /*
@@ -94,9 +154,13 @@ std::string      LlamaGPT_ParamsParser::getDocumentationOfDeviceParams() const
     doc = doc + std::string("\n");
     doc = doc + std::string("This is the list of the parameters accepted by the device:\n");
     doc = doc + std::string("'modelPath': path to model directory\n");
+    doc = doc + std::string("'ngl': number of layers to offload to the GPU\n");
+    doc = doc + std::string("'tokens': number of tokens to predict\n");
+    doc = doc + std::string("'prompt': prompt to generate text from\n");
+    doc = doc + std::string("'promptPath': path to a file containing the prompt\n");
     doc = doc + std::string("\n");
     doc = doc + std::string("Here are some examples of invocation command with yarpdev, with all params:\n");
-    doc = doc + " yarpdev --device LlamaGPT --modelPath <optional_value>\n";
+    doc = doc + " yarpdev --device LlamaGPT --modelPath <optional_value> --ngl 99 --tokens 32 --prompt <optional_value> --promptPath <optional_value>\n";
     doc = doc + std::string("Using only mandatory params:\n");
     doc = doc + " yarpdev --device LlamaGPT\n";
     doc = doc + std::string("=============================================\n\n");    return doc;

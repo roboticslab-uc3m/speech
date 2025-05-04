@@ -3,12 +3,14 @@
 #ifndef __LLAMA_GPT_HPP__
 #define __LLAMA_GPT_HPP__
 
-#include <string>
+#include <vector>
 
 #include <yarp/conf/version.h>
 
 #include <yarp/dev/DeviceDriver.h>
 #include <yarp/dev/ILLM.h>
+
+#include <llama.h>
 
 #include "LlamaGPT_ParamsParser.h"
 
@@ -48,6 +50,10 @@ public:
     // -------- DeviceDriver declarations. Implementation in DeviceDriverImpl.cpp --------
     bool open(yarp::os::Searchable & config) override;
     bool close() override;
+
+private:
+    llama_model * model {nullptr};
+    std::vector<yarp::dev::LLM_Message> conversation;
 };
 
 #endif // __LLAMA_GPT_HPP__
