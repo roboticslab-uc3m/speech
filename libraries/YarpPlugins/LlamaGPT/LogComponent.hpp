@@ -1,0 +1,8 @@
+#ifndef LLAMA_GPT_LOG_COMPONENT_HPP__
+#define LLAMA_GPT_LOG_COMPONENT_HPP__
+
+#include <yarp/os/LogComponent.h>
+
+YARP_DECLARE_LOG_COMPONENT(LLAMA)
+
+#endif // LLAMA_GPT_LOG_COMPONENT_HPP__

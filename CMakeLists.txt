@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.19..3.28)
 
-project(ROBOTICSLAB_SPEECH LANGUAGES CXX)
+# C is required for the LlamaGPT device.
+project(ROBOTICSLAB_SPEECH LANGUAGES C CXX)
 
 # Let the user specify a configuration (only single-config generators).
 if(NOT CMAKE_CONFIGURATION_TYPES)
@@ -34,6 +35,7 @@ find_package(YARP 3.10 REQUIRED COMPONENTS os dev
 find_package(Espeak QUIET)
 find_package(Piper 1.2 QUIET)
 find_package(Vosk QUIET)
+find_package(llama QUIET)
 find_package(GTestSources 1.8 QUIET)
 find_package(SWIG 3.0.12 QUIET)
 find_package(Doxygen QUIET)
