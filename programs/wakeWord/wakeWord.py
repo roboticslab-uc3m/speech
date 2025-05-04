@@ -9,6 +9,7 @@ from openwakeword.model import Model
 
 import argparse
 import numpy as np
+import os
 import yarp
 
 parser = argparse.ArgumentParser(description='YARP wake word service', add_help=False)
@@ -35,6 +36,7 @@ if not onnx_model_path:
     print(f'[error] Failed to find model file {args.model}')
     raise SystemExit
 
+print(f'Using model {onnx_model_path}')
 model = Model(wakeword_model_paths=[onnx_model_path])
 
 pb = yarp.BufferedPortBottle()
@@ -47,7 +49,7 @@ class SoundCallback(yarp.TypedReaderCallbackSound):
     def __init__(self, model, model_name, threshold):
         super().__init__()
         self.model = model
-        self.model_name = model_name[:-len('.onnx')]
+        self.model_name = os.path.basename(model_name[:-len('.onnx')])
         self.buffer = self.model.prediction_buffer[self.model_name]
         self.threshold = threshold
 
@@ -60,16 +62,17 @@ class SoundCallback(yarp.TypedReaderCallbackSound):
 
             self.model.predict(frame)
 
-            confidence = float(self.buffer[-1])
-            print(f'{self.model_name}: {confidence}')
+            if (len(self.buffer) != 0):
+                confidence = float(self.buffer[-1])
+                print(f'{self.model_name}: {confidence}')
 
-            if confidence >= self.threshold:
-                bottle = pb.prepare()
-                bottle.clear()
-                bottle.addString(self.model_name)
-                bottle.addFloat32(confidence)
+                if confidence >= self.threshold:
+                    bottle = pb.prepare()
+                    bottle.clear()
+                    bottle.addString(self.model_name)
+                    bottle.addFloat32(confidence)
 
-                pb.write()
+                    pb.write()
 
 ps = yarp.BufferedPortSound()
 c = SoundCallback(model, args.model, args.confidence)
