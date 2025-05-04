@@ -1,0 +1,27 @@
+var searchData=
+[
+  ['selecting_20default_20soundcard_0',['Troubleshooting selecting default soundcard',['../md_doc_2speech-install.html#autotoc_md15',1,'']]],
+  ['similar_20and_20related_20projects_1',['Similar and Related Projects',['../index.html#autotoc_md8',1,'']]],
+  ['software_2',['Speech software',['../md_programs_2espeakServer_2README.html',1,'']]],
+  ['software_20dependencies_3',['Install the Software dependencies',['../md_doc_2speech-install.html#autotoc_md13',1,'']]],
+  ['software_20on_20ubuntu_20working_20on_20all_20tested_20versions_4',['Install the Software on Ubuntu (working on all tested versions)',['../md_doc_2speech-install.html#autotoc_md14',1,'']]],
+  ['soundcallback_5',['SoundCallback',['../classvoskTranscriptionExample_1_1SoundCallback.html',1,'voskTranscriptionExample']]],
+  ['soundcard_6',['Troubleshooting selecting default soundcard',['../md_doc_2speech-install.html#autotoc_md15',1,'']]],
+  ['source_20code_7',['Installation from Source Code',['../md_doc_2speech-install.html',1,'']]],
+  ['spanish_20speech_20recognition_3a_8',['How to add new words for Spanish speech recognition:',['../md_doc_2speech-development-manual.html#autotoc_md11',1,'']]],
+  ['speech_9',['Speech',['../index.html',1,'']]],
+  ['speech_20applications_20collections_20of_20programs_10',['speech Applications (Collections of Programs)',['../group__speech-applications.html',1,'']]],
+  ['speech_20examples_11',['speech Examples',['../group__speech-examples.html',1,'']]],
+  ['speech_20libraries_12',['speech Libraries',['../group__speech-libraries.html',1,'']]],
+  ['speech_20programs_13',['speech Programs',['../group__speech-programs.html',1,'']]],
+  ['speech_20recognition_14',['Speech recognition',['../md_programs_2speechRecognition_2README.html',1,'']]],
+  ['speech_20recognition_3a_15',['speech recognition:',['../md_doc_2speech-development-manual.html#autotoc_md10',1,'How to add new words for English speech recognition:'],['../md_doc_2speech-development-manual.html#autotoc_md11',1,'How to add new words for Spanish speech recognition:']]],
+  ['speech_20software_16',['Speech software',['../md_programs_2espeakServer_2README.html',1,'']]],
+  ['speech_20synthesis_17',['Speech synthesis',['../md_programs_2speechSynthesis_2README.html',1,'']]],
+  ['speechrecognition_20py_18',['speechRecognition.py',['../group__speechRecognition.html',1,'']]],
+  ['speechrecognitiontranscriber_19',['SpeechRecognitionTranscriber',['../classspeechRecognition_1_1SpeechRecognitionTranscriber.html',1,'speechRecognition']]],
+  ['speechsynthesizer_20',['SpeechSynthesizer',['../classspeechSynthesis_1_1SpeechSynthesizer.html',1,'speechSynthesis']]],
+  ['status_21',['Status',['../index.html#autotoc_md7',1,'']]],
+  ['synthesis_22',['Speech synthesis',['../md_programs_2speechSynthesis_2README.html',1,'']]],
+  ['synthesizerfactory_23',['SynthesizerFactory',['../classspeechSynthesis_1_1SynthesizerFactory.html',1,'speechSynthesis']]]
+];
