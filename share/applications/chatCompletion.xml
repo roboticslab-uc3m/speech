@@ -60,6 +60,12 @@
         <deployer>yarpdev</deployer>
     </module>
 
+    <module>
+        <name>chatCompletion</name>
+        <parameters></parameters>
+        <node>localhost</node>
+    </module>
+
     <connection>
         <from>/tts/sound:o</from>
         <to>/player/audio:i</to>
