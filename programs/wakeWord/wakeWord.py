@@ -10,6 +10,8 @@ from openwakeword.model import Model
 import argparse
 import numpy as np
 import os
+import signal
+import time
 import yarp
 
 parser = argparse.ArgumentParser(description='YARP wake word service', add_help=False)
@@ -82,7 +84,17 @@ if not ps.open(args.prefix + '/sound:i'):
     print('[error] Failed to open sound in port')
     raise SystemExit
 
-input('Press ENTER to quit\n')
+should_stop = False
+
+def signal_handler(signum, frame):
+    global should_stop
+    should_stop = True
+
+signal.signal(signal.SIGINT, signal_handler)
+
+while not should_stop:
+    time.sleep(0.1)
+
 print('Stopping the program...')
 
 ps.interrupt()
