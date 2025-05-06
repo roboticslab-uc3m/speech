@@ -134,10 +134,10 @@ def main_loop():
     tts.synthesize('I am ready to listen', sound)
     time.sleep(sound.getDuration())
 
-    # 5. disable microphone, enable speaker
-    print('5. Disabling microphone, enabling speaker')
-    set_recorder_state(on=False)
-    set_player_state(on=True)
+    # 5. disable speaker, enable microphone
+    print('5. Disabling speaker, enabling microphone')
+    set_player_state(on=False)
+    set_recorder_state(on=True)
 
     # 6. wait for ASR
     print('6. Waiting for ASR')
