@@ -214,6 +214,15 @@ bool LlamaGPT::ask(const std::string & question, yarp::dev::LLM_Message & answer
     llama_free(ctx);
 
     yCDebug(LLAMA) << "Generated:" << out;
+    auto index = out.find("</think>");
+
+    if (index != std::string::npos)
+    {
+        out = out.substr(index + 8);
+        ltrim(out);
+        rtrim(out);
+    }
+
     answer = {"assistant", out, {}, {}};
     conversation.push_back(answer);
 
