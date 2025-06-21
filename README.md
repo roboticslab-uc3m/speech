@@ -48,6 +48,7 @@ Bartek Łukawski, Juan G. Victores, Carlos Balaguer, and Alberto Jardón. Intera
     title     = {Interaction with a humanoid robot through a conversational interface using DeepSeek},
     booktitle = {Simposio CEA de Robótica, Bioingeniería, Visión Artificial y Automática Marina},
     year      = {2025},
+    doi       = {10.64117/simposioscea.v1i1.65},
 }
 ```
 
