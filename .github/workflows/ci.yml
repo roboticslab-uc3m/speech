@@ -41,8 +41,8 @@ jobs:
         - { os: ubuntu-24.04, compiler: { cc: gcc-13,   cxx: g++-13 } }
         - { os: ubuntu-24.04, compiler: { cc: clang-18, cxx: clang++-18 } }
         robotology:
-        - { yarp: yarp-3.10, cmake: 3.19.x }
         - { yarp: yarp-3.11, cmake: 3.19.x }
+        - { yarp: yarp-3.12, cmake: 3.19.x }
         - { yarp: master,    cmake: 3.19.x }
         experimental:
         - ${{github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'}}
@@ -65,6 +65,12 @@ jobs:
         repository: robotology/yarp
         ref: ${{matrix.robotology.yarp}}
         path: .deps/yarp
+
+    - name: Check out Piper
+      uses: actions/checkout@v4
+      with:
+        repository: roboticslab-uc3m/piper
+        path: .deps/piper
 
     - name: Check out SWIG
       if: ${{matrix.system.os == 'ubuntu-24.04'}}
@@ -103,6 +109,12 @@ jobs:
         cmake -S .deps/yarp -B .deps/yarp/build -DSKIP_ACE=ON -DYARP_DISABLE_VERSION_SOURCE=ON
         cmake --build .deps/yarp/build
         sudo cmake --install .deps/yarp/build
+
+    - name: Build Piper
+      run: |
+        cmake -S .deps/piper -B .deps/piper/build
+        cmake --build .deps/piper/build
+        sudo cmake --install .deps/piper/build
 
     - name: Build SWIG
       if: ${{matrix.system.os == 'ubuntu-24.04'}}
