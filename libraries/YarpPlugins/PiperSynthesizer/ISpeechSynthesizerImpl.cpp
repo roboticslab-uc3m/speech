@@ -2,6 +2,7 @@
 
 #include "PiperSynthesizer.hpp"
 
+#include <cmath> // std::max
 #include <cstdint>
 
 #include <vector>
@@ -40,21 +41,25 @@ yarp::dev::ReturnValue PiperSynthesizer::getVoice(std::string & voice_name)
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue PiperSynthesizer::setSpeed(const double speed)
+yarp::dev::ReturnValue PiperSynthesizer::setSpeed(double speed)
 {
-    return yarp::dev::ReturnValue::return_code::return_value_error_not_implemented_by_device;
+    speed = std::max(speed, 0.0); // ensure speed is non-negative
+    options.length_scale = 1.0 / speed;
+    yCInfo(PIPER) << "Setting speed to:" << speed;
+    return yarp::dev::ReturnValue::return_code::return_value_ok;
 }
 
 // -----------------------------------------------------------------------------
 
 yarp::dev::ReturnValue PiperSynthesizer::getSpeed(double & speed)
 {
-    return yarp::dev::ReturnValue::return_code::return_value_error_not_implemented_by_device;
+    speed = 1.0 / options.length_scale;
+    return yarp::dev::ReturnValue::return_code::return_value_ok;
 }
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue PiperSynthesizer::setPitch(const double pitch)
+yarp::dev::ReturnValue PiperSynthesizer::setPitch(double pitch)
 {
     return yarp::dev::ReturnValue::return_code::return_value_error_not_implemented_by_device;
 }
