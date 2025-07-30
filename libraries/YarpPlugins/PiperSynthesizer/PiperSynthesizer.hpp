@@ -6,7 +6,7 @@
 #include <yarp/dev/DeviceDriver.h>
 #include <yarp/dev/ISpeechSynthesizer.h>
 
-#include <piper/piper.hpp>
+#include <piper/piper.h>
 
 #include "PiperSynthesizer_ParamsParser.h"
 
@@ -42,8 +42,8 @@ public:
     bool close() override;
 
 private:
-    piper::PiperConfig piperConfig;
-    piper::Voice voice;
+    piper_synthesizer * synth {nullptr};
+    piper_synthesize_options options;
 };
 
 #endif // __PIPER_SYNTHESIZER_HPP__

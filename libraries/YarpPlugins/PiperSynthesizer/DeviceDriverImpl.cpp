@@ -17,8 +17,6 @@ bool PiperSynthesizer::open(yarp::os::Searchable & config)
         return false;
     }
 
-    yCInfo(PIPER) << "Piper version:" << piper::getVersion();
-
     if (m_modelPath.empty())
     {
         yCError(PIPER) << "Model path is empty";
@@ -53,65 +51,32 @@ bool PiperSynthesizer::open(yarp::os::Searchable & config)
 
     yCInfo(PIPER) << "Loading model config from:" << modelConfigFullPath;
 
-    auto speakerId = std::optional(static_cast<std::int64_t>(m_speakerId));
-    piper::loadVoice(piperConfig, modelFullPath, modelConfigFullPath, voice, speakerId, m_useCuda);
+    std::string eSpeakDataFullPath;
 
-    if (voice.phonemizeConfig.phonemeType == piper::eSpeakPhonemes)
+    if (!m_eSpeakDataPath.empty())
     {
-        if (!m_eSpeakDataPath.empty())
+        eSpeakDataFullPath = rf.findFileByName(m_eSpeakDataPath);
+
+        if (eSpeakDataFullPath.empty())
         {
-            auto eSpeakDataFullPath = rf.findFileByName(m_eSpeakDataPath);
-
-            if (eSpeakDataFullPath.empty())
-            {
-                yCError(PIPER) << "eSpeak data path not found:" << m_eSpeakDataPath;
-                return false;
-            }
-
-            piperConfig.eSpeakDataPath = eSpeakDataFullPath;
+            yCError(PIPER) << "eSpeak data path not found:" << m_eSpeakDataPath;
+            return false;
         }
-        else
-        {
-            piperConfig.eSpeakDataPath = std::string(_PIPER_DATA_DIR) + "/espeak-ng-data";
-        }
-
-        yCInfo(PIPER) << "Using eSpeak data path:" << piperConfig.eSpeakDataPath;
     }
     else
     {
-        piperConfig.useESpeak = false;
+        eSpeakDataFullPath = std::string(_ESPEAKNG_DATA_DIR);
     }
 
-    if (voice.phonemizeConfig.eSpeak.voice == "ar")
-    {
-        piperConfig.useTashkeel = true;
+    yCInfo(PIPER) << "Using eSpeak data path:" << eSpeakDataFullPath;
 
-        if (!m_tashkeelModelPath.empty())
-        {
-            auto tashkeelModelFullPath = rf.findFileByName(m_tashkeelModelPath);
+    synth = ::piper_create(modelFullPath.c_str(), modelConfigFullPath.c_str(), eSpeakDataFullPath.c_str());
+    options = ::piper_default_synthesize_options(synth);
 
-            if (tashkeelModelFullPath.empty())
-            {
-                yCError(PIPER) << "Tashkeel model path not found:" << m_tashkeelModelPath;
-                return false;
-            }
-
-            piperConfig.tashkeelModelPath = tashkeelModelFullPath;
-        }
-        else
-        {
-            piperConfig.tashkeelModelPath = std::string(_PIPER_DATA_DIR) + "/libtashkeel_model.ort";
-        }
-
-        yCInfo(PIPER) << "Using Tashkeel model path:" << piperConfig.tashkeelModelPath.value();
-    }
-
-    piper::initialize(piperConfig);
-
-    voice.synthesisConfig.noiseScale = m_noiseScale;
-    voice.synthesisConfig.lengthScale = m_lengthScale;
-    voice.synthesisConfig.noiseW = m_noiseW;
-    voice.synthesisConfig.sentenceSilenceSeconds = m_sentenceSilenceSeconds;
+    options.speaker_id = m_speakerId;
+    options.length_scale = m_lengthScale;
+    options.noise_scale = m_noiseScale;
+    options.noise_w_scale = m_noiseW;
 
     return true;
 }
@@ -120,7 +85,7 @@ bool PiperSynthesizer::open(yarp::os::Searchable & config)
 
 bool PiperSynthesizer::close()
 {
-    piper::terminate(piperConfig);
+    ::piper_free(synth);
     return true;
 }
 

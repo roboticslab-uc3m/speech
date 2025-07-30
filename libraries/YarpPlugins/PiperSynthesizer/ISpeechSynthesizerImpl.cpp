@@ -72,22 +72,38 @@ yarp::dev::ReturnValue PiperSynthesizer::synthesize(const std::string & text, ya
 {
     yCInfo(PIPER) << "Synthesizing:" << text;
 
-    piper::SynthesisResult result;
-    std::vector<std::int16_t> audioBuffer;
+    int ret = ::piper_synthesize_start(synth, text.c_str(), &options);
 
-    sound.setFrequency(voice.synthesisConfig.sampleRate);
-
-    piper::textToAudio(piperConfig, voice, text, audioBuffer, result, [&audioBuffer, &sound]()
+    if (ret != PIPER_OK)
     {
-        sound.resize(audioBuffer.size());
+        yCError(PIPER) << "Failed to start synthesis:" << ret;
+        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+    }
 
-        for (int i = 0; i < audioBuffer.size(); i++)
+    piper_audio_chunk chunk;
+
+    while ((ret = ::piper_synthesize_next(synth, &chunk)) != PIPER_DONE)
+    {
+        if (ret != PIPER_OK)
         {
-            sound.set(audioBuffer[i], i);
+            yCError(PIPER) << "Failed to synthesize next chunk:" << ret;
+            return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
         }
-    });
 
-    yCDebug(PIPER, "Real-time factor: %f (infer=%f sec, audio=%f sec)", result.realTimeFactor, result.inferSeconds, result.audioSeconds);
+        yarp::sig::Sound subSound;
+        subSound.resize(chunk.num_samples);
+        subSound.setFrequency(chunk.sample_rate);
+
+        for (auto i = 0; i < chunk.num_samples; ++i)
+        {
+            subSound.set(static_cast<std::int16_t>(chunk.samples[i] * 32767.0f), i);
+        }
+
+        sound.setFrequency(chunk.sample_rate);
+        sound += subSound;
+
+        yCDebug(PIPER) << "Synthesized chunk with" << chunk.num_samples << "samples at" << chunk.sample_rate << "Hz";
+    }
 
     return yarp::dev::ReturnValue::return_code::return_value_ok;
 }

@@ -66,10 +66,10 @@ jobs:
         ref: ${{matrix.robotology.yarp}}
         path: .deps/yarp
 
-    - name: Check out Piper
+    - name: Check out piper
       uses: actions/checkout@v4
       with:
-        repository: roboticslab-uc3m/piper
+        repository: roboticslab-uc3m/piper1-gpl
         path: .deps/piper
 
     - name: Check out SWIG
@@ -110,11 +110,11 @@ jobs:
         cmake --build .deps/yarp/build
         sudo cmake --install .deps/yarp/build
 
-    - name: Build Piper
+    - name: Build piper
       run: |
-        cmake -S .deps/piper -B .deps/piper/build
-        cmake --build .deps/piper/build
-        sudo cmake --install .deps/piper/build
+        cmake -S .deps/piper/libpiper -B .deps/piper/libpiper/build
+        cmake --build .deps/piper/libpiper/build
+        sudo cmake --install .deps/piper/libpiper/build
 
     - name: Build SWIG
       if: ${{matrix.system.os == 'ubuntu-24.04'}}
