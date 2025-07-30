@@ -1,0 +1,64 @@
+<application>
+    <name>speech synthesis app</name>
+
+    <module>
+        <name>deviceBundler</name>
+        <parameters>
+            --wrapper_device AudioPlayerWrapper
+            --attached_device portaudioPlayer
+            --start 1
+            --playback_network_buffer_size 0.1
+            --AUDIO_BASE::samples 320000
+            --name /player
+        </parameters>
+        <deployer>yarpdev</deployer>
+        <node>localhost</node>
+    </module>
+
+    <module>
+        <name>PiperSynthesizer</name>
+        <parameters>--modelPath en_US-lessac-medium.onnx</parameters>
+        <deployer>yarpdev</deployer>
+        <node>localhost</node>
+    </module>
+
+    <module>
+        <name>PiperSynthesizer</name>
+        <parameters>--modelPath es_ES-davefx-medium.onnx</parameters>
+        <deployer>yarpdev</deployer>
+        <node>localhost</node>
+    </module>
+
+    <module>
+        <name>eSpeakSynthesizer</name>
+        <parameters>--voice mb-en1</parameters>
+        <deployer>yarpdev</deployer>
+        <node>localhost</node>
+    </module>
+
+    <module>
+        <name>eSpeakSynthesizer</name>
+        <parameters>--voice mb-es1</parameters>
+        <deployer>yarpdev</deployer>
+        <node>localhost</node>
+    </module>
+
+    <module>
+        <name>gnome-terminal</name>
+        <parameters>-e "yarp rpc /speechSynthesizer_nws/rpc"</parameters>
+        <node>localhost</node>
+    </module>
+
+    <module>
+        <name>gnome-terminal</name>
+        <parameters>-e "yarp write ... /speechSynthesizer_nws/text:i"</parameters>
+        <node>localhost</node>
+    </module>
+
+    <connection>
+        <from>/speechSynthesizer_nws/sound:o</from>
+        <to>/player/audio:i</to>
+        <protocol>udp</protocol>
+    </connection>
+
+</application>
