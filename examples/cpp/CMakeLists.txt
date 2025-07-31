@@ -8,4 +8,8 @@ if(ENABLE_examples)
     if(ENABLE_SpeechIDL)
         add_subdirectory(espeakClientExample)
     endif()
+
+    if(ENABLE_PiperSynthesizer)
+        add_subdirectory(speechSynthesizerExample)
+    endif()
 endif()
