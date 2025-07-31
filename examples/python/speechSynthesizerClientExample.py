@@ -1,3 +1,10 @@
+#!/usr/bin/env python3
+
+## @ingroup speech-examples-py
+#  @defgroup speechSynthesizerClientExamplePy speechSynthesizerClientExample.py
+#  @see @ref speechSynthesizerClientExample.py
+## @example{lineno} speechSynthesizerClientExample.py
+
 import yarp
 
 yarp.Network.init()

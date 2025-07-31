@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
 
+## @ingroup speech-examples-py
+#  @defgroup speechSynthesizerExamplePy speechSynthesizerExample.py
+#  @see @ref speechSynthesizerExample.py
+## @example{lineno} speechSynthesizerExample.py
+
 import argparse
 import time
 import yarp
