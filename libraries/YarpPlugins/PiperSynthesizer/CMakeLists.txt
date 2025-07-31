@@ -16,12 +16,14 @@ if(NOT SKIP_PiperSynthesizer)
     yarp_add_plugin(PiperSynthesizer)
 
     target_sources(PiperSynthesizer PRIVATE PiperSynthesizer.hpp
+                                            PiperSynthesizer.cpp
                                             DeviceDriverImpl.cpp
                                             ISpeechSynthesizerImpl.cpp
                                             PiperSynthesizer_ParamsParser.h
                                             PiperSynthesizer_ParamsParser.cpp
                                             LogComponent.hpp
-                                            LogComponent.cpp)
+                                            LogComponent.cpp
+                                            json.hpp)
 
     target_link_libraries(PiperSynthesizer YARP::YARP_os
                                            YARP::YARP_dev

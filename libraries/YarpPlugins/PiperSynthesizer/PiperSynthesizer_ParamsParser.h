@@ -8,7 +8,7 @@
 // This is an automatically generated file. Please do not edit it.
 // It will be re-generated if the cmake flag ALLOW_DEVICE_PARAM_PARSER_GERNERATION is ON.
 
-// Generated on: Wed Jul 30 16:11:19 2025
+// Generated on: Thu Jul 31 11:53:09 2025
 
 
 #ifndef PIPERSYNTHESIZER_PARAMSPARSER_H
@@ -23,19 +23,19 @@
 * This class is the parameters parser for class PiperSynthesizer.
 *
 * These are the used parameters:
-* | Group name | Parameter name  | Type   | Units | Default Value | Required | Description                      | Notes                             |
-* |:----------:|:---------------:|:------:|:-----:|:-------------:|:--------:|:--------------------------------:|:---------------------------------:|
-* | -          | modelPath       | string | -     | -             | 0        | path to .onnx voice file         | -                                 |
-* | -          | modelConfigPath | string | -     | -             | 0        | path to JSON voice config file   | -                                 |
-* | -          | eSpeakDataPath  | string | -     | -             | 0        | path to espeak-ng data directory | -                                 |
-* | -          | speakerId       | int    | -     | 0             | 0        | id of speaker                    | -                                 |
-* | -          | noiseScale      | float  | -     | 0.667         | 0        | generator noise                  | -                                 |
-* | -          | lengthScale     | float  | -     | 1             | 0        | phoneme length                   | 1: normal, <1: faster, >1: slower |
-* | -          | noiseW          | float  | -     | 0.8           | 0        | phoneme width noise              | -                                 |
+* | Group name | Parameter name | Type   | Units | Default Value | Required | Description              | Notes                             |
+* |:----------:|:--------------:|:------:|:-----:|:-------------:|:--------:|:------------------------:|:---------------------------------:|
+* | -          | model          | string | -     | -             | 0        | ONNX voice file          | -                                 |
+* | -          | modelConfig    | string | -     | -             | 0        | JSON voice config file   | -                                 |
+* | -          | eSpeakDataDir  | string | -     | -             | 0        | espeak-ng data directory | -                                 |
+* | -          | speakerId      | int    | -     | 0             | 0        | id of speaker            | -                                 |
+* | -          | noiseScale     | float  | -     | 0.667         | 0        | generator noise          | -                                 |
+* | -          | lengthScale    | float  | -     | 1             | 0        | phoneme length           | 1: normal, <1: faster, >1: slower |
+* | -          | noiseW         | float  | -     | 0.8           | 0        | phoneme width noise      | -                                 |
 *
 * The device can be launched by yarpdev using one of the following examples (with and without all optional parameters):
 * \code{.unparsed}
-* yarpdev --device PiperSynthesizer --modelPath <optional_value> --modelConfigPath <optional_value> --eSpeakDataPath <optional_value> --speakerId 0 --noiseScale 0.667 --lengthScale 1 --noiseW 0.8
+* yarpdev --device PiperSynthesizer --model <optional_value> --modelConfig <optional_value> --eSpeakDataDir <optional_value> --speakerId 0 --noiseScale 0.667 --lengthScale 1 --noiseW 0.8
 * \endcode
 *
 * \code{.unparsed}
@@ -69,9 +69,9 @@ public:
     const std::string m_lengthScale_defaultValue = {"1"};
     const std::string m_noiseW_defaultValue = {"0.8"};
 
-    std::string m_modelPath = {}; //This default value of this string is an empty string. It is highly recommended to provide a suggested value also for optional string parameters.
-    std::string m_modelConfigPath = {}; //This default value of this string is an empty string. It is highly recommended to provide a suggested value also for optional string parameters.
-    std::string m_eSpeakDataPath = {}; //This default value of this string is an empty string. It is highly recommended to provide a suggested value also for optional string parameters.
+    std::string m_model = {}; //This default value of this string is an empty string. It is highly recommended to provide a suggested value also for optional string parameters.
+    std::string m_modelConfig = {}; //This default value of this string is an empty string. It is highly recommended to provide a suggested value also for optional string parameters.
+    std::string m_eSpeakDataDir = {}; //This default value of this string is an empty string. It is highly recommended to provide a suggested value also for optional string parameters.
     int m_speakerId = {0};
     float m_noiseScale = {0.667};
     float m_lengthScale = {1};

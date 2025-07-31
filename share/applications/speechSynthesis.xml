@@ -17,14 +17,14 @@
 
     <module>
         <name>PiperSynthesizer</name>
-        <parameters>--modelPath en_US-lessac-medium.onnx</parameters>
+        <parameters>--model en_US-lessac-medium.onnx</parameters>
         <deployer>yarpdev</deployer>
         <node>localhost</node>
     </module>
 
     <module>
         <name>PiperSynthesizer</name>
-        <parameters>--modelPath es_ES-davefx-medium.onnx</parameters>
+        <parameters>--model es_ES-davefx-medium.onnx</parameters>
         <deployer>yarpdev</deployer>
         <node>localhost</node>
     </module>

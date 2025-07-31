@@ -8,7 +8,7 @@
 // This is an automatically generated file. Please do not edit it.
 // It will be re-generated if the cmake flag ALLOW_DEVICE_PARAM_PARSER_GERNERATION is ON.
 
-// Generated on: Wed Jul 30 16:11:19 2025
+// Generated on: Thu Jul 31 11:53:09 2025
 
 
 #include "PiperSynthesizer_ParamsParser.h"
@@ -28,9 +28,9 @@ PiperSynthesizer_ParamsParser::PiperSynthesizer_ParamsParser()
 std::vector<std::string> PiperSynthesizer_ParamsParser::getListOfParams() const
 {
     std::vector<std::string> params;
-    params.push_back("modelPath");
-    params.push_back("modelConfigPath");
-    params.push_back("eSpeakDataPath");
+    params.push_back("model");
+    params.push_back("modelConfig");
+    params.push_back("eSpeakDataDir");
     params.push_back("speakerId");
     params.push_back("noiseScale");
     params.push_back("lengthScale");
@@ -49,46 +49,46 @@ bool      PiperSynthesizer_ParamsParser::parseParams(const yarp::os::Searchable 
 
     std::string config_string = config.toString();
     yarp::os::Property prop_check(config_string.c_str());
-    //Parser of parameter modelPath
+    //Parser of parameter model
     {
-        if (config.check("modelPath"))
+        if (config.check("model"))
         {
-            m_modelPath = config.find("modelPath").asString();
-            yCInfo(PiperSynthesizerParamsCOMPONENT) << "Parameter 'modelPath' using value:" << m_modelPath;
+            m_model = config.find("model").asString();
+            yCInfo(PiperSynthesizerParamsCOMPONENT) << "Parameter 'model' using value:" << m_model;
         }
         else
         {
-            yCInfo(PiperSynthesizerParamsCOMPONENT) << "Parameter 'modelPath' using DEFAULT value:" << m_modelPath;
+            yCInfo(PiperSynthesizerParamsCOMPONENT) << "Parameter 'model' using DEFAULT value:" << m_model;
         }
-        prop_check.unput("modelPath");
+        prop_check.unput("model");
     }
 
-    //Parser of parameter modelConfigPath
+    //Parser of parameter modelConfig
     {
-        if (config.check("modelConfigPath"))
+        if (config.check("modelConfig"))
         {
-            m_modelConfigPath = config.find("modelConfigPath").asString();
-            yCInfo(PiperSynthesizerParamsCOMPONENT) << "Parameter 'modelConfigPath' using value:" << m_modelConfigPath;
+            m_modelConfig = config.find("modelConfig").asString();
+            yCInfo(PiperSynthesizerParamsCOMPONENT) << "Parameter 'modelConfig' using value:" << m_modelConfig;
         }
         else
         {
-            yCInfo(PiperSynthesizerParamsCOMPONENT) << "Parameter 'modelConfigPath' using DEFAULT value:" << m_modelConfigPath;
+            yCInfo(PiperSynthesizerParamsCOMPONENT) << "Parameter 'modelConfig' using DEFAULT value:" << m_modelConfig;
         }
-        prop_check.unput("modelConfigPath");
+        prop_check.unput("modelConfig");
     }
 
-    //Parser of parameter eSpeakDataPath
+    //Parser of parameter eSpeakDataDir
     {
-        if (config.check("eSpeakDataPath"))
+        if (config.check("eSpeakDataDir"))
         {
-            m_eSpeakDataPath = config.find("eSpeakDataPath").asString();
-            yCInfo(PiperSynthesizerParamsCOMPONENT) << "Parameter 'eSpeakDataPath' using value:" << m_eSpeakDataPath;
+            m_eSpeakDataDir = config.find("eSpeakDataDir").asString();
+            yCInfo(PiperSynthesizerParamsCOMPONENT) << "Parameter 'eSpeakDataDir' using value:" << m_eSpeakDataDir;
         }
         else
         {
-            yCInfo(PiperSynthesizerParamsCOMPONENT) << "Parameter 'eSpeakDataPath' using DEFAULT value:" << m_eSpeakDataPath;
+            yCInfo(PiperSynthesizerParamsCOMPONENT) << "Parameter 'eSpeakDataDir' using DEFAULT value:" << m_eSpeakDataDir;
         }
-        prop_check.unput("eSpeakDataPath");
+        prop_check.unput("eSpeakDataDir");
     }
 
     //Parser of parameter speakerId
@@ -183,16 +183,16 @@ std::string      PiperSynthesizer_ParamsParser::getDocumentationOfDeviceParams()
     doc = doc + std::string("This is the help for device: PiperSynthesizer\n");
     doc = doc + std::string("\n");
     doc = doc + std::string("This is the list of the parameters accepted by the device:\n");
-    doc = doc + std::string("'modelPath': path to .onnx voice file\n");
-    doc = doc + std::string("'modelConfigPath': path to JSON voice config file\n");
-    doc = doc + std::string("'eSpeakDataPath': path to espeak-ng data directory\n");
+    doc = doc + std::string("'model': ONNX voice file\n");
+    doc = doc + std::string("'modelConfig': JSON voice config file\n");
+    doc = doc + std::string("'eSpeakDataDir': espeak-ng data directory\n");
     doc = doc + std::string("'speakerId': id of speaker\n");
     doc = doc + std::string("'noiseScale': generator noise\n");
     doc = doc + std::string("'lengthScale': phoneme length\n");
     doc = doc + std::string("'noiseW': phoneme width noise\n");
     doc = doc + std::string("\n");
     doc = doc + std::string("Here are some examples of invocation command with yarpdev, with all params:\n");
-    doc = doc + " yarpdev --device PiperSynthesizer --modelPath <optional_value> --modelConfigPath <optional_value> --eSpeakDataPath <optional_value> --speakerId 0 --noiseScale 0.667 --lengthScale 1 --noiseW 0.8\n";
+    doc = doc + " yarpdev --device PiperSynthesizer --model <optional_value> --modelConfig <optional_value> --eSpeakDataDir <optional_value> --speakerId 0 --noiseScale 0.667 --lengthScale 1 --noiseW 0.8\n";
     doc = doc + std::string("Using only mandatory params:\n");
     doc = doc + " yarpdev --device PiperSynthesizer\n";
     doc = doc + std::string("=============================================\n\n");    return doc;

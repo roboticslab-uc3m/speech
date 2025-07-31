@@ -3,6 +3,10 @@
 #ifndef __PIPER_SYNTHESIZER_HPP__
 #define __PIPER_SYNTHESIZER_HPP__
 
+#include <filesystem>
+#include <string>
+#include <unordered_map>
+
 #include <yarp/dev/DeviceDriver.h>
 #include <yarp/dev/ISpeechSynthesizer.h>
 
@@ -42,8 +46,24 @@ public:
     bool close() override;
 
 private:
+    struct model_entry
+    {
+        std::string path;
+        std::string code;
+        std::string language;
+        std::string dataset;
+    };
+
+    bool inspectModels(const std::filesystem::path & base);
+    void loadCurrentModel();
+
+    std::unordered_map<std::string, model_entry> storage;
+    model_entry * current_model {nullptr};
+
     piper_synthesizer * synth {nullptr};
     piper_synthesize_options options;
+
+    std::string eSpeakDataFullPath;
 };
 
 #endif // __PIPER_SYNTHESIZER_HPP__
