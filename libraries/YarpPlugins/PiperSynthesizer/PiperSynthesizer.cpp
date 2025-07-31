@@ -2,6 +2,8 @@
 
 #include "PiperSynthesizer.hpp"
 
+#include <cctype> // std::tolower
+
 #include <fstream>
 
 #include <yarp/os/LogStream.h>
@@ -36,9 +38,9 @@ bool PiperSynthesizer::inspectModels(const std::filesystem::path & base)
 
                         model_entry entry = {
                             model.string(),
-                            language["code"].get<std::string>(),
-                            language["name_english"].get<std::string>(),
-                            config["dataset"].get<std::string>()
+                            toLowerCase(language["code"].get<std::string>()),
+                            toLowerCase(language["name_english"].get<std::string>()),
+                            toLowerCase(config["dataset"].get<std::string>())
                         };
 
                         storage.emplace(name.string(), entry);
@@ -88,6 +90,18 @@ void PiperSynthesizer::loadCurrentModel()
     options.length_scale = m_lengthScale;
     options.noise_scale = m_noiseScale;
     options.noise_w_scale = m_noiseW;
+}
+
+// -----------------------------------------------------------------------------
+
+std::string PiperSynthesizer::toLowerCase(const std::string & str)
+{
+    std::string lowerStr = str;
+
+    std::transform(lowerStr.begin(), lowerStr.end(), lowerStr.begin(),
+                   [](unsigned char c) { return std::tolower(c); });
+
+    return lowerStr;
 }
 
 // -----------------------------------------------------------------------------

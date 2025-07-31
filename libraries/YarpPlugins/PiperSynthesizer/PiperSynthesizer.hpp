@@ -57,6 +57,8 @@ private:
     bool inspectModels(const std::filesystem::path & base);
     void loadCurrentModel();
 
+    static std::string toLowerCase(const std::string & str);
+
     std::unordered_map<std::string, model_entry> storage;
     model_entry * current_model {nullptr};
 
