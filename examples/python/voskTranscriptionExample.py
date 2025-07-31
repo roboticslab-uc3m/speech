@@ -1,3 +1,10 @@
+#!/usr/bin/env python3
+
+## @ingroup speech-examples-py
+#  @defgroup voskTranscriptionExamplePy voskTranscriptionExample.py
+#  @see @ref voskTranscriptionExample.py
+## @example{lineno} voskTranscriptionExample.py
+
 import yarp
 
 yarp.Network.init()

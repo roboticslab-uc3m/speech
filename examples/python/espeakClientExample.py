@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
 
+## @ingroup speech-examples-py
+#  @defgroup espeakClientExamplePy espeakClientExample.py
+#  @see @ref espeakClientExample.py
+## @example{lineno} espeakClientExample.py
+
 import argparse
 import yarp
 import roboticslab_speech as speech

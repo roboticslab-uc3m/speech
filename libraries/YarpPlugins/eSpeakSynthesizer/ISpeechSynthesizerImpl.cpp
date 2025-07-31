@@ -13,17 +13,17 @@
 
 namespace
 {
-    constexpr auto MIN_SPEED = 80;
-    constexpr auto MAX_SPEED = 450;
+    constexpr auto MAX_SPEED_RATE = espeakRATE_MAXIMUM / static_cast<double>(espeakRATE_NORMAL);
+    constexpr auto MIN_SPEED_RATE = espeakRATE_MINIMUM / static_cast<double>(espeakRATE_NORMAL);
 
     inline int userToLibSpeed(double userSpeed)
     {
-        return static_cast<int>(MIN_SPEED + (MAX_SPEED - MIN_SPEED) * userSpeed);
+        return static_cast<int>(userSpeed * espeakRATE_NORMAL);
     }
 
     inline double libToUserSpeed(int libSpeed)
     {
-        return static_cast<double>(libSpeed - MIN_SPEED) / (MAX_SPEED - MIN_SPEED);
+        return static_cast<double>(libSpeed / espeakRATE_NORMAL);
     }
 
     inline int userToLibPitch(double userPitch)
@@ -139,9 +139,9 @@ yarp::dev::ReturnValue eSpeakSynthesizer::getVoice(std::string & voice_name)
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue eSpeakSynthesizer::setSpeed(const double speed)
+yarp::dev::ReturnValue eSpeakSynthesizer::setSpeed(double speed)
 {
-    auto clamped = std::clamp(speed, 0.0, 1.0);
+    auto clamped = std::clamp(speed, MIN_SPEED_RATE, MAX_SPEED_RATE);
     yCInfo(ESS) << "Setting speed to:" << clamped;
 
     return espeak_SetParameter(espeakRATE, userToLibSpeed(clamped), 0) == EE_OK
@@ -160,7 +160,7 @@ yarp::dev::ReturnValue eSpeakSynthesizer::getSpeed(double & speed)
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue eSpeakSynthesizer::setPitch(const double pitch)
+yarp::dev::ReturnValue eSpeakSynthesizer::setPitch(double pitch)
 {
     auto clamped = std::clamp(pitch, 0.0, 1.0);
     yCInfo(ESS) << "Setting pitch to:" << clamped;
