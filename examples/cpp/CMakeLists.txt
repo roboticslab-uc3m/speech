@@ -10,6 +10,6 @@ if(ENABLE_examples)
     endif()
 
     if(ENABLE_PiperSynthesizer)
-        add_subdirectory(speechSynthesizerExample)
+        add_subdirectory(speechSynthesizerClientExample)
     endif()
 endif()

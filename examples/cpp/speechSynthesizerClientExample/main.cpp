@@ -2,7 +2,7 @@
 
 /**
  * @ingroup speech-examples-cpp
- * @defgroup speechSynthesizerExample speechSynthesizerExample
+ * @defgroup speechSynthesizerClientExample speechSynthesizerClientExample
  */
 
 #include <yarp/os/LogStream.h>
@@ -33,7 +33,7 @@ int main(int argc, char * argv[])
 
     yarp::os::Property options {
         {"device", yarp::os::Value("speechSynthesizer_nwc_yarp")},
-        {"local", yarp::os::Value("/speechSynthesizerExample/client")},
+        {"local", yarp::os::Value("/speechSynthesizerClientExample/client")},
         {"remote", remote}
     };
 
