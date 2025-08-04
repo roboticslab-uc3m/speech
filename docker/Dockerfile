@@ -21,7 +21,6 @@ RUN apt-get update && \
         ccache \
         libespeak-dev \
         mbrola-en1 \
-        pulseaudio \
         bison \
         googletest \
         python3-setuptools \

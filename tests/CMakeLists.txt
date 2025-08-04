@@ -22,6 +22,16 @@ if(ENABLE_tests)
         gtest_discover_tests(testEspeak)
     endif()
 
+    if(ENABLE_eSpeakSynthesizer)
+        add_executable(testeSpeakSynthesizer testeSpeakSynthesizer.cpp)
+
+        target_link_libraries(testeSpeakSynthesizer YARP::YARP_os
+                                                    YARP::YARP_dev
+                                                    gtest_main)
+
+        gtest_discover_tests(testeSpeakSynthesizer)
+    endif()
+
 else()
 
     set(ENABLE_tests OFF CACHE BOOL "Enable/disable unit tests" FORCE)

@@ -123,10 +123,10 @@ jobs:
     - name: Install main project
       run: cmake --install build && ldconfig
 
-    # disabled due to pulseaudio "Daemon startup failed"
-    # - name: Test main project
-    #   working-directory: build
-    #   run: pulseaudio -D && ctest -V
+    # exclude Espeak class tests due to pulseaudio "Daemon startup failed" error
+    - name: Test main project
+      working-directory: build
+      run: ctest -V -E Espeak
 
     - name: Uninstall main project
       run: cmake --build build --target uninstall
