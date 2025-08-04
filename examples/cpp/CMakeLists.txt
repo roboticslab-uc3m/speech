@@ -12,4 +12,8 @@ if(ENABLE_examples)
     if(ENABLE_PiperSynthesizer)
         add_subdirectory(speechSynthesizerClientExample)
     endif()
+
+    if(ENABLE_VoskTranscription)
+        add_subdirectory(voskTranscriptionExample)
+    endif()
 endif()
