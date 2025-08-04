@@ -22,4 +22,5 @@ yarp_install(FILES applications/ymanager.ini
                    applications/example_espeakServer.xml
                    applications/example_speechRecognition.xml
                    applications/speechSynthesis.xml
+                   applications/speechTranscription.xml
              DESTINATION ${ROBOTICSLAB-SPEECH_APPLICATIONS_INSTALL_DIR})
