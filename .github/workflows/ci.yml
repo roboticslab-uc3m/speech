@@ -31,6 +31,10 @@ jobs:
   build:
     name: build (${{matrix.system.os}}, ${{matrix.robotology.yarp}}, ${{matrix.system.compiler.cc}})
     runs-on: ${{matrix.system.os}}
+    container:
+      image: ghcr.io/roboticslab-uc3m/speech:${{matrix.system.os}}
+      env:
+        DEBIAN_FRONTEND: noninteractive
     needs: maybe_skip
     if: ${{needs.maybe_skip.outputs.should_skip != 'true'}}
 
@@ -69,23 +73,6 @@ jobs:
         ref: ${{matrix.robotology.yarp}}
         path: .deps/yarp
 
-    - name: Check out piper
-      uses: actions/checkout@v4
-      with:
-        repository: roboticslab-uc3m/piper1-gpl
-        path: .deps/piper
-
-    - name: Check out SWIG
-      if: ${{matrix.system.os == 'ubuntu-24.04'}}
-      uses: actions/checkout@v4
-      with:
-        repository: swig/swig
-        ref: v4.2.1
-        path: .deps/swig
-
-    - name: Install dependencies via apt
-      run: sudo apt-get update && sudo apt-get install -qq ccache libespeak-dev mbrola-en1 googletest pulseaudio
-
     - name: Set up CMake
       uses: jwlawson/actions-setup-cmake@v2
       with:
@@ -105,27 +92,13 @@ jobs:
       run: |
         cmake -S .deps/ycm -B .deps/ycm/build
         cmake --build .deps/ycm/build
-        sudo cmake --install .deps/ycm/build
+        cmake --install .deps/ycm/build
 
     - name: Build YARP
       run: |
         cmake -S .deps/yarp -B .deps/yarp/build -DSKIP_ACE=ON -DYARP_DISABLE_VERSION_SOURCE=ON
         cmake --build .deps/yarp/build
-        sudo cmake --install .deps/yarp/build
-
-    - name: Build piper
-      run: |
-        cmake -S .deps/piper/libpiper -B .deps/piper/libpiper/build
-        cmake --build .deps/piper/libpiper/build
-        sudo cmake --install .deps/piper/libpiper/build
-
-    - name: Build SWIG
-      if: ${{matrix.system.os == 'ubuntu-24.04'}}
-      run: |
-        cmake -S .deps/swig -B .deps/swig/build
-        cmake --build .deps/swig/build
-        sudo cmake --install .deps/swig/build
-        sudo ln -s /usr/local/bin/swig /usr/local/bin/swig4.0 # shadows /usr/bin/swig4.0
+        cmake --install .deps/yarp/build
 
     - name: Configure main project
       run: cmake -S . -B build -DCREATE_BINDINGS_PYTHON=ON -DENABLE_examples=ON
@@ -134,11 +107,11 @@ jobs:
       run: cmake --build build
 
     - name: Install main project
-      run: sudo cmake --install build && sudo ldconfig
+      run: cmake --install build && ldconfig
 
     - name: Test main project
       working-directory: build
       run: pulseaudio -D && ctest -V
 
     - name: Uninstall main project
-      run: sudo cmake --build build --target uninstall
+      run: cmake --build build --target uninstall
