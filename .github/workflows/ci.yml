@@ -125,7 +125,7 @@ jobs:
 
     - name: Test main project
       working-directory: build
-      run: pulseaudio -D && ctest -V
+      run: pulseaudio -D --system && ctest -V
 
     - name: Uninstall main project
       run: cmake --build build --target uninstall
