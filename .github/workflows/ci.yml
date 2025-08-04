@@ -73,6 +73,12 @@ jobs:
         ref: ${{matrix.robotology.yarp}}
         path: .deps/yarp
 
+    - name: Check out Vosk
+      uses: actions/checkout@v4
+      with:
+        repository: alphacep/vosk-api
+        path: .deps/vosk
+
     - name: Set up CMake
       uses: jwlawson/actions-setup-cmake@v2
       with:
@@ -100,7 +106,15 @@ jobs:
         cmake --build .deps/yarp/build
         cmake --install .deps/yarp/build
 
+    - name: Build Vosk
+      env:
+        CC: "ccache ${{matrix.system.compiler.cc}}"
+        CXX: "ccache ${{matrix.system.compiler.cxx}}"
+      run: make -C .deps/vosk/src KALDI_ROOT=/opt/kaldi
+
     - name: Configure main project
+      env:
+        Vosk_ROOT: .deps/vosk/src
       run: cmake -S . -B build -DCREATE_BINDINGS_PYTHON=ON -DENABLE_examples=ON
 
     - name: Compile main project
