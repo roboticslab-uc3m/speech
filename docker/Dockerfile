@@ -25,6 +25,7 @@ RUN apt-get update && \
         bison \
         googletest \
         python3-setuptools \
+        libpython3-dev \
         ca-certificates && \
     rm -rf /var/lib/apt/lists/* && \
     apt-get clean
