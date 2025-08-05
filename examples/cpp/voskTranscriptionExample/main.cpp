@@ -23,12 +23,22 @@ constexpr auto DEFAULT_PORT_NAME = "/voskTranscriptionExample/sound:i";
 class SoundCallback : public yarp::os::TypedReaderCallback<yarp::sig::Sound>
 {
 public:
-    SoundCallback(yarp::dev::ISpeechTranscription * transcription)
-        : transcription(transcription)
+    SoundCallback(yarp::dev::ISpeechTranscription * asr)
+        : asr(asr)
     {}
 
+    void onRead(yarp::sig::Sound & sound) override
+    {
+        double _score;
+
+        if (std::string transcription; asr && asr->transcribe(sound, transcription, _score) && !transcription.empty())
+        {
+            yInfo() << "Transcription:" << transcription;
+        }
+    }
+
 private:
-    yarp::dev::ISpeechTranscription * transcription {nullptr};
+    yarp::dev::ISpeechTranscription * asr {nullptr};
 };
 
 int main(int argc, char * argv[])
@@ -58,15 +68,15 @@ int main(int argc, char * argv[])
         return 1;
     }
 
-    yarp::dev::ISpeechTranscription * transcription = nullptr;
+    yarp::dev::ISpeechTranscription * asr = nullptr;
 
-    if (!device.view(transcription))
+    if (!device.view(asr))
     {
         yError() << "Failed to view ISpeechTranscription interface";
         return 1;
     }
 
-    if (std::string language; !transcription->getLanguage(language))
+    if (std::string language; !asr->getLanguage(language))
     {
         yError() << "Failed to get current language";
         return 1;
@@ -76,7 +86,7 @@ int main(int argc, char * argv[])
         yInfo() << "Current language:" << language;
     }
 
-    SoundCallback callback(transcription);
+    SoundCallback callback(asr);
     yarp::os::BufferedPort<yarp::sig::Sound> soundPort;
     soundPort.useCallback(callback);
 
