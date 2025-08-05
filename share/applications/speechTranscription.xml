@@ -1,0 +1,54 @@
+<application>
+    <name>speech transcription app</name>
+
+    <module>
+        <name>deviceBundler</name>
+        <parameters>
+            --wrapper_device audioRecorder_nws_yarp
+            --attached_device portaudioRecorder
+            --start true
+            --send_sound_on_stop false
+            --min_samples_over_network 3200
+            --max_samples_over_network 3200
+            --AUDIO_BASE::rate 16000
+            --AUDIO_BASE::samples 6400
+            --AUDIO_BASE::channels 1
+            --name /recorder
+        </parameters>
+        <deployer>yarpdev</deployer>
+        <node>localhost</node>
+    </module>
+
+    <module>
+        <name>VoskTranscription</name>
+        <parameters>--model vosk-model-small-en-us-0.15 --useGPU 0</parameters>
+        <deployer>yarpdev</deployer>
+        <node>localhost</node>
+    </module>
+
+    <module>
+        <name>VoskTranscription</name>
+        <parameters>--model vosk-model-small-es-0.42 --useGPU 0</parameters>
+        <deployer>yarpdev</deployer>
+        <node>localhost</node>
+    </module>
+
+    <module>
+        <name>gnome-terminal</name>
+        <parameters>-e "yarp rpc /speechTranscription_nws/rpc"</parameters>
+        <node>localhost</node>
+    </module>
+
+    <module>
+        <name>gnome-terminal</name>
+        <parameters>-e "yarp read ... /speechTranscription_nws/text:o"</parameters>
+        <node>localhost</node>
+    </module>
+
+    <connection>
+        <from>/recorder/audio:o</from>
+        <to>/speechTranscription_nws/sound:i</to>
+        <protocol>udp</protocol>
+    </connection>
+
+</application>

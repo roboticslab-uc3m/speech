@@ -23,14 +23,14 @@
 * This class is the parameters parser for class VoskTranscription.
 *
 * These are the used parameters:
-* | Group name | Parameter name | Type   | Units | Default Value | Required | Description             | Notes |
-* |:----------:|:--------------:|:------:|:-----:|:-------------:|:--------:|:-----------------------:|:-----:|
-* | -          | modelPath      | string | -     | -             | 0        | path to model directory | -     |
-* | -          | useGPU         | bool   | -     | 0             | 0        | use GPU (if supported)  | -     |
+* | Group name | Parameter name | Type   | Units | Default Value | Required | Description            | Notes |
+* |:----------:|:--------------:|:------:|:-----:|:-------------:|:--------:|:----------------------:|:-----:|
+* | -          | model          | string | -     | -             | 0        | model directory        | -     |
+* | -          | useGPU         | bool   | -     | 0             | 0        | use GPU (if supported) | -     |
 *
 * The device can be launched by yarpdev using one of the following examples (with and without all optional parameters):
 * \code{.unparsed}
-* yarpdev --device VoskTranscription --modelPath <optional_value> --useGPU 0
+* yarpdev --device VoskTranscription --model <optional_value> --useGPU 0
 * \endcode
 *
 * \code{.unparsed}
@@ -56,10 +56,10 @@ public:
     };
     const parser_version_type m_parser_version = {};
 
-    const std::string m_modelPath_defaultValue = {""};
+    const std::string m_model_defaultValue = {""};
     const std::string m_useGPU_defaultValue = {"0"};
 
-    std::string m_modelPath = {}; //This default value of this string is an empty string. It is highly recommended to provide a suggested value also for optional string parameters.
+    std::string m_model = {}; //This default value of this string is an empty string. It is highly recommended to provide a suggested value also for optional string parameters.
     bool m_useGPU = {0};
 
     bool          parseParams(const yarp::os::Searchable & config) override;

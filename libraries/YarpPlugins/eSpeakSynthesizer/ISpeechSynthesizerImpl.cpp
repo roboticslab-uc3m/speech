@@ -13,17 +13,17 @@
 
 namespace
 {
-    constexpr auto MIN_SPEED = 80;
-    constexpr auto MAX_SPEED = 450;
+    constexpr auto MAX_SPEED_RATE = espeakRATE_MAXIMUM / static_cast<double>(espeakRATE_NORMAL);
+    constexpr auto MIN_SPEED_RATE = espeakRATE_MINIMUM / static_cast<double>(espeakRATE_NORMAL);
 
     inline int userToLibSpeed(double userSpeed)
     {
-        return static_cast<int>(MIN_SPEED + (MAX_SPEED - MIN_SPEED) * userSpeed);
+        return static_cast<int>(userSpeed * espeakRATE_NORMAL);
     }
 
     inline double libToUserSpeed(int libSpeed)
     {
-        return static_cast<double>(libSpeed - MIN_SPEED) / (MAX_SPEED - MIN_SPEED);
+        return static_cast<double>(libSpeed) / espeakRATE_NORMAL;
     }
 
     inline int userToLibPitch(double userPitch)
@@ -81,7 +81,7 @@ yarp::dev::ReturnValue eSpeakSynthesizer::setLanguage(const std::string & langua
     else
     {
         yCError(ESS) << "Failed to set language:" << language;
-        return yarp::dev::ReturnValue::return_code::return_value_error_generic;
+        return yarp::dev::ReturnValue::return_code::return_value_error_not_ready;
     }
 }
 
@@ -92,7 +92,8 @@ yarp::dev::ReturnValue eSpeakSynthesizer::getLanguage(std::string & language)
     if (isVoiceSet)
     {
         const auto * voice = espeak_GetCurrentVoice();
-        language = voice->languages;
+        const auto temp = voice->languages;
+        language = std::string(temp + 1); // skip the first non-printable character
         return yarp::dev::ReturnValue::return_code::return_value_ok;
     }
     else
@@ -116,7 +117,7 @@ yarp::dev::ReturnValue eSpeakSynthesizer::setVoice(const std::string & voice_nam
     else
     {
         yCError(ESS) << "Failed to set voice:" << voice_name;
-        return yarp::dev::ReturnValue::return_code::return_value_error_generic;
+        return yarp::dev::ReturnValue::return_code::return_value_error_not_ready;
     }
 }
 
@@ -139,50 +140,84 @@ yarp::dev::ReturnValue eSpeakSynthesizer::getVoice(std::string & voice_name)
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue eSpeakSynthesizer::setSpeed(const double speed)
+yarp::dev::ReturnValue eSpeakSynthesizer::setSpeed(double speed)
 {
-    auto clamped = std::clamp(speed, 0.0, 1.0);
+    if (!isVoiceSet)
+    {
+        yCError(ESS) << "No voice set";
+        return yarp::dev::ReturnValue::return_code::return_value_error_not_ready;
+    }
+
+    auto clamped = std::clamp(speed, MIN_SPEED_RATE, MAX_SPEED_RATE);
     yCInfo(ESS) << "Setting speed to:" << clamped;
 
     return espeak_SetParameter(espeakRATE, userToLibSpeed(clamped), 0) == EE_OK
         ? yarp::dev::ReturnValue::return_code::return_value_ok
-        : yarp::dev::ReturnValue::return_code::return_value_error_generic;
+        : yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
 }
 
 // -----------------------------------------------------------------------------
 
 yarp::dev::ReturnValue eSpeakSynthesizer::getSpeed(double & speed)
 {
-    auto original = espeak_GetParameter(espeakRATE, 1);
-    speed = libToUserSpeed(original);
-    return yarp::dev::ReturnValue::return_code::return_value_ok;
+    if (isVoiceSet)
+    {
+        auto original = espeak_GetParameter(espeakRATE, 1);
+        speed = libToUserSpeed(original);
+        return yarp::dev::ReturnValue::return_code::return_value_ok;
+    }
+    else
+    {
+        yCError(ESS) << "No voice set";
+        return yarp::dev::ReturnValue::return_code::return_value_error_not_ready;
+    }
 }
 
 // -----------------------------------------------------------------------------
 
-yarp::dev::ReturnValue eSpeakSynthesizer::setPitch(const double pitch)
+yarp::dev::ReturnValue eSpeakSynthesizer::setPitch(double pitch)
 {
+    if (!isVoiceSet)
+    {
+        yCError(ESS) << "No voice set";
+        return yarp::dev::ReturnValue::return_code::return_value_error_not_ready;
+    }
+
     auto clamped = std::clamp(pitch, 0.0, 1.0);
     yCInfo(ESS) << "Setting pitch to:" << clamped;
 
     return espeak_SetParameter(espeakPITCH, userToLibPitch(clamped), 0) == EE_OK
         ? yarp::dev::ReturnValue::return_code::return_value_ok
-        : yarp::dev::ReturnValue::return_code::return_value_error_generic;
+        : yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
 }
 
 // -----------------------------------------------------------------------------
 
 yarp::dev::ReturnValue eSpeakSynthesizer::getPitch(double & pitch)
 {
-    auto original = espeak_GetParameter(espeakPITCH, 1);
-    pitch = libToUserPitch(original);
-    return yarp::dev::ReturnValue::return_code::return_value_ok;
+    if (isVoiceSet)
+    {
+        auto original = espeak_GetParameter(espeakPITCH, 1);
+        pitch = libToUserPitch(original);
+        return yarp::dev::ReturnValue::return_code::return_value_ok;
+    }
+    else
+    {
+        yCError(ESS) << "No voice set";
+        return yarp::dev::ReturnValue::return_code::return_value_error_not_ready;
+    }
 }
 
 // -----------------------------------------------------------------------------
 
 yarp::dev::ReturnValue eSpeakSynthesizer::synthesize(const std::string & text, yarp::sig::Sound & sound)
 {
+    if (!isVoiceSet)
+    {
+        yCError(ESS) << "No voice set";
+        return yarp::dev::ReturnValue::return_code::return_value_error_not_ready;
+    }
+
     yCInfo(ESS) << "Synthesizing:" << text;
 
     // espeak_Initialize() returs 22050 Hz, but it's misleading
@@ -208,7 +243,7 @@ yarp::dev::ReturnValue eSpeakSynthesizer::synthesize(const std::string & text, y
     if (espeak_Synth(text.c_str(), 0, 0, POS_CHARACTER, 0, espeakCHARS_AUTO | espeakENDPAUSE, nullptr, nullptr) != EE_OK)
     {
         yCError(ESS) << "Failed to synthesize text";
-        return yarp::dev::ReturnValue::return_code::return_value_error_generic;
+        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
 
     return yarp::dev::ReturnValue::return_code::return_value_ok;

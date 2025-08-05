@@ -56,13 +56,10 @@ TEST_F(EspeakTest, EspeakSayLong)
     ASSERT_TRUE(espeak.say(text));
     ASSERT_FALSE(espeak.checkSayDone());
 
-    yarp::os::SystemClock::delaySystem(2.0);
+    yarp::os::SystemClock::delaySystem(1.0);
 
     ASSERT_FALSE(espeak.checkSayDone());
     ASSERT_TRUE(espeak.stop());
-
-    yarp::os::SystemClock::delaySystem(1.0); // this is necessary for CI
-
     ASSERT_TRUE(espeak.checkSayDone());
 }
 

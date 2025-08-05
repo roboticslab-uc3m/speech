@@ -16,7 +16,7 @@ bool VoskTranscription::open(yarp::os::Searchable & config)
         return false;
     }
 
-    if (!m_modelPath.empty() && !setLanguage(m_modelPath))
+    if (!m_model.empty() && !setLanguage(m_model))
     {
         return false;
     }

@@ -1,40 +1,48 @@
-
 /**
-@brief The main, catch-all namespace for TEO.
+@brief The main, catch-all namespace for RoboticsLab UC3M.
  */
-namespace teo {}
+namespace roboticslab
+{
+    /**
+     * @brief Contains classes related to unit testing.
+     */
+    namespace test {}
+}
 
 /**
- * \defgroup speech-libraries speech Libraries
- *
+ * @defgroup speech-libraries speech Libraries
  * @brief speech libraries.
- *
  */
 
 /**
- * \defgroup speech-programs speech Programs
- *
+ * @defgroup speech-programs speech Programs
  * @brief speech programs.
  */
 
 /**
- * \defgroup speech-applications speech Applications (Collections of Programs)
- *
+ * @defgroup speech-applications speech Applications (Collections of Programs)
  * @brief speech applications (collections of programs).
  */
 
 /**
- * \defgroup speech-examples speech Examples
- *
+ * @defgroup speech-examples speech Examples
  * @brief speech examples.
  */
 
+/**
+ * @ingroup speech-examples
+ * @defgroup speech-examples-cpp C++ examples
+ */
+
+/**
+ * @ingroup speech-examples
+ * @defgroup speech-examples-py Python examples
+ */
 
 /**
 * @ingroup speech-libraries
-* \defgroup YarpPlugins YarpPlugins
+* @defgroup YarpPlugins YarpPlugins
 *
 * @brief A collection of speech libraries that implement YARP device interfaces
 * and therefore can be invoked as YARP plugins.
 */
-

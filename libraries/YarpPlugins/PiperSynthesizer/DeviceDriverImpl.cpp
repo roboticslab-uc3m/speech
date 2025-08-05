@@ -17,101 +17,58 @@ bool PiperSynthesizer::open(yarp::os::Searchable & config)
         return false;
     }
 
-    yCInfo(PIPER) << "Piper version:" << piper::getVersion();
-
-    if (m_modelPath.empty())
-    {
-        yCError(PIPER) << "Model path is empty";
-        return false;
-    }
-
-    if (m_modelConfigPath.empty())
-    {
-        m_modelConfigPath = m_modelPath + ".json";
-    }
-
     yarp::os::ResourceFinder rf;
     rf.setDefaultContext("PiperSynthesizer");
 
-    auto modelFullPath = rf.findFileByName(m_modelPath);
-
-    if (modelFullPath.empty())
+    if (!m_eSpeakDataDir.empty())
     {
-        yCError(PIPER) << "Model file not found:" << m_modelPath;
-        return false;
-    }
+        eSpeakDataFullPath = rf.findFileByName(m_eSpeakDataDir);
 
-    yCInfo(PIPER) << "Loading model from:" << modelFullPath;
-
-    auto modelConfigFullPath = rf.findFileByName(m_modelConfigPath);
-
-    if (modelConfigFullPath.empty())
-    {
-        yCError(PIPER) << "Model config file not found:" << m_modelConfigPath;
-        return false;
-    }
-
-    yCInfo(PIPER) << "Loading model config from:" << modelConfigFullPath;
-
-    auto speakerId = std::optional(static_cast<std::int64_t>(m_speakerId));
-    piper::loadVoice(piperConfig, modelFullPath, modelConfigFullPath, voice, speakerId, m_useCuda);
-
-    if (voice.phonemizeConfig.phonemeType == piper::eSpeakPhonemes)
-    {
-        if (!m_eSpeakDataPath.empty())
+        if (eSpeakDataFullPath.empty())
         {
-            auto eSpeakDataFullPath = rf.findFileByName(m_eSpeakDataPath);
-
-            if (eSpeakDataFullPath.empty())
-            {
-                yCError(PIPER) << "eSpeak data path not found:" << m_eSpeakDataPath;
-                return false;
-            }
-
-            piperConfig.eSpeakDataPath = eSpeakDataFullPath;
+            yCError(PIPER) << "eSpeak data path not found:" << m_eSpeakDataDir;
+            return false;
         }
-        else
-        {
-            piperConfig.eSpeakDataPath = std::string(_PIPER_DATA_DIR) + "/espeak-ng-data";
-        }
-
-        yCInfo(PIPER) << "Using eSpeak data path:" << piperConfig.eSpeakDataPath;
     }
     else
     {
-        piperConfig.useESpeak = false;
+        eSpeakDataFullPath = _ESPEAKNG_DATA_DIR;
     }
 
-    if (voice.phonemizeConfig.eSpeak.voice == "ar")
+    yCInfo(PIPER) << "Using eSpeak data path:" << eSpeakDataFullPath;
+
+    auto baseFullPath = rf.findFileByName("PiperSynthesizer.ini");
+
+    if (baseFullPath.empty())
     {
-        piperConfig.useTashkeel = true;
-
-        if (!m_tashkeelModelPath.empty())
-        {
-            auto tashkeelModelFullPath = rf.findFileByName(m_tashkeelModelPath);
-
-            if (tashkeelModelFullPath.empty())
-            {
-                yCError(PIPER) << "Tashkeel model path not found:" << m_tashkeelModelPath;
-                return false;
-            }
-
-            piperConfig.tashkeelModelPath = tashkeelModelFullPath;
-        }
-        else
-        {
-            piperConfig.tashkeelModelPath = std::string(_PIPER_DATA_DIR) + "/libtashkeel_model.ort";
-        }
-
-        yCInfo(PIPER) << "Using Tashkeel model path:" << piperConfig.tashkeelModelPath.value();
+        yCError(PIPER) << "Base model path not found";
+        return false;
     }
 
-    piper::initialize(piperConfig);
+    const auto base = std::filesystem::path(baseFullPath).parent_path();
 
-    voice.synthesisConfig.noiseScale = m_noiseScale;
-    voice.synthesisConfig.lengthScale = m_lengthScale;
-    voice.synthesisConfig.noiseW = m_noiseW;
-    voice.synthesisConfig.sentenceSilenceSeconds = m_sentenceSilenceSeconds;
+    yCDebug(PIPER) << "Searching for models in:" << base.string();
+
+    if (!inspectModels(base))
+    {
+        yCError(PIPER) << "Failed to inspect models";
+        return false;
+    }
+
+    if (!m_model.empty())
+    {
+        auto it = storage.find(m_model);
+
+        if (it == storage.end())
+        {
+            yCError(PIPER) << "Model not found:" << m_model;
+            return false;
+        }
+
+        current_model = &it->second;
+        loadCurrentModel();
+        yCDebug(PIPER) << "Loaded model:" << m_model;
+    }
 
     return true;
 }
@@ -120,7 +77,12 @@ bool PiperSynthesizer::open(yarp::os::Searchable & config)
 
 bool PiperSynthesizer::close()
 {
-    piper::terminate(piperConfig);
+    if (synth)
+    {
+        ::piper_free(synth);
+        synth = nullptr;
+    }
+
     return true;
 }
 

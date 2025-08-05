@@ -47,7 +47,7 @@ if not pb.open(args.prefix + '/result:o'):
     print('[error] Failed to open bottle out port')
     raise SystemExit
 
-class SoundCallback(yarp.TypedReaderCallbackSound):
+class SoundCallback(yarp.SoundCallback):
     def __init__(self, model, model_name, threshold):
         super().__init__()
         self.model = model
@@ -64,7 +64,7 @@ class SoundCallback(yarp.TypedReaderCallbackSound):
 
             self.model.predict(frame)
 
-            if (len(self.buffer) != 0):
+            if len(self.buffer) != 0:
                 confidence = float(self.buffer[-1])
                 print(f'{self.model_name}: {confidence}')
 
