@@ -6,7 +6,7 @@
         <parameters>
             --wrapper_device AudioPlayerWrapper
             --attached_device portaudioPlayer
-            --start 1
+            --start true
             --playback_network_buffer_size 0.1
             --AUDIO_BASE::samples 320000
             --name /player

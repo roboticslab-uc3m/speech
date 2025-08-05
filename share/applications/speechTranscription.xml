@@ -6,7 +6,8 @@
         <parameters>
             --wrapper_device audioRecorder_nws_yarp
             --attached_device portaudioRecorder
-            --start 1
+            --start true
+            --send_sound_on_stop false
             --min_samples_over_network 3200
             --max_samples_over_network 3200
             --AUDIO_BASE::rate 16000
