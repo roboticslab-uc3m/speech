@@ -40,7 +40,7 @@ if not asr.setLanguage('vosk-model-small-es-0.42'):
     print('[error] Failed to set language')
     raise SystemExit
 
-class SoundCallback(yarp.TypedReaderCallbackSound):
+class SoundCallback(yarp.SoundCallback):
     def __init__(self):
         super().__init__()
         self.s = yarp.SVector(1)
