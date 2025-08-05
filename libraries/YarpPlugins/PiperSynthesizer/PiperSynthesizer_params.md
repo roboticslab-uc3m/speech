@@ -1,6 +1,6 @@
 | Group |   Parameter   |  Type  | Units | Default Value | Required |       Description        |               Notes               |
 |:-----:|:-------------:|:------:|:-----:|:-------------:|:--------:|:------------------------:|:---------------------------------:|
-|       |      model    | string |       |               |    no    |     ONNX voice file      |                                   |
+|       |     model     | string |       |               |    no    |     ONNX voice file      |                                   |
 |       |  modelConfig  | string |       |               |    no    |  JSON voice config file  |                                   |
 |       | eSpeakDataDir | string |       |               |    no    | espeak-ng data directory |                                   |
 |       |   speakerId   |  int   |       |       0       |    no    |      id of speaker       |                                   |

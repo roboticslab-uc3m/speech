@@ -8,7 +8,7 @@
 // This is an automatically generated file. Please do not edit it.
 // It will be re-generated if the cmake flag ALLOW_DEVICE_PARAM_PARSER_GERNERATION is ON.
 
-// Generated on: Sat May  3 01:25:21 2025
+// Generated on: Mon Aug  4 16:58:55 2025
 
 
 #include "VoskTranscription_ParamsParser.h"
@@ -28,7 +28,7 @@ VoskTranscription_ParamsParser::VoskTranscription_ParamsParser()
 std::vector<std::string> VoskTranscription_ParamsParser::getListOfParams() const
 {
     std::vector<std::string> params;
-    params.push_back("modelPath");
+    params.push_back("model");
     params.push_back("useGPU");
     return params;
 }
@@ -44,18 +44,18 @@ bool      VoskTranscription_ParamsParser::parseParams(const yarp::os::Searchable
 
     std::string config_string = config.toString();
     yarp::os::Property prop_check(config_string.c_str());
-    //Parser of parameter modelPath
+    //Parser of parameter model
     {
-        if (config.check("modelPath"))
+        if (config.check("model"))
         {
-            m_modelPath = config.find("modelPath").asString();
-            yCInfo(VoskTranscriptionParamsCOMPONENT) << "Parameter 'modelPath' using value:" << m_modelPath;
+            m_model = config.find("model").asString();
+            yCInfo(VoskTranscriptionParamsCOMPONENT) << "Parameter 'model' using value:" << m_model;
         }
         else
         {
-            yCInfo(VoskTranscriptionParamsCOMPONENT) << "Parameter 'modelPath' using DEFAULT value:" << m_modelPath;
+            yCInfo(VoskTranscriptionParamsCOMPONENT) << "Parameter 'model' using DEFAULT value:" << m_model;
         }
-        prop_check.unput("modelPath");
+        prop_check.unput("model");
     }
 
     //Parser of parameter useGPU
@@ -108,11 +108,11 @@ std::string      VoskTranscription_ParamsParser::getDocumentationOfDeviceParams(
     doc = doc + std::string("This is the help for device: VoskTranscription\n");
     doc = doc + std::string("\n");
     doc = doc + std::string("This is the list of the parameters accepted by the device:\n");
-    doc = doc + std::string("'modelPath': path to model directory\n");
+    doc = doc + std::string("'model': path to model directory\n");
     doc = doc + std::string("'useGPU': use GPU (if supported)\n");
     doc = doc + std::string("\n");
     doc = doc + std::string("Here are some examples of invocation command with yarpdev, with all params:\n");
-    doc = doc + " yarpdev --device VoskTranscription --modelPath <optional_value> --useGPU 0\n";
+    doc = doc + " yarpdev --device VoskTranscription --model <optional_value> --useGPU 0\n";
     doc = doc + std::string("Using only mandatory params:\n");
     doc = doc + " yarpdev --device VoskTranscription\n";
     doc = doc + std::string("=============================================\n\n");    return doc;
