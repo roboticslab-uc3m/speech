@@ -98,14 +98,25 @@ if not yarp.Network.connect(args.asr + '/text:o', asr_port.getName()):
 def set_player_state(*, on):
     response = yarp.Bottle()
     player_rpc.write(yarp.Bottle('start' if on == True else 'stop'), response)
-    return response.size() > 0 and response.get(0).asString() == 'ok'
+    if response.size() == 0 or response.get(0).asString() != 'ok':
+        print(f'[error] Failed to set player state to {"on" if on else "off"}')
 
 def set_recorder_state(*, on):
     response = yarp.Bottle()
-    recorder_rpc.write(yarp.Bottle('start' if on == True else 'stop'), response)
-    return response.size() > 0 and response.get(0).asString() == 'ok'
+    recorder_rpc.write(yarp.Bottle('startRecording_RPC' if on == True else 'stopRecording_RPC'), response)
+    if response.size() != 0:
+        print(f'[error] Failed to set recorder state to {"on" if on else "off"}')
+    else: reset_recorder_buffer()
+
+def reset_recorder_buffer():
+    response = yarp.Bottle()
+    recorder_rpc.write(yarp.Bottle('resetRecordingAudioBuffer_RPC'), response)
+    if response.size() != 0:
+        print('[error] Failed to reset recorder audio buffer')
 
 def main_loop():
+    sound = yarp.Sound()
+
     # 1. disable speaker, enable microphone
     print('1. Disabling speaker, enabling microphone')
     set_player_state(on=False)
@@ -130,7 +141,6 @@ def main_loop():
 
     # 4. acknowledge readiness through TTS
     print('4. Signaling readiness through TTS')
-    sound = yarp.Sound()
     tts.synthesize('I am ready to listen', sound)
     time.sleep(sound.getDuration())
 
