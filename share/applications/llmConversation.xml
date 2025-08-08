@@ -1,0 +1,23 @@
+<application>
+    <name>LLM conversation app</name>
+
+    <module>
+        <name>LlamaGPT</name>
+        <parameters>--model DeepSeek-R1-Distill-Qwen-1.5B-BF16.gguf --tokens 500 --name /llm</parameters>
+        <node>localhost</node>
+        <deployer>yarpdev</deployer>
+    </module>
+
+    <module>
+        <name>yarpllmgui</name>
+        <parameters>--remote_rpc /llm/rpc:i</parameters>
+        <node>localhost</node>
+    </module>
+
+    <connection>
+        <from>/speechSynthesizer_nws/sound:o</from>
+        <to>/player/audio:i</to>
+        <protocol>udp</protocol>
+    </connection>
+
+</application>
