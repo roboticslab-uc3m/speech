@@ -42,21 +42,21 @@
 
     <module>
         <name>PiperSynthesizer</name>
-        <parameters>--modelPath en_US-lessac-medium.onnx --name /tts</parameters>
+        <parameters>--model en_US-lessac-medium.onnx --name /tts</parameters>
         <node>localhost</node>
         <deployer>yarpdev</deployer>
     </module>
 
     <module>
         <name>VoskTranscription</name>
-        <parameters>--modelPath vosk-model-small-en-us-0.15 --name /asr</parameters>
+        <parameters>--model vosk-model-small-en-us-0.15 --name /asr</parameters>
         <node>localhost</node>
         <deployer>yarpdev</deployer>
     </module>
 
     <module>
         <name>LlamaGPT</name>
-        <parameters>--modelPath DeepSeek-R1-Distill-Qwen-1.5B-BF16.gguf --tokens 500 --name /llm</parameters>
+        <parameters>--model DeepSeek-R1-Distill-Qwen-1.5B-BF16.gguf --tokens 500 --name /llm</parameters>
         <node>localhost</node>
         <deployer>yarpdev</deployer>
     </module>

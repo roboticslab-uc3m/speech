@@ -23,11 +23,11 @@ bool LlamaGPT::open(yarp::os::Searchable & config)
     yarp::os::ResourceFinder rf;
     rf.setDefaultContext("LlamaGPT");
 
-    auto modelFullPath = rf.findFileByName(m_modelPath);
+    auto modelFullPath = rf.findFileByName(m_model);
 
     if (modelFullPath.empty())
     {
-        yCError(LLAMA) << "Model file not found:" << m_modelPath;
+        yCError(LLAMA) << "Model file not found:" << m_model;
         return false;
     }
 
@@ -69,11 +69,11 @@ bool LlamaGPT::open(yarp::os::Searchable & config)
             return false;
         }
     }
-    else if (!m_promptPath.empty())
+    else if (!m_promptFile.empty())
     {
-        yCInfo(LLAMA) << "Loading prompt from:" << m_promptPath;
+        yCInfo(LLAMA) << "Loading prompt from:" << m_promptFile;
 
-        auto promptFullPath = rf.findFileByName(m_promptPath);
+        auto promptFullPath = rf.findFileByName(m_promptFile);
 
         if (promptFullPath.empty())
         {

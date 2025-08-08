@@ -8,7 +8,7 @@
 // This is an automatically generated file. Please do not edit it.
 // It will be re-generated if the cmake flag ALLOW_DEVICE_PARAM_PARSER_GERNERATION is ON.
 
-// Generated on: Sun May  4 13:22:26 2025
+// Generated on: Fri Aug  8 22:54:08 2025
 
 
 #ifndef LLAMAGPT_PARAMSPARSER_H
@@ -25,15 +25,15 @@
 * These are the used parameters:
 * | Group name | Parameter name | Type   | Units | Default Value | Required | Description                            | Notes                |
 * |:----------:|:--------------:|:------:|:-----:|:-------------:|:--------:|:--------------------------------------:|:--------------------:|
-* | -          | modelPath      | string | -     | -             | 0        | path to model directory                | -                    |
+* | -          | model          | string | -     | -             | 0        | model directory                        | -                    |
 * | -          | ngl            | int    | -     | 99            | 0        | number of layers to offload to the GPU | -                    |
 * | -          | tokens         | int    | -     | 32            | 0        | number of tokens to predict            | -                    |
-* | -          | prompt         | string | -     | -             | 0        | prompt to generate text from           | overrides promptPath |
-* | -          | promptPath     | string | -     | -             | 0        | path to a file containing the prompt   | -                    |
+* | -          | prompt         | string | -     | -             | 0        | prompt to generate text from           | overrides promptFile |
+* | -          | promptFile     | string | -     | -             | 0        | file containing the prompt             | -                    |
 *
 * The device can be launched by yarpdev using one of the following examples (with and without all optional parameters):
 * \code{.unparsed}
-* yarpdev --device LlamaGPT --modelPath <optional_value> --ngl 99 --tokens 32 --prompt <optional_value> --promptPath <optional_value>
+* yarpdev --device LlamaGPT --model <optional_value> --ngl 99 --tokens 32 --prompt <optional_value> --promptFile <optional_value>
 * \endcode
 *
 * \code{.unparsed}
@@ -59,17 +59,17 @@ public:
     };
     const parser_version_type m_parser_version = {};
 
-    const std::string m_modelPath_defaultValue = {""};
+    const std::string m_model_defaultValue = {""};
     const std::string m_ngl_defaultValue = {"99"};
     const std::string m_tokens_defaultValue = {"32"};
     const std::string m_prompt_defaultValue = {""};
-    const std::string m_promptPath_defaultValue = {""};
+    const std::string m_promptFile_defaultValue = {""};
 
-    std::string m_modelPath = {}; //This default value of this string is an empty string. It is highly recommended to provide a suggested value also for optional string parameters.
+    std::string m_model = {}; //This default value of this string is an empty string. It is highly recommended to provide a suggested value also for optional string parameters.
     int m_ngl = {99};
     int m_tokens = {32};
     std::string m_prompt = {}; //This default value of this string is an empty string. It is highly recommended to provide a suggested value also for optional string parameters.
-    std::string m_promptPath = {}; //This default value of this string is an empty string. It is highly recommended to provide a suggested value also for optional string parameters.
+    std::string m_promptFile = {}; //This default value of this string is an empty string. It is highly recommended to provide a suggested value also for optional string parameters.
 
     bool          parseParams(const yarp::os::Searchable & config) override;
     std::string   getDeviceClassName() const override { return m_device_classname; }
