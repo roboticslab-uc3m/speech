@@ -9,7 +9,7 @@
             --attached_device portaudioPlayer
             --playback_network_buffer_size 0.1
             --AUDIO_BASE::samples 320000
-            --start false
+            --start true
             --name /player
         </parameters>
         <node>localhost</node>
@@ -26,7 +26,7 @@
             --AUDIO_BASE::rate 16000
             --AUDIO_BASE::samples 6400
             --AUDIO_BASE::channels 1
-            --start false
+            --start true
             --send_sound_on_stop false
             --name /recorder
         </parameters>
@@ -74,20 +74,5 @@
             <port timeout="5.0">/llm/rpc:i</port>
         </dependencies>
     </module>
-
-    <connection>
-        <from>/tts/sound:o</from>
-        <to>/player/audio:i</to>
-    </connection>
-
-    <connection>
-        <from>/recorder/audio:o</from>
-        <to>/asr/sound:i</to>
-    </connection>
-
-    <connection>
-        <from>/recorder/audio:o</from>
-        <to>/wakeword/sound:i</to>
-    </connection>
 
 </application>

@@ -9,8 +9,6 @@ import argparse
 import time
 import yarp
 
-VOCAB_OK = yarp.encode('ok')
-
 parser = argparse.ArgumentParser(description='YARP chat completion service', add_help=False)
 parser.add_argument('--prefix', '-p', type=str, default='/chatCompletion', help='port prefix')
 parser.add_argument('--context', type=str, default='chatCompletion', help='context directory')
@@ -29,6 +27,16 @@ if not yarp.Network.checkNetwork():
     print('[error] Please try running yarp server')
     raise SystemExit
 
+def connect_ports(source_port, destination_port):
+    if not yarp.Network.connect(source_port, destination_port):
+        print(f'Unable to connect {source_port} to {destination_port}')
+
+def disconnect_ports(source_port, destination_port):
+    if not yarp.Network.disconnect(source_port, destination_port):
+        print(f'Unable to disconnect {source_port} from {destination_port}')
+
+# TTS
+
 tts_options = yarp.Property()
 tts_options.put('device', 'speechSynthesizer_nwc_yarp')
 tts_options.put('local', args.prefix + '/tts')
@@ -41,6 +49,24 @@ if not tts_device.isValid():
     raise SystemExit
 
 tts = tts_device.viewISpeechSynthesizer()
+
+# ASR
+
+asr_port = yarp.BufferedPortBottle()
+
+if not asr_port.open(args.prefix + '/asr/text:i'):
+    print('[error] Unable to open ASR port')
+    raise SystemExit
+
+# wake word detection
+
+wakeword_port = yarp.BufferedPortBottle()
+
+if not wakeword_port.open(args.prefix + '/wakeword/result:i'):
+    print('[error] Unable to open wakeword port')
+    raise SystemExit
+
+# LLM
 
 llm_options = yarp.Property()
 llm_options.put('device', 'LLM_nwc_yarp')
@@ -55,146 +81,80 @@ if not llm_device.isValid():
 
 llm = llm_device.viewILLM()
 
-player_rpc = yarp.RpcClient()
+# prerequisites
 
-if not player_rpc.open(args.prefix + '/player/rpc:o'):
-    print('[error] Unable to open player RPC port')
-    raise SystemExit
+connect_ports(args.tts + '/sound:o', args.player + '/audio:i')
+connect_ports(args.asr + '/text:o', asr_port.getName())
+connect_ports(args.wakeword + '/result:o', wakeword_port.getName())
 
-if not yarp.Network.connect(player_rpc.getName(), args.player + '/rpc:i'):
-    print('[error] Unable to connect player RPC port')
-    raise SystemExit
+disconnect_ports(args.recorder + '/audio:o', args.asr + '/sound:i')
 
-recorder_rpc = yarp.RpcClient()
-
-if not recorder_rpc.open(args.prefix + '/recorder/rpc:o'):
-    print('[error] Unable to open recorder RPC port')
-    raise SystemExit
-
-if not yarp.Network.connect(recorder_rpc.getName(), args.recorder + '/rpc'):
-    print('[error] Unable to connect recorder RPC port')
-    raise SystemExit
-
-wakeword_port = yarp.BufferedPortBottle()
-
-if not wakeword_port.open(args.prefix + '/wakeword/result:i'):
-    print('[error] Unable to open wakeword port')
-    raise SystemExit
-
-if not yarp.Network.connect(args.wakeword + '/result:o', wakeword_port.getName()):
-    print('[error] Unable to connect wakeword port')
-    raise SystemExit
-
-asr_port = yarp.BufferedPortBottle()
-
-if not asr_port.open(args.prefix + '/asr/text:i'):
-    print('[error] Unable to open ASR port')
-    raise SystemExit
-
-if not yarp.Network.connect(args.asr + '/text:o', asr_port.getName()):
-    print('[error] Unable to connect ASR port')
-    raise SystemExit
-
-def set_player_state(*, on):
-    response = yarp.Bottle()
-    player_rpc.write(yarp.Bottle('start' if on == True else 'stop'), response)
-    if response.size() == 0 or response.get(0).asString() != 'ok':
-        print(f'[error] Failed to set player state to {"on" if on else "off"}')
-
-def set_recorder_state(*, on):
-    response = yarp.Bottle()
-    recorder_rpc.write(yarp.Bottle('startRecording_RPC' if on == True else 'stopRecording_RPC'), response)
-    if response.size() != 0:
-        print(f'[error] Failed to set recorder state to {"on" if on else "off"}')
-    else: reset_recorder_buffer()
-
-def reset_recorder_buffer():
-    response = yarp.Bottle()
-    recorder_rpc.write(yarp.Bottle('resetRecordingAudioBuffer_RPC'), response)
-    if response.size() != 0:
-        print('[error] Failed to reset recorder audio buffer')
+# main loop
 
 def main_loop():
+    print('----- Starting main loop -----')
+
     sound = yarp.Sound()
 
-    # 1. disable speaker, enable microphone
-    print('1. Disabling speaker, enabling microphone')
-    set_player_state(on=False)
-    set_recorder_state(on=True)
-
-    # 2. wait for wakeword
-    print('2. Waiting for wakeword')
+    # 1. detect wake word
+    print('1. Detecting wake word')
+    connect_ports(args.recorder + '/audio:o', args.wakeword + '/sound:i')
 
     while True:
         wakeword_bottle = wakeword_port.read(False)
 
         if wakeword_bottle is not None:
-            print(f'Wakeword detected: {wakeword_bottle.toString()}')
+            print(f'   -> {wakeword_bottle.toString()}')
             break
 
         time.sleep(0.1)
 
-    # 3. disable microphone, enable speaker
-    print('3. Disabling microphone, enabling speaker')
-    set_recorder_state(on=False)
-    set_player_state(on=True)
+    disconnect_ports(args.recorder + '/audio:o', args.wakeword + '/sound:i')
 
-    # 4. acknowledge readiness through TTS
-    print('4. Signaling readiness through TTS')
+    # 2. acknowledge readiness through TTS
+    print('2. Signaling readiness through TTS')
     tts.synthesize('I am ready to listen', sound)
     time.sleep(sound.getDuration())
 
-    # 5. disable speaker, enable microphone
-    print('5. Disabling speaker, enabling microphone')
-    set_player_state(on=False)
-    set_recorder_state(on=True)
-
-    # 6. wait for ASR
-    print('6. Waiting for ASR')
+    # 3. wait for ASR result
+    print('3. Waiting for ASR result')
+    connect_ports(args.recorder + '/audio:o', args.asr + '/sound:i')
 
     while True:
         asr_bottle = asr_port.read(False)
 
         if asr_bottle is not None and asr_bottle.size() > 0 and len(asr_bottle.get(0).asString()) > 0:
             question = asr_bottle.get(0).asString()
-            print(f'ASR result: {question}')
+            print(f'   -> {question}')
             break
 
         time.sleep(0.1)
 
-    # 7. disable speaker, disable microphone
-    print('7. Disabling speaker, disabling microphone')
-    set_player_state(on=False)
-    set_recorder_state(on=False)
+    disconnect_ports(args.recorder + '/audio:o', args.asr + '/sound:i')
 
-    # 8. send ASR result to LLM
-    print('8. Sending ASR result to LLM')
+    # 4. send ASR result to LLM and wait for answer
+    print('4. Sending ASR result to LLM and waiting for answer')
     answer = yarp.SVector(1) # FIXME: should be a LLM_Message, but its bindings are missing
     llm.ask(question, answer)
+    print(f'   -> {answer[0]}')
 
-    # 9. enable speaker, disable microphone
-    print('9. Enabling speaker, disabling microphone')
-    set_player_state(on=True)
-    set_recorder_state(on=False)
-
-    # 10. send LLM result to TTS
-    print('10. Sending LLM result to TTS')
+    # 5. send LLM result to TTS
+    print('5. Sending LLM result to TTS')
     tts.synthesize(answer[0], sound)
     time.sleep(sound.getDuration())
 
 try:
-    while True: main_loop()
+    while True:
+        main_loop()
 except KeyboardInterrupt:
     print('Keyboard interrupt received, stopping...')
 
+disconnect_ports(args.recorder + '/audio:o', args.wakeword + '/sound:i')
+disconnect_ports(args.recorder + '/audio:o', args.asr + '/sound:i')
+disconnect_ports(args.tts + '/sound:o', args.player + '/audio:i')
+
 tts_device.close()
 llm_device.close()
-
-player_rpc.interrupt()
-player_rpc.close()
-
-recorder_rpc.interrupt()
-recorder_rpc.close()
 
 wakeword_port.interrupt()
 wakeword_port.close()
