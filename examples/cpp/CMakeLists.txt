@@ -9,11 +9,10 @@ if(ENABLE_examples)
         add_subdirectory(espeakClientExample)
     endif()
 
-    if(ENABLE_PiperSynthesizer)
-        add_subdirectory(speechSynthesizerClientExample)
-    endif()
-
     if(ENABLE_VoskTranscription)
         add_subdirectory(voskTranscriptionExample)
     endif()
+
+    add_subdirectory(llmClientExample)
+    add_subdirectory(speechSynthesizerClientExample)
 endif()
