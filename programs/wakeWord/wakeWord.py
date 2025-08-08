@@ -90,6 +90,7 @@ signal.signal(signal.SIGINT, signal_handler)
 
 while not should_stop:
     if ps.getInputCount() == 0 and model.prediction_buffer:
+        print('[warning] No input sound port connected, flushing prediction buffer')
         model.reset() # flush prediction buffer
 
     time.sleep(0.1)

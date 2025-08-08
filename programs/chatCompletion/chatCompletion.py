@@ -58,6 +58,8 @@ if not asr_port.open(args.prefix + '/asr/text:i'):
     print('[error] Unable to open ASR port')
     raise SystemExit
 
+asr_port.setStrict(True) # don't drop messages
+
 # wake word detection
 
 wakeword_port = yarp.BufferedPortBottle()
@@ -81,14 +83,6 @@ if not llm_device.isValid():
 
 llm = llm_device.viewILLM()
 
-# prerequisites
-
-connect_ports(args.tts + '/sound:o', args.player + '/audio:i')
-connect_ports(args.asr + '/text:o', asr_port.getName())
-connect_ports(args.wakeword + '/result:o', wakeword_port.getName())
-
-disconnect_ports(args.recorder + '/audio:o', args.asr + '/sound:i')
-
 # main loop
 
 def main_loop():
@@ -107,7 +101,7 @@ def main_loop():
             print(f'   -> {wakeword_bottle.toString()}')
             break
 
-        time.sleep(0.1)
+        time.sleep(0.01)
 
     disconnect_ports(args.recorder + '/audio:o', args.wakeword + '/sound:i')
 
@@ -128,7 +122,7 @@ def main_loop():
             print(f'   -> {question}')
             break
 
-        time.sleep(0.1)
+        time.sleep(0.01)
 
     disconnect_ports(args.recorder + '/audio:o', args.asr + '/sound:i')
 
@@ -143,11 +137,21 @@ def main_loop():
     tts.synthesize(answer[0], sound)
     time.sleep(sound.getDuration())
 
+# prerequisites
+
+connect_ports(args.tts + '/sound:o', args.player + '/audio:i')
+connect_ports(args.asr + '/text:o', asr_port.getName())
+connect_ports(args.wakeword + '/result:o', wakeword_port.getName())
+
+disconnect_ports(args.recorder + '/audio:o', args.asr + '/sound:i')
+
 try:
     while True:
         main_loop()
 except KeyboardInterrupt:
     print('Keyboard interrupt received, stopping...')
+
+# housekeeping
 
 disconnect_ports(args.recorder + '/audio:o', args.wakeword + '/sound:i')
 disconnect_ports(args.recorder + '/audio:o', args.asr + '/sound:i')
