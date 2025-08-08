@@ -52,7 +52,6 @@ class SoundCallback(yarp.SoundCallback):
         super().__init__()
         self.model = model
         self.model_name = os.path.basename(model_name[:-len('.onnx')])
-        self.buffer = self.model.prediction_buffer[self.model_name]
         self.threshold = threshold
 
     def onRead(self, sound, reader):
@@ -62,19 +61,16 @@ class SoundCallback(yarp.SoundCallback):
             for i in range(sound.getSamples()):
                 frame[i] = sound.get(i)
 
-            self.model.predict(frame)
+            confidence = self.model.predict(frame)[self.model_name]
+            print(f'{self.model_name}: {confidence}')
 
-            if len(self.buffer) != 0:
-                confidence = float(self.buffer[-1])
-                print(f'{self.model_name}: {confidence}')
+            if confidence >= self.threshold and pb.getOutputCount() > 0:
+                bottle = pb.prepare()
+                bottle.clear()
+                bottle.addString(self.model_name)
+                bottle.addFloat32(float(confidence))
 
-                if confidence >= self.threshold:
-                    bottle = pb.prepare()
-                    bottle.clear()
-                    bottle.addString(self.model_name)
-                    bottle.addFloat32(confidence)
-
-                    pb.write()
+                pb.write()
 
 ps = yarp.BufferedPortSound()
 c = SoundCallback(model, args.model, args.confidence)
@@ -93,6 +89,9 @@ def signal_handler(signum, frame):
 signal.signal(signal.SIGINT, signal_handler)
 
 while not should_stop:
+    if ps.getInputCount() == 0 and model.prediction_buffer:
+        model.reset() # flush prediction buffer
+
     time.sleep(0.1)
 
 print('Stopping the program...')
