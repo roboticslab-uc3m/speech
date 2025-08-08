@@ -16,31 +16,23 @@
 
 yarp::dev::ReturnValue PiperSynthesizer::setLanguage(const std::string & language)
 {
-    if (synth)
+    const auto name = toLowerCase(language);
+
+    auto it = std::find_if(storage.begin(), storage.end(), [&name](const auto & entry) {
+        return entry.second.language == name || entry.second.code == name;
+    });
+
+    if (it != storage.end())
     {
-        const auto name = toLowerCase(language);
-
-        auto it = std::find_if(storage.begin(), storage.end(), [&name](const auto & entry) {
-            return entry.second.language == name || entry.second.code == name;
-        });
-
-        if (it != storage.end())
-        {
-            current_model = &it->second;
-            yCInfo(PIPER) << "Setting language to:" << name;
-            loadCurrentModel();
-            return yarp::dev::ReturnValue::return_code::return_value_ok;
-        }
-        else
-        {
-            yCError(PIPER) << "Language not found:" << name;
-            return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
-        }
+        current_model = &it->second;
+        yCInfo(PIPER) << "Setting language to:" << name;
+        loadCurrentModel();
+        return yarp::dev::ReturnValue::return_code::return_value_ok;
     }
     else
     {
-        yCError(PIPER) << "Synthesizer not initialized";
-        return yarp::dev::ReturnValue::return_code::return_value_error_not_ready;
+        yCError(PIPER) << "Language not found:" << name;
+        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
 }
 
@@ -64,31 +56,23 @@ yarp::dev::ReturnValue PiperSynthesizer::getLanguage(std::string & language)
 
 yarp::dev::ReturnValue PiperSynthesizer::setVoice(const std::string & voice_name)
 {
-    if (synth)
+    const auto name = toLowerCase(voice_name);
+
+    auto it = std::find_if(storage.begin(), storage.end(), [&name](const auto & entry) {
+        return entry.second.dataset == name;
+    });
+
+    if (it != storage.end())
     {
-        const auto name = toLowerCase(voice_name);
-
-        auto it = std::find_if(storage.begin(), storage.end(), [&name](const auto & entry) {
-            return entry.second.dataset == name;
-        });
-
-        if (it != storage.end())
-        {
-            current_model = &it->second;
-            yCInfo(PIPER) << "Setting voice to:" << name;
-            loadCurrentModel();
-            return yarp::dev::ReturnValue::return_code::return_value_ok;
-        }
-        else
-        {
-            yCError(PIPER) << "Voice not found:" << name;
-            return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
-        }
+        current_model = &it->second;
+        yCInfo(PIPER) << "Setting voice to:" << name;
+        loadCurrentModel();
+        return yarp::dev::ReturnValue::return_code::return_value_ok;
     }
     else
     {
-        yCError(PIPER) << "Synthesizer not initialized";
-        return yarp::dev::ReturnValue::return_code::return_value_error_not_ready;
+        yCError(PIPER) << "Voice not found:" << name;
+        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
     }
 }
 
