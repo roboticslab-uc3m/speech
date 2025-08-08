@@ -1,0 +1,78 @@
+<application>
+
+    <name>chatCompletion App (English)</name>
+
+    <module>
+        <name>deviceBundler</name>
+        <parameters>
+            --wrapper_device AudioPlayerWrapper
+            --attached_device portaudioPlayer
+            --playback_network_buffer_size 0.1
+            --AUDIO_BASE::samples 320000
+            --start true
+            --name /player
+        </parameters>
+        <node>localhost</node>
+        <deployer>yarpdev</deployer>
+    </module>
+
+    <module>
+        <name>deviceBundler</name>
+        <parameters>
+            --wrapper_device audioRecorder_nws_yarp
+            --attached_device portaudioRecorder
+            --min_samples_over_network 1280
+            --max_samples_over_network 1280
+            --AUDIO_BASE::rate 16000
+            --AUDIO_BASE::samples 6400
+            --AUDIO_BASE::channels 1
+            --start true
+            --send_sound_on_stop false
+            --name /recorder
+        </parameters>
+        <node>localhost</node>
+        <deployer>yarpdev</deployer>
+    </module>
+
+    <module>
+        <name>wakeWord</name>
+        <parameters>--model hey-teo.onnx --prefix /wakeword</parameters>
+        <node>localhost</node>
+    </module>
+
+    <module>
+        <name>PiperSynthesizer</name>
+        <parameters>--model en_US-lessac-medium.onnx --name /tts</parameters>
+        <node>localhost</node>
+        <deployer>yarpdev</deployer>
+    </module>
+
+    <module>
+        <name>VoskTranscription</name>
+        <parameters>--model vosk-model-small-en-us-0.15 --name /asr</parameters>
+        <node>localhost</node>
+        <deployer>yarpdev</deployer>
+    </module>
+
+    <module>
+        <name>LlamaGPT</name>
+        <parameters>--model DeepSeek-R1-Distill-Qwen-1.5B-BF16.gguf --tokens 500 --name /llm</parameters>
+        <node>localhost</node>
+        <deployer>yarpdev</deployer>
+    </module>
+
+    <module>
+        <name>chatCompletion</name>
+        <parameters></parameters>
+        <node>localhost</node>
+        <dependencies>
+            <port timeout="5.0">/player/audio:i</port>
+            <port timeout="5.0">/recorder/audio:o</port>
+            <port timeout="5.0">/wakeword/result:o</port>
+            <port timeout="5.0">/tts/sound:o</port>
+            <port timeout="5.0">/asr/sound:i</port>
+            <port timeout="5.0">/llm/rpc:i</port>
+        </dependencies>
+    </module>
+
+</application>

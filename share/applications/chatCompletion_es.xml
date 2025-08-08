@@ -1,6 +1,6 @@
 <application>
 
-    <name>chatCompletion App</name>
+    <name>chatCompletion App (Spanish)</name>
 
     <module>
         <name>deviceBundler</name>
@@ -36,20 +36,20 @@
 
     <module>
         <name>wakeWord</name>
-        <parameters>--model hey-teo.onnx --prefix /wakeword</parameters>
+        <parameters>--model oye-teo.onnx --prefix /wakeword</parameters>
         <node>localhost</node>
     </module>
 
     <module>
         <name>PiperSynthesizer</name>
-        <parameters>--model en_US-lessac-medium.onnx --name /tts</parameters>
+        <parameters>--model en_ES-davefx-medium.onnx --name /tts</parameters>
         <node>localhost</node>
         <deployer>yarpdev</deployer>
     </module>
 
     <module>
         <name>VoskTranscription</name>
-        <parameters>--model vosk-model-small-en-us-0.15 --name /asr</parameters>
+        <parameters>--model vosk-model-small-es-0.42 --name /asr</parameters>
         <node>localhost</node>
         <deployer>yarpdev</deployer>
     </module>

@@ -29,7 +29,8 @@ if(ENABLE_wakeWord)
 endif()
 
 yarp_install(FILES applications/ymanager.ini
-                   applications/chatCompletion.xml
+                   applications/chatCompletion_en.xml
+                   applications/chatCompletion_es.xml
                    applications/example_espeakServer.xml
                    applications/example_speechRecognition.xml
                    applications/speechSynthesis.xml
