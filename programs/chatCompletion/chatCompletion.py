@@ -89,6 +89,7 @@ def main_loop():
     print('----- Starting main loop -----')
 
     sound = yarp.Sound()
+    answer = yarp.LLM_Message()
 
     # 1. detect wake word
     print('1. Detecting wake word')
@@ -128,13 +129,12 @@ def main_loop():
 
     # 4. send ASR result to LLM and wait for answer
     print('4. Sending ASR result to LLM and waiting for answer')
-    answer = yarp.SVector(1) # FIXME: should be a LLM_Message, but its bindings are missing
     llm.ask(question, answer)
-    print(f'   -> {answer[0]}')
+    print(f'   -> {answer.content}')
 
     # 5. send LLM result to TTS
     print('5. Sending LLM result to TTS')
-    tts.synthesize(answer[0], sound)
+    tts.synthesize(answer.content, sound)
     time.sleep(sound.getDuration())
 
 # prerequisites
