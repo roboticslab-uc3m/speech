@@ -4,7 +4,7 @@
 
 #include <cctype> // std::isspace
 #include <cstdlib> // std::free
-#include <cstring> // ::strdup (POSIX standard, but not C standard)
+#include <cstring> // std::strcmp, ::strdup (POSIX standard, but not C standard)
 
 #include <algorithm> // std::find_if, std::transform
 #include <iterator> // std::back_inserter
@@ -44,9 +44,9 @@ yarp::dev::ReturnValue LlamaGPT::setPrompt(const std::string & prompt)
 bool LlamaGPT::setPrompt(const std::string & prompt)
 #endif
 {
-    if (!m_prompt.empty())
+    if (!conversation.empty())
     {
-        yCError(LLAMA) << "Prompt already set";
+        yCError(LLAMA) << "Conversation has started or the prompt was already set, you must delete the conversation first";
 #if YARP_VERSION_COMPARE(>=, 3, 12, 0)
         return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
 #else
@@ -58,14 +58,15 @@ bool LlamaGPT::setPrompt(const std::string & prompt)
     ltrim(temp);
     rtrim(temp);
 
-    if (temp.empty())
+    if (!temp.empty())
     {
-        yCWarning(LLAMA) << "Requested prompt is empty";
+        yCInfo(LLAMA) << "Setting prompt:" << temp;
+        conversation.push_back({"system", ::strdup(temp.c_str())});
     }
-
-    yCInfo(LLAMA) << "Setting prompt:" << temp;
-    m_prompt = temp;
-    conversation.push_back({"system", ::strdup(m_prompt.c_str())});
+    else
+    {
+        yCWarning(LLAMA) << "Requested prompt is empty, not setting it";
+    }
 
 #if YARP_VERSION_COMPARE(>=, 3, 12, 0)
     return yarp::dev::ReturnValue::return_code::return_value_ok;
@@ -82,7 +83,16 @@ yarp::dev::ReturnValue LlamaGPT::readPrompt(std::string & oPrompt)
 bool LlamaGPT::readPrompt(std::string & oPrompt)
 #endif
 {
-    oPrompt = m_prompt;
+    if (!conversation.empty() && conversation.front().role == "system")
+    {
+        oPrompt = conversation.front().content;
+    }
+    else
+    {
+        yCWarning(LLAMA) << "No prompt set, returning empty string";
+        oPrompt.clear();
+    }
+
 #if YARP_VERSION_COMPARE(>=, 3, 12, 0)
     return yarp::dev::ReturnValue::return_code::return_value_ok;
 #else
@@ -101,7 +111,12 @@ bool LlamaGPT::ask(const std::string & question, yarp::dev::LLM_Message & answer
     yCInfo(LLAMA) << "Asking:" << question;
     conversation.push_back({"user", ::strdup(question.c_str())});
 
-    auto prompt = m_prompt;
+    std::string prompt;
+
+    if (!conversation.empty() && conversation.front().role == "system")
+    {
+        prompt = conversation.front().content;
+    }
 
     if (!prompt.empty())
     {
@@ -276,7 +291,6 @@ bool LlamaGPT::deleteConversation()
     }
 
     conversation.clear();
-    m_prompt.clear();
 #if YARP_VERSION_COMPARE(>=, 3, 12, 0)
     return yarp::dev::ReturnValue::return_code::return_value_ok;
 #else
@@ -292,14 +306,26 @@ yarp::dev::ReturnValue LlamaGPT::refreshConversation()
 bool LlamaGPT::refreshConversation()
 #endif
 {
-    yCInfo(LLAMA) << "Deleting conversation while keeping the prompt";
+    yCInfo(LLAMA) << "Deleting conversation while keeping the prompt (if any)";
 
-    for (auto & msg : conversation)
+    if (!conversation.empty())
     {
-        std::free(const_cast<char *>(msg.content));
-    }
+        auto first = conversation.end();
 
-    conversation.clear();
+        for (auto it = conversation.begin(); it != conversation.end(); ++it)
+        {
+            if (std::strcmp(it->role, "system") != 0)
+            {
+                std::free(const_cast<char *>(it->content));
+            }
+            else if (first == conversation.end())
+            {
+                first = it;
+            }
+        }
+
+        conversation.erase(first, conversation.end());
+    }
 #if YARP_VERSION_COMPARE(>=, 3, 12, 0)
     return yarp::dev::ReturnValue::return_code::return_value_ok;
 #else
