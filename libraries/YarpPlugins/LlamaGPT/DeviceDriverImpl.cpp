@@ -99,6 +99,10 @@ bool LlamaGPT::open(yarp::os::Searchable & config)
         }
     }
 
+    // initialize the sampler
+    smpl = llama_sampler_chain_init(llama_sampler_chain_default_params());
+    llama_sampler_chain_add(smpl, llama_sampler_init_greedy());
+
     return true;
 }
 
@@ -107,6 +111,12 @@ bool LlamaGPT::open(yarp::os::Searchable & config)
 bool LlamaGPT::close()
 {
     bool ret = deleteConversation();
+
+    if (smpl)
+    {
+        llama_sampler_free(smpl);
+        smpl = nullptr;
+    }
 
     if (model)
     {

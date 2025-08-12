@@ -167,15 +167,6 @@ bool LlamaGPT::ask(const std::string & question, yarp::dev::LLM_Message & answer
 #endif
     }
 
-    // initialize the sampler
-
-    auto sparams = llama_sampler_chain_default_params();
-    sparams.no_perf = true;
-
-    llama_sampler * smpl = llama_sampler_chain_init(sparams);
-
-    llama_sampler_chain_add(smpl, llama_sampler_init_greedy());
-
     // prepare a batch for the prompt
     llama_batch batch = llama_batch_get_one(prompt_tokens.data(), prompt_tokens.size());
 
@@ -228,7 +219,6 @@ bool LlamaGPT::ask(const std::string & question, yarp::dev::LLM_Message & answer
         }
     }
 
-    llama_sampler_free(smpl);
     llama_free(ctx);
 
     yCDebug(LLAMA) << "Generated:" << out;

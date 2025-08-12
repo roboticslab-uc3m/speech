@@ -53,6 +53,8 @@ public:
 
 private:
     llama_model * model {nullptr};
+    llama_sampler * smpl {nullptr};
+
     std::vector<llama_chat_message> conversation;
 };
 
