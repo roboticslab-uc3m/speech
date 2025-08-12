@@ -241,7 +241,7 @@ yarp::dev::ReturnValue LlamaGPT::getConversation(std::vector<yarp::dev::LLM_Mess
 bool LlamaGPT::getConversation(std::vector<yarp::dev::LLM_Message> & conversation)
 #endif
 {
-    conversation = this->conversation;
+    conversation = std::vector(this->conversation);
 #if YARP_VERSION_COMPARE(>=, 3, 12, 0)
     return yarp::dev::ReturnValue::return_code::return_value_ok;
 #else
