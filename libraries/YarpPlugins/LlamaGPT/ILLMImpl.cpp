@@ -3,8 +3,11 @@
 #include "LlamaGPT.hpp"
 
 #include <cctype> // std::isspace
+#include <cstdlib> // std::free
+#include <cstring> // ::strdup (POSIX standard, but not C standard)
 
-#include <algorithm> // std::find_if
+#include <algorithm> // std::find_if, std::transform
+#include <iterator> // std::back_inserter
 
 #include <yarp/os/LogStream.h>
 
@@ -62,7 +65,7 @@ bool LlamaGPT::setPrompt(const std::string & prompt)
 
     yCInfo(LLAMA) << "Setting prompt:" << temp;
     m_prompt = temp;
-    conversation.push_back(yarp::dev::LLM_Message("system", m_prompt, {}, {}));
+    conversation.push_back({"system", ::strdup(m_prompt.c_str())});
 
 #if YARP_VERSION_COMPARE(>=, 3, 12, 0)
     return yarp::dev::ReturnValue::return_code::return_value_ok;
@@ -96,7 +99,7 @@ bool LlamaGPT::ask(const std::string & question, yarp::dev::LLM_Message & answer
 #endif
 {
     yCInfo(LLAMA) << "Asking:" << question;
-    conversation.push_back(yarp::dev::LLM_Message("user", question, {}, {}));
+    conversation.push_back({"user", ::strdup(question.c_str())});
 
     auto prompt = m_prompt;
 
@@ -224,7 +227,7 @@ bool LlamaGPT::ask(const std::string & question, yarp::dev::LLM_Message & answer
     }
 
     answer = {"assistant", out, {}, {}};
-    conversation.push_back(answer);
+    conversation.push_back({"assistant", ::strdup(out.c_str())});
 
 #if YARP_VERSION_COMPARE(>=, 3, 12, 0)
     return yarp::dev::ReturnValue::return_code::return_value_ok;
@@ -241,7 +244,15 @@ yarp::dev::ReturnValue LlamaGPT::getConversation(std::vector<yarp::dev::LLM_Mess
 bool LlamaGPT::getConversation(std::vector<yarp::dev::LLM_Message> & conversation)
 #endif
 {
-    conversation = std::vector(this->conversation);
+    conversation.clear();
+    conversation.reserve(this->conversation.size());
+
+    std::transform(this->conversation.cbegin(), this->conversation.cend(), std::back_inserter(conversation),
+        [](const llama_chat_message & msg)
+        {
+            return yarp::dev::LLM_Message(msg.role, msg.content, {}, {});
+        });
+
 #if YARP_VERSION_COMPARE(>=, 3, 12, 0)
     return yarp::dev::ReturnValue::return_code::return_value_ok;
 #else
@@ -258,6 +269,12 @@ bool LlamaGPT::deleteConversation()
 #endif
 {
     yCInfo(LLAMA) << "Deleting conversation and prompt";
+
+    for (auto & msg : conversation)
+    {
+        std::free(const_cast<char *>(msg.content));
+    }
+
     conversation.clear();
     m_prompt.clear();
 #if YARP_VERSION_COMPARE(>=, 3, 12, 0)
@@ -276,6 +293,12 @@ bool LlamaGPT::refreshConversation()
 #endif
 {
     yCInfo(LLAMA) << "Deleting conversation while keeping the prompt";
+
+    for (auto & msg : conversation)
+    {
+        std::free(const_cast<char *>(msg.content));
+    }
+
     conversation.clear();
 #if YARP_VERSION_COMPARE(>=, 3, 12, 0)
     return yarp::dev::ReturnValue::return_code::return_value_ok;

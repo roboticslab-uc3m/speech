@@ -106,13 +106,15 @@ bool LlamaGPT::open(yarp::os::Searchable & config)
 
 bool LlamaGPT::close()
 {
+    bool ret = deleteConversation();
+
     if (model)
     {
         llama_model_free(model);
         model = nullptr;
     }
 
-    return true;
+    return ret;
 }
 
 // -----------------------------------------------------------------------------

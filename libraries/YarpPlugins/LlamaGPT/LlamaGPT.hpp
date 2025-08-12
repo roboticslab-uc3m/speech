@@ -53,7 +53,7 @@ public:
 
 private:
     llama_model * model {nullptr};
-    std::vector<yarp::dev::LLM_Message> conversation;
+    std::vector<llama_chat_message> conversation;
 };
 
 #endif // __LLAMA_GPT_HPP__
