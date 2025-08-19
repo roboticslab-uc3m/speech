@@ -5,3 +5,4 @@
 |       |   tokens   |  int   |       |      32       |    no    |      number of tokens to predict       |                      |
 |       |   prompt   | string |       |               |    no    |      prompt to generate text from      | overrides promptFile |
 |       | promptFile | string |       |               |    no    |       file containing the prompt       |                      |
+|       |   print    |  bool  |       |     false     |    no    | print the generated thoughts to stdout |                      |

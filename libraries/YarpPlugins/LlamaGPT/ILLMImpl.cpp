@@ -7,6 +7,7 @@
 #include <cstring> // std::strcmp, ::strdup (POSIX standard, but not C standard)
 
 #include <algorithm> // std::find_if, std::transform
+#include <iostream>
 #include <iterator> // std::back_inserter
 
 #include <yarp/os/LogStream.h>
@@ -214,12 +215,22 @@ bool LlamaGPT::ask(const std::string & question, yarp::dev::LLM_Message & answer
             std::string s(buf, n);
             out += s;
 
+            if (m_print)
+            {
+                std::cout << s << std::flush;
+            }
+
             // prepare the next batch with the sampled token
             batch = llama_batch_get_one(&new_token_id, 1);
         }
     }
 
     llama_free(ctx);
+
+    if (m_print)
+    {
+        std::cout << std::endl;
+    }
 
     yCDebug(LLAMA) << "Generated:" << out;
     auto index = out.find("</think>");

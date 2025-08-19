@@ -8,7 +8,7 @@
 // This is an automatically generated file. Please do not edit it.
 // It will be re-generated if the cmake flag ALLOW_DEVICE_PARAM_PARSER_GERNERATION is ON.
 
-// Generated on: Fri Aug  8 22:54:08 2025
+// Generated on: Tue Aug 19 21:38:01 2025
 
 
 #include "LlamaGPT_ParamsParser.h"
@@ -33,6 +33,7 @@ std::vector<std::string> LlamaGPT_ParamsParser::getListOfParams() const
     params.push_back("tokens");
     params.push_back("prompt");
     params.push_back("promptFile");
+    params.push_back("print");
     return params;
 }
 
@@ -117,6 +118,20 @@ bool      LlamaGPT_ParamsParser::parseParams(const yarp::os::Searchable & config
         prop_check.unput("promptFile");
     }
 
+    //Parser of parameter print
+    {
+        if (config.check("print"))
+        {
+            m_print = config.find("print").asBool();
+            yCInfo(LlamaGPTParamsCOMPONENT) << "Parameter 'print' using value:" << m_print;
+        }
+        else
+        {
+            yCInfo(LlamaGPTParamsCOMPONENT) << "Parameter 'print' using DEFAULT value:" << m_print;
+        }
+        prop_check.unput("print");
+    }
+
     /*
     //This code check if the user set some parameter which are not check by the parser
     //If the parser is set in strict mode, this will generate an error
@@ -158,9 +173,10 @@ std::string      LlamaGPT_ParamsParser::getDocumentationOfDeviceParams() const
     doc = doc + std::string("'tokens': number of tokens to predict\n");
     doc = doc + std::string("'prompt': prompt to generate text from\n");
     doc = doc + std::string("'promptFile': file containing the prompt\n");
+    doc = doc + std::string("'print': print the generated thoughts to stdout\n");
     doc = doc + std::string("\n");
     doc = doc + std::string("Here are some examples of invocation command with yarpdev, with all params:\n");
-    doc = doc + " yarpdev --device LlamaGPT --model <optional_value> --ngl 99 --tokens 32 --prompt <optional_value> --promptFile <optional_value>\n";
+    doc = doc + " yarpdev --device LlamaGPT --model <optional_value> --ngl 99 --tokens 32 --prompt <optional_value> --promptFile <optional_value> --print false\n";
     doc = doc + std::string("Using only mandatory params:\n");
     doc = doc + " yarpdev --device LlamaGPT\n";
     doc = doc + std::string("=============================================\n\n");    return doc;

@@ -8,7 +8,7 @@
 // This is an automatically generated file. Please do not edit it.
 // It will be re-generated if the cmake flag ALLOW_DEVICE_PARAM_PARSER_GERNERATION is ON.
 
-// Generated on: Fri Aug  8 22:54:08 2025
+// Generated on: Tue Aug 19 21:38:01 2025
 
 
 #ifndef LLAMAGPT_PARAMSPARSER_H
@@ -33,7 +33,7 @@
 *
 * The device can be launched by yarpdev using one of the following examples (with and without all optional parameters):
 * \code{.unparsed}
-* yarpdev --device LlamaGPT --model <optional_value> --ngl 99 --tokens 32 --prompt <optional_value> --promptFile <optional_value>
+* yarpdev --device LlamaGPT --model <optional_value> --ngl 99 --tokens 32 --prompt <optional_value> --promptFile <optional_value> --print false
 * \endcode
 *
 * \code{.unparsed}
@@ -64,12 +64,14 @@ public:
     const std::string m_tokens_defaultValue = {"32"};
     const std::string m_prompt_defaultValue = {""};
     const std::string m_promptFile_defaultValue = {""};
+    const std::string m_print_defaultValue = {"false"};
 
     std::string m_model = {}; //This default value of this string is an empty string. It is highly recommended to provide a suggested value also for optional string parameters.
     int m_ngl = {99};
     int m_tokens = {32};
     std::string m_prompt = {}; //This default value of this string is an empty string. It is highly recommended to provide a suggested value also for optional string parameters.
     std::string m_promptFile = {}; //This default value of this string is an empty string. It is highly recommended to provide a suggested value also for optional string parameters.
+    bool m_print = {false};
 
     bool          parseParams(const yarp::os::Searchable & config) override;
     std::string   getDeviceClassName() const override { return m_device_classname; }
