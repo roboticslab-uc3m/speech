@@ -52,6 +52,8 @@ public:
     bool close() override;
 
 private:
+    bool clear(bool preservePrompt, bool recreateContext = true);
+
     llama_model * model {nullptr};
     llama_context * ctx {nullptr};
     llama_sampler * smpl {nullptr};

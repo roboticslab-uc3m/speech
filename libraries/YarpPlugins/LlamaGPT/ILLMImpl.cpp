@@ -3,8 +3,7 @@
 #include "LlamaGPT.hpp"
 
 #include <cctype> // std::isspace
-#include <cstdlib> // std::free
-#include <cstring> // std::strcmp, ::strdup (POSIX standard, but not C standard)
+#include <cstring> // ::strdup (POSIX standard, but not C standard)
 
 #include <algorithm> // std::find_if, std::transform
 #include <iostream>
@@ -314,18 +313,12 @@ bool LlamaGPT::deleteConversation()
 #endif
 {
     yCInfo(LLAMA) << "Deleting conversation and prompt";
-
-    for (auto & msg : messages)
-    {
-        std::free(const_cast<char *>(msg.content));
-    }
-
-    messages.clear();
-    prev_len = 0;
 #if YARP_VERSION_COMPARE(>=, 3, 12, 0)
-    return yarp::dev::ReturnValue::return_code::return_value_ok;
+    return clear(false)
+        ? yarp::dev::ReturnValue::return_code::return_value_ok
+        : yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
 #else
-    return true;
+    return clear(false);
 #endif
 }
 
@@ -338,31 +331,12 @@ bool LlamaGPT::refreshConversation()
 #endif
 {
     yCInfo(LLAMA) << "Deleting conversation while keeping the prompt (if any)";
-
-    if (!messages.empty())
-    {
-        auto first = messages.end();
-
-        for (auto it = messages.begin(); it != messages.end(); ++it)
-        {
-            if (std::strcmp(it->role, "system") != 0)
-            {
-                std::free(const_cast<char *>(it->content));
-            }
-            else if (first == messages.end())
-            {
-                first = it;
-            }
-        }
-
-        messages.erase(first, messages.end());
-    }
-
-    prev_len = 0;
 #if YARP_VERSION_COMPARE(>=, 3, 12, 0)
-    return yarp::dev::ReturnValue::return_code::return_value_ok;
+    return clear(true)
+        ? yarp::dev::ReturnValue::return_code::return_value_ok
+        : yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
 #else
-    return true;
+    return clear(true);
 #endif
 }
 

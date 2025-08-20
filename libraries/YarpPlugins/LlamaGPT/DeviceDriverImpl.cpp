@@ -140,7 +140,7 @@ bool LlamaGPT::open(yarp::os::Searchable & config)
 
 bool LlamaGPT::close()
 {
-    bool ret = deleteConversation();
+    bool ret = clear(false, false);
 
     if (smpl)
     {

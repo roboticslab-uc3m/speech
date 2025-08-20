@@ -16,6 +16,7 @@ if(NOT SKIP_LlamaGPT)
     yarp_add_plugin(LlamaGPT)
 
     target_sources(LlamaGPT PRIVATE LlamaGPT.hpp
+                                    LlamaGPT.cpp
                                     DeviceDriverImpl.cpp
                                     ILLMImpl.cpp
                                     LlamaGPT_ParamsParser.h
