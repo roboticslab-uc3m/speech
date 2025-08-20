@@ -163,6 +163,9 @@ bool LlamaGPT::ask(const std::string & question, yarp::dev::LLM_Message & answer
     llama_token new_token_id;
     std::string out;
 
+    const auto t_main_start = ggml_time_us();
+    int n_decode = 0;
+
     while (true)
     {
         // check if we have enough space in the context to evaluate this batch
@@ -222,6 +225,8 @@ bool LlamaGPT::ask(const std::string & question, yarp::dev::LLM_Message & answer
 
         // prepare the next batch with the sampled token
         batch = llama_batch_get_one(&new_token_id, 1);
+
+        n_decode++;
     }
 
     if (m_print)
@@ -229,7 +234,15 @@ bool LlamaGPT::ask(const std::string & question, yarp::dev::LLM_Message & answer
         std::cout << std::endl;
     }
 
+    const auto t_main_end = ggml_time_us();
+
     yCDebug(LLAMA) << "Generated:" << out;
+
+    yCDebug(LLAMA, "Decoded %d tokens in %.2f s, speed: %.2f t/s",
+            n_decode, (t_main_end - t_main_start) / 1000000.0f, n_decode / ((t_main_end - t_main_start) / 1000000.0f));
+
+    llama_perf_sampler_print(smpl);
+    llama_perf_context_print(ctx);
 
     if (auto index = out.find("</think>"); index != std::string::npos)
     {
