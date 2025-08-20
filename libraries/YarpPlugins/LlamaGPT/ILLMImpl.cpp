@@ -9,6 +9,7 @@
 #include <algorithm> // std::find_if, std::transform
 #include <iostream>
 #include <iterator> // std::back_inserter
+#include <regex>
 
 #include <yarp/os/LogStream.h>
 
@@ -35,6 +36,8 @@ namespace
             return !std::isspace(ch);
         }).base(), s.end());
     }
+
+    std::regex re("\\\\boxed\\{([^}]+)\\}");
 }
 
 // ------------------- ILLM Related ------------------------------------
@@ -236,8 +239,6 @@ bool LlamaGPT::ask(const std::string & question, yarp::dev::LLM_Message & answer
 
     const auto t_main_end = ggml_time_us();
 
-    yCDebug(LLAMA) << "Generated:" << out;
-
     yCDebug(LLAMA, "Decoded %d tokens in %.2f s, speed: %.2f t/s",
             n_decode, (t_main_end - t_main_start) / 1000000.0f, n_decode / ((t_main_end - t_main_start) / 1000000.0f));
 
@@ -250,6 +251,13 @@ bool LlamaGPT::ask(const std::string & question, yarp::dev::LLM_Message & answer
         ltrim(out);
         rtrim(out);
     }
+
+    if (std::smatch sm; std::regex_search(out, sm, re) && !sm.empty())
+    {
+        out = sm[1].str();
+    }
+
+    yCInfo(LLAMA) << "Response:" << out;
 
     answer = {"assistant", out, {}, {}};
     messages.push_back({"assistant", ::strdup(out.c_str())});
