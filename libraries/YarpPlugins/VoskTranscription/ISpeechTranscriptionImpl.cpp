@@ -108,7 +108,12 @@ yarp::dev::ReturnValue VoskTranscription::transcribe(const yarp::sig::Sound & so
         auto result = vosk_recognizer_result(recognizer);
         auto parsed = json::JSON::Load(result);
         transcription = parsed["text"].ToString();
-        yCDebug(VOSK) << "Result:" << transcription;
+
+        if (!transcription.empty())
+        {
+            yCDebug(VOSK) << "Result:" << transcription;
+        }
+
         break;
     }
     case 0:
@@ -121,8 +126,12 @@ yarp::dev::ReturnValue VoskTranscription::transcribe(const yarp::sig::Sound & so
         {
             yCDebug(VOSK) << "Partial result:" << partial;
         }
+        else
+        {
+            transcription.clear();
+            score = 0.0;
+        }
 
-        transcription = ""; // signalize an incomplete transcription
         break;
     }
     case -1:

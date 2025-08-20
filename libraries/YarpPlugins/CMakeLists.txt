@@ -9,5 +9,6 @@ option(ALLOW_DEVICE_PARAM_PARSER_GENERATION "Allow YARP to (re)build device para
        ${ALLOW_DEVICE_PARAM_PARSER_GENERATION_DEFAULT_VALUE})
 
 add_subdirectory(eSpeakSynthesizer)
+add_subdirectory(LlamaGPT)
 add_subdirectory(PiperSynthesizer)
 add_subdirectory(VoskTranscription)

@@ -1,3 +1,8 @@
+if(ENABLE_LlamaGPT)
+    yarp_install(DIRECTORY contexts/LlamaGPT
+                 DESTINATION ${ROBOTICSLAB-SPEECH_CONTEXTS_INSTALL_DIR})
+endif()
+
 if(ENABLE_PiperSynthesizer)
     yarp_install(DIRECTORY contexts/PiperSynthesizer
                  DESTINATION ${ROBOTICSLAB-SPEECH_CONTEXTS_INSTALL_DIR})
@@ -18,7 +23,14 @@ if(ENABLE_speechSynthesis)
                  DESTINATION ${ROBOTICSLAB-SPEECH_CONTEXTS_INSTALL_DIR})
 endif()
 
+if(ENABLE_wakeWord)
+    yarp_install(DIRECTORY contexts/wakeWord
+                 DESTINATION ${ROBOTICSLAB-SPEECH_CONTEXTS_INSTALL_DIR})
+endif()
+
 yarp_install(FILES applications/ymanager.ini
+                   applications/chatCompletion_en.xml
+                   applications/chatCompletion_es.xml
                    applications/example_espeakServer.xml
                    applications/example_speechRecognition.xml
                    applications/speechSynthesis.xml

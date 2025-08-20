@@ -79,6 +79,12 @@ jobs:
         repository: alphacep/vosk-api
         path: .deps/vosk
 
+    - name: Check out llama.cpp
+      uses: actions/checkout@v4
+      with:
+        repository: ggml-org/llama.cpp
+        path: .deps/llama.cpp
+
     - name: Set up CMake
       uses: jwlawson/actions-setup-cmake@v2
       with:
@@ -111,6 +117,12 @@ jobs:
         CC: "ccache ${{matrix.system.compiler.cc}}"
         CXX: "ccache ${{matrix.system.compiler.cxx}}"
       run: make -C .deps/vosk/src KALDI_ROOT=/opt/kaldi
+
+    - name: Build llama.cpp
+      run: |
+        cmake -S .deps/llama.cpp -B .deps/llama.cpp/build -DLLAMA_CURL=OFF
+        cmake --build .deps/llama.cpp/build
+        cmake --install .deps/llama.cpp/build
 
     - name: Configure main project
       env:

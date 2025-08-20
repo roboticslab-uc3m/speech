@@ -34,6 +34,24 @@ To see how other programs call to `speechRecognition` and  `Espeak` and configur
 4. Push to the branch (`git push origin my-new-feature`)
 5. Create a new Pull Request
 
+## Citation
+
+If you found this project useful, please consider citing the following works:
+
+- [chat application](programs/chatCompletion/) and related modules
+
+Bartek Łukawski, Juan G. Victores, Carlos Balaguer, and Alberto Jardón. Interaction with a humanoid robot through a conversational interface using DeepSeek. In *Simposio CEA de Robótica, Bioingeniería, Visión Artificial y Automática Marina*, 2025.
+
+```bibtex
+@inproceedings{lukawski2025rbvm,
+    author    = {{\L}ukawski, Bartek and Victores, Juan G. and Balaguer, Carlos and Jardón, Alberto},
+    title     = {Interaction with a humanoid robot through a conversational interface using DeepSeek},
+    booktitle = {Simposio CEA de Robótica, Bioingeniería, Visión Artificial y Automática Marina},
+    year      = {2025},
+    doi       = {10.64117/simposioscea.v1i1.65},
+}
+```
+
 ## Status
 
 [![Continuous Integration](https://github.com/roboticslab-uc3m/speech/actions/workflows/ci.yml/badge.svg)](https://github.com/roboticslab-uc3m/speech/actions/workflows/ci.yml)
