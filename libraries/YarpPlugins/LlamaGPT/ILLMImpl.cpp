@@ -36,6 +36,14 @@ namespace
         }).base(), s.end());
     }
 
+    std::string trim(const std::string & s)
+    {
+        std::string out = s;
+        ltrim(out);
+        rtrim(out);
+        return out;
+    }
+
     std::regex re("\\\\boxed\\{([^}]+)\\}");
 }
 
@@ -57,14 +65,12 @@ bool LlamaGPT::setPrompt(const std::string & prompt)
 #endif
     }
 
-    auto temp = prompt;
-    ltrim(temp);
-    rtrim(temp);
+    const auto trimmed = trim(prompt);
 
-    if (!temp.empty())
+    if (!trimmed.empty())
     {
-        yCInfo(LLAMA) << "Setting prompt:" << temp;
-        messages.push_back({"system", ::strdup(temp.c_str())});
+        yCInfo(LLAMA) << "Setting prompt:" << trimmed;
+        messages.push_back({"system", ::strdup(trimmed.c_str())});
     }
     else
     {
@@ -246,9 +252,12 @@ bool LlamaGPT::ask(const std::string & question, yarp::dev::LLM_Message & answer
 
     if (auto index = out.find("</think>"); index != std::string::npos)
     {
-        out = out.substr(index + 8);
-        ltrim(out);
-        rtrim(out);
+        out = trim(out.substr(index + 8));
+    }
+
+    if (auto index = out.find("<think>"); index != std::string::npos)
+    {
+        out = trim(out.substr(index + 7));
     }
 
     if (std::smatch sm; std::regex_search(out, sm, re) && !sm.empty())
