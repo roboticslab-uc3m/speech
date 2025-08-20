@@ -46,11 +46,13 @@ bool LlamaGPT::clear(bool preservePrompt, bool recreateContext)
 
     prev_len = 0;
 
-    if (recreateContext && ctx)
+    if (recreateContext)
     {
-        llama_free(ctx);
+        if (ctx)
+        {
+            llama_free(ctx);
+        }
 
-        // initialize the context
         llama_context_params ctx_params = llama_context_default_params();
         ctx_params.n_ctx = m_tokens;
         ctx_params.n_batch = m_tokens;
@@ -60,7 +62,7 @@ bool LlamaGPT::clear(bool preservePrompt, bool recreateContext)
 
         if (!ctx)
         {
-            yCError(LLAMA) << "Failed to recreate context";
+            yCError(LLAMA) << "Failed to (re)create context";
             return 1;
         }
     }

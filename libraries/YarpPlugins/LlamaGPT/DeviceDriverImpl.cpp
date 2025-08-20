@@ -97,18 +97,9 @@ bool LlamaGPT::open(yarp::os::Searchable & config)
         }
     }
 
-    // initialize the context
-    llama_context_params ctx_params = llama_context_default_params();
-    ctx_params.n_ctx = m_tokens;
-    ctx_params.n_batch = m_tokens;
-    ctx_params.no_perf = false;
-
-    ctx = llama_init_from_model(model, ctx_params);
-
-    if (!ctx)
+    if (!clear(false)) // initialize the context
     {
-        yCError(LLAMA) << "Failed to create context";
-        return 1;
+        return false;
     }
 
     // initialize the sampler
