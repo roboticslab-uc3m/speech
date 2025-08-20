@@ -45,7 +45,7 @@ yarp::dev::ReturnValue LlamaGPT::setPrompt(const std::string & prompt)
 bool LlamaGPT::setPrompt(const std::string & prompt)
 #endif
 {
-    if (!conversation.empty())
+    if (!messages.empty())
     {
         yCError(LLAMA) << "Conversation has started or the prompt was already set, you must delete the conversation first";
 #if YARP_VERSION_COMPARE(>=, 3, 12, 0)
@@ -62,7 +62,7 @@ bool LlamaGPT::setPrompt(const std::string & prompt)
     if (!temp.empty())
     {
         yCInfo(LLAMA) << "Setting prompt:" << temp;
-        conversation.push_back({"system", ::strdup(temp.c_str())});
+        messages.push_back({"system", ::strdup(temp.c_str())});
     }
     else
     {
@@ -84,9 +84,9 @@ yarp::dev::ReturnValue LlamaGPT::readPrompt(std::string & oPrompt)
 bool LlamaGPT::readPrompt(std::string & oPrompt)
 #endif
 {
-    if (!conversation.empty() && conversation.front().role == "system")
+    if (!messages.empty() && messages.front().role == "system")
     {
-        oPrompt = conversation.front().content;
+        oPrompt = messages.front().content;
     }
     else
     {
@@ -110,35 +110,23 @@ bool LlamaGPT::ask(const std::string & question, yarp::dev::LLM_Message & answer
 #endif
 {
     yCInfo(LLAMA) << "Asking:" << question;
-    conversation.push_back({"user", ::strdup(question.c_str())});
 
-    std::string prompt;
+    std::vector<char> formatted(llama_n_ctx(ctx));
 
-    if (!conversation.empty() && conversation.front().role == "system")
+    // add the user input to the message list and format it
+    messages.push_back({"user", ::strdup(question.c_str())});
+
+    int new_len = llama_chat_apply_template(tmpl, messages.data(), messages.size(), true, formatted.data(), formatted.size());
+
+    if (new_len > (int)formatted.size())
     {
-        prompt = conversation.front().content;
+        formatted.resize(new_len);
+        new_len = llama_chat_apply_template(tmpl, messages.data(), messages.size(), true, formatted.data(), formatted.size());
     }
 
-    if (!prompt.empty())
+    if (new_len < 0)
     {
-        prompt += " ";
-    }
-
-    prompt += question;
-
-    const llama_vocab * vocab = llama_model_get_vocab(model);
-
-    // tokenize the prompt
-
-    // find the number of tokens in the prompt
-    const int n_prompt = -llama_tokenize(vocab, prompt.c_str(), prompt.size(), nullptr, 0, true, true);
-
-    // allocate space for the tokens and tokenize the prompt
-    std::vector<llama_token> prompt_tokens(n_prompt);
-
-    if (llama_tokenize(vocab, prompt.c_str(), prompt.size(), prompt_tokens.data(), prompt_tokens.size(), true, true) < 0)
-    {
-        yCError(LLAMA) << "Failed to tokenize the prompt";
+        yCError(LLAMA) << "Failed to apply the chat template (pre)";
 #if YARP_VERSION_COMPARE(>=, 3, 12, 0)
         return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
 #else
@@ -146,21 +134,22 @@ bool LlamaGPT::ask(const std::string & question, yarp::dev::LLM_Message & answer
 #endif
     }
 
-    // initialize the context
+    // remove previous messages to obtain the prompt to generate the response
+    std::string prompt(formatted.begin() + prev_len, formatted.begin() + new_len);
 
-    llama_context_params ctx_params = llama_context_default_params();
-    // context size
-    ctx_params.n_ctx = n_prompt + m_tokens - 1;
-    // maximum number of tokens that can be processed in a single call to llama_decode
-    ctx_params.n_batch = n_prompt;
-    // disable performance counters
-    ctx_params.no_perf = true;
+    const bool is_first = llama_memory_seq_pos_max(llama_get_memory(ctx), 0) == -1;
 
-    llama_context * ctx = llama_init_from_model(model, ctx_params);
+    const llama_vocab * vocab = llama_model_get_vocab(model);
 
-    if (!ctx)
+    // find the number of tokens in the prompt
+    const int n_prompt = -llama_tokenize(vocab, prompt.c_str(), prompt.size(), nullptr, 0, is_first, true);
+
+    // allocate space for the tokens and tokenize the prompt
+    std::vector<llama_token> prompt_tokens(n_prompt);
+
+    if (llama_tokenize(vocab, prompt.c_str(), prompt.size(), prompt_tokens.data(), prompt_tokens.size(), is_first, true) < 0)
     {
-        yCError(LLAMA) << "Failed to create context";
+        yCError(LLAMA) << "Failed to tokenize the prompt";
 #if YARP_VERSION_COMPARE(>=, 3, 12, 0)
         return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
 #else
@@ -174,8 +163,22 @@ bool LlamaGPT::ask(const std::string & question, yarp::dev::LLM_Message & answer
     llama_token new_token_id;
     std::string out;
 
-    for (int n_pos = 0; n_pos + batch.n_tokens < n_prompt + m_tokens; )
+    while (true)
     {
+        // check if we have enough space in the context to evaluate this batch
+        int n_ctx = llama_n_ctx(ctx);
+        int n_ctx_used = llama_memory_seq_pos_max(llama_get_memory(ctx), 0) + 1;
+
+        if (n_ctx_used + batch.n_tokens > n_ctx)
+        {
+            yCError(LLAMA) << "Context size exceeded: " << n_ctx_used + batch.n_tokens << " > " << n_ctx;
+#if YARP_VERSION_COMPARE(>=, 3, 12, 0)
+            return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+#else
+            return false;
+#endif
+        }
+
         // evaluate the current batch with the transformer model
         if (llama_decode(ctx, batch))
         {
@@ -187,45 +190,39 @@ bool LlamaGPT::ask(const std::string & question, yarp::dev::LLM_Message & answer
 #endif
         }
 
-        n_pos += batch.n_tokens;
-
         // sample the next token
+        new_token_id = llama_sampler_sample(smpl, ctx, -1);
+
+        // is it an end of generation?
+        if (llama_vocab_is_eog(vocab, new_token_id))
         {
-            new_token_id = llama_sampler_sample(smpl, ctx, -1);
-
-            // is it an end of generation?
-            if (llama_vocab_is_eog(vocab, new_token_id))
-            {
-                break;
-            }
-
-            char buf[128];
-            int n = llama_token_to_piece(vocab, new_token_id, buf, sizeof(buf), 0, true);
-
-            if (n < 0)
-            {
-                yCError(LLAMA) << "Failed to convert token to piece";
-#if YARP_VERSION_COMPARE(>=, 3, 12, 0)
-                return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
-#else
-                return false;
-#endif
-            }
-
-            std::string s(buf, n);
-            out += s;
-
-            if (m_print)
-            {
-                std::cout << s << std::flush;
-            }
-
-            // prepare the next batch with the sampled token
-            batch = llama_batch_get_one(&new_token_id, 1);
+            break;
         }
-    }
 
-    llama_free(ctx);
+        char buf[256];
+        int n = llama_token_to_piece(vocab, new_token_id, buf, sizeof(buf), 0, true);
+
+        if (n < 0)
+        {
+            yCError(LLAMA) << "Failed to convert token to piece";
+#if YARP_VERSION_COMPARE(>=, 3, 12, 0)
+            return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+#else
+            return false;
+#endif
+        }
+
+        std::string s(buf, n);
+        out += s;
+
+        if (m_print)
+        {
+            std::cout << s << std::flush;
+        }
+
+        // prepare the next batch with the sampled token
+        batch = llama_batch_get_one(&new_token_id, 1);
+    }
 
     if (m_print)
     {
@@ -233,9 +230,8 @@ bool LlamaGPT::ask(const std::string & question, yarp::dev::LLM_Message & answer
     }
 
     yCDebug(LLAMA) << "Generated:" << out;
-    auto index = out.find("</think>");
 
-    if (index != std::string::npos)
+    if (auto index = out.find("</think>"); index != std::string::npos)
     {
         out = out.substr(index + 8);
         ltrim(out);
@@ -243,7 +239,19 @@ bool LlamaGPT::ask(const std::string & question, yarp::dev::LLM_Message & answer
     }
 
     answer = {"assistant", out, {}, {}};
-    conversation.push_back({"assistant", ::strdup(out.c_str())});
+    messages.push_back({"assistant", ::strdup(out.c_str())});
+
+    prev_len = llama_chat_apply_template(tmpl, messages.data(), messages.size(), false, nullptr, 0);
+
+    if (prev_len < 0)
+    {
+        yCError(LLAMA) << "Failed to apply the chat template (post)";
+#if YARP_VERSION_COMPARE(>=, 3, 12, 0)
+        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+#else
+        return false;
+#endif
+    }
 
 #if YARP_VERSION_COMPARE(>=, 3, 12, 0)
     return yarp::dev::ReturnValue::return_code::return_value_ok;
@@ -261,9 +269,9 @@ bool LlamaGPT::getConversation(std::vector<yarp::dev::LLM_Message> & conversatio
 #endif
 {
     conversation.clear();
-    conversation.reserve(this->conversation.size());
+    conversation.reserve(messages.size());
 
-    std::transform(this->conversation.cbegin(), this->conversation.cend(), std::back_inserter(conversation),
+    std::transform(messages.cbegin(), messages.cend(), std::back_inserter(conversation),
         [](const llama_chat_message & msg)
         {
             return yarp::dev::LLM_Message(msg.role, msg.content, {}, {});
@@ -286,12 +294,13 @@ bool LlamaGPT::deleteConversation()
 {
     yCInfo(LLAMA) << "Deleting conversation and prompt";
 
-    for (auto & msg : conversation)
+    for (auto & msg : messages)
     {
         std::free(const_cast<char *>(msg.content));
     }
 
-    conversation.clear();
+    messages.clear();
+    prev_len = 0;
 #if YARP_VERSION_COMPARE(>=, 3, 12, 0)
     return yarp::dev::ReturnValue::return_code::return_value_ok;
 #else
@@ -309,24 +318,26 @@ bool LlamaGPT::refreshConversation()
 {
     yCInfo(LLAMA) << "Deleting conversation while keeping the prompt (if any)";
 
-    if (!conversation.empty())
+    if (!messages.empty())
     {
-        auto first = conversation.end();
+        auto first = messages.end();
 
-        for (auto it = conversation.begin(); it != conversation.end(); ++it)
+        for (auto it = messages.begin(); it != messages.end(); ++it)
         {
             if (std::strcmp(it->role, "system") != 0)
             {
                 std::free(const_cast<char *>(it->content));
             }
-            else if (first == conversation.end())
+            else if (first == messages.end())
             {
                 first = it;
             }
         }
 
-        conversation.erase(first, conversation.end());
+        messages.erase(first, messages.end());
     }
+
+    prev_len = 0;
 #if YARP_VERSION_COMPARE(>=, 3, 12, 0)
     return yarp::dev::ReturnValue::return_code::return_value_ok;
 #else

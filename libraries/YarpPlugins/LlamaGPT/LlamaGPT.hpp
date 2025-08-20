@@ -53,9 +53,12 @@ public:
 
 private:
     llama_model * model {nullptr};
+    llama_context * ctx {nullptr};
     llama_sampler * smpl {nullptr};
+    const char * tmpl {nullptr};
 
-    std::vector<llama_chat_message> conversation;
+    std::vector<llama_chat_message> messages;
+    int prev_len {0}; // length of the previous message in the conversation
 };
 
 #endif // __LLAMA_GPT_HPP__

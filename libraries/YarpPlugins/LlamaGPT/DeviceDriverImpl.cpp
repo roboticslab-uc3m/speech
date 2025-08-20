@@ -60,8 +60,6 @@ bool LlamaGPT::open(yarp::os::Searchable & config)
         return false;
     }
 
-    const llama_vocab * vocab = llama_model_get_vocab(model);
-
     if (!m_prompt.empty())
     {
         if (!setPrompt(m_prompt))
@@ -99,9 +97,41 @@ bool LlamaGPT::open(yarp::os::Searchable & config)
         }
     }
 
+    // initialize the context
+    llama_context_params ctx_params = llama_context_default_params();
+    ctx_params.n_ctx = m_tokens;
+    ctx_params.n_batch = m_tokens;
+    ctx_params.no_perf = false;
+
+    ctx = llama_init_from_model(model, ctx_params);
+
+    if (!ctx)
+    {
+        yCError(LLAMA) << "Failed to create context";
+        return 1;
+    }
+
     // initialize the sampler
-    smpl = llama_sampler_chain_init(llama_sampler_chain_default_params());
+    auto sparams = llama_sampler_chain_default_params();
+    sparams.no_perf = false;
+
+    smpl = llama_sampler_chain_init(sparams);
+
+    if (!smpl)
+    {
+        yCError(LLAMA) << "Failed to create sampler";
+        return false;
+    }
+
     llama_sampler_chain_add(smpl, llama_sampler_init_greedy());
+
+    tmpl = llama_model_chat_template(model, nullptr);
+
+    if (!tmpl)
+    {
+        yCError(LLAMA) << "Failed to retrieve the default chat template";
+        return false;
+    }
 
     return true;
 }
@@ -116,6 +146,12 @@ bool LlamaGPT::close()
     {
         llama_sampler_free(smpl);
         smpl = nullptr;
+    }
+
+    if (ctx)
+    {
+        llama_free(ctx);
+        ctx = nullptr;
     }
 
     if (model)
