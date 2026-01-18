@@ -40,7 +40,7 @@ If you found this project useful, please consider citing the following works:
 
 - [chat application](programs/chatCompletion/) and related modules
 
-Bartek Łukawski, Juan G. Victores, Carlos Balaguer, and Alberto Jardón. Interaction with a humanoid robot through a conversational interface using DeepSeek. In *Simposio CEA de Robótica, Bioingeniería, Visión Artificial y Automática Marina*, 2025.
+Bartek Łukawski, Juan G. Victores, Carlos Balaguer, and Alberto Jardón. Interaction with a humanoid robot through a conversational interface using DeepSeek. In *Simposio CEA de Robótica, Bioingeniería, Visión Artificial y Automática Marina*, 2025. DOI: [10.64117/simposioscea.v1i1.65](https://doi.org/10.64117/simposioscea.v1i1.65)
 
 ```bibtex
 @inproceedings{lukawski2025rbvm,
