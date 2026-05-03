@@ -129,7 +129,7 @@ jobs:
     - name: Configure main project
       env:
         Vosk_ROOT: .deps/vosk/src
-      run: cmake -S . -B build -DCREATE_BINDINGS_PYTHON=ON -DENABLE_examples=ON
+      run: cmake -S . -B build -DCREATE_BINDINGS_PYTHON=ON -DENABLE_examples=ON -DALLOW_DEVICE_PARAM_PARSER_GENERATION=ON
 
     - name: Compile main project
       run: cmake --build build
