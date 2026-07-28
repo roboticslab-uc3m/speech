@@ -20,7 +20,7 @@ env:
 
 jobs:
   maybe_skip:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     outputs:
       should_skip: ${{steps.skip_check.outputs.should_skip}}
     steps:
@@ -43,11 +43,10 @@ jobs:
       fail-fast: false
       matrix:
         system:
-        - { os: ubuntu-22.04, compiler: { cc: gcc-11,   cxx: g++-11 } }
-        # https://github.com/roboticslab-uc3m/questions-and-answers/issues/101
-        - { os: ubuntu-22.04, compiler: { cc: clang-15, cxx: clang++-15 } }
-        - { os: ubuntu-24.04, compiler: { cc: gcc-13,   cxx: g++-13 } }
-        - { os: ubuntu-24.04, compiler: { cc: clang-18, cxx: clang++-18 } }
+        - { os: ubuntu-24.04, compiler: { cc: gcc-13,   cxx: g++-13,     apt: g++-13 } }
+        - { os: ubuntu-24.04, compiler: { cc: clang-18, cxx: clang++-18, apt: clang-18 } }
+        - { os: ubuntu-26.04, compiler: { cc: gcc-15,   cxx: g++-15,     apt: g++-15 } }
+        - { os: ubuntu-26.04, compiler: { cc: clang-21, cxx: clang++-21, apt: clang-21 } }
         robotology:
         # CMake 3.22 instead of 3.19 because of the CMAKE_BUILD_TYPE env var
         - { yarp: yarp-3.11, cmake: 3.22.x }
@@ -60,29 +59,29 @@ jobs:
 
     steps:
     - name: Check out main project
-      uses: actions/checkout@v4
+      uses: actions/checkout@v7
 
     - name: Check out YCM
-      uses: actions/checkout@v4
+      uses: actions/checkout@v7
       with:
         repository: robotology/ycm
         path: .deps/ycm
 
     - name: Check out YARP
-      uses: actions/checkout@v4
+      uses: actions/checkout@v7
       with:
         repository: robotology/yarp
         ref: ${{matrix.robotology.yarp}}
         path: .deps/yarp
 
     - name: Check out Vosk
-      uses: actions/checkout@v4
+      uses: actions/checkout@v7
       with:
         repository: alphacep/vosk-api
         path: .deps/vosk
 
     - name: Check out llama.cpp
-      uses: actions/checkout@v4
+      uses: actions/checkout@v7
       with:
         repository: ggml-org/llama.cpp
         path: .deps/llama.cpp
