@@ -5,8 +5,8 @@ on:
     inputs:
       ubuntu:
         description: 'Ubuntu version'
-        required: false
-        default: '24.04'
+        required: true
+        default: '26.04'
         type: string
 
 env:
