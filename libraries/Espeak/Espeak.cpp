@@ -24,6 +24,9 @@ namespace
         case EE_OK:
             yCError(ESPK) << caller << "EE_OK";
             break;
+        case EE_INTERNAL_ERROR:
+            yCError(ESPK) << caller << "EE_INTERNAL_ERROR";
+            break;
         case EE_BUFFER_FULL:
             yCError(ESPK) << caller << "EE_BUFFER_FULL";
             break;

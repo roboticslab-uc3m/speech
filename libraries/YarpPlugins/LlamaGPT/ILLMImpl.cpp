@@ -76,7 +76,7 @@ yarp::dev::ReturnValue LlamaGPT::setPrompt(const std::string & prompt)
 
 yarp::dev::ReturnValue LlamaGPT::readPrompt(std::string & oPrompt)
 {
-    if (!messages.empty() && messages.front().role == "system")
+    if (!messages.empty() && messages.front().role == std::string("system"))
     {
         oPrompt = messages.front().content;
     }
