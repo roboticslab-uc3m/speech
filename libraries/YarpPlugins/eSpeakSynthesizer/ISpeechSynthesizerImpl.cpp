@@ -5,6 +5,8 @@
 #include <algorithm> // std::clamp
 #include <functional> // std::function
 
+#include <yarp/conf/version.h>
+
 #include <yarp/os/LogStream.h>
 
 #include <espeak/speak_lib.h>
@@ -81,7 +83,11 @@ yarp::dev::ReturnValue eSpeakSynthesizer::setLanguage(const std::string & langua
     else
     {
         yCError(ESS) << "Failed to set language:" << language;
+#if YARP_VERSION_COMPARE(>=, 4, 0, 0)
         return yarp::dev::ReturnValue_error_not_ready;
+#else
+        return yarp::dev::ReturnValue::return_code::return_value_error_not_ready;
+#endif
     }
 }
 
@@ -99,7 +105,11 @@ yarp::dev::ReturnValue eSpeakSynthesizer::getLanguage(std::string & language)
     else
     {
         yCError(ESS) << "No voice set";
+#if YARP_VERSION_COMPARE(>=, 4, 0, 0)
         return yarp::dev::ReturnValue_error_not_ready;
+#else
+        return yarp::dev::ReturnValue::return_code::return_value_error_not_ready;
+#endif
     }
 }
 
@@ -117,7 +127,11 @@ yarp::dev::ReturnValue eSpeakSynthesizer::setVoice(const std::string & voice_nam
     else
     {
         yCError(ESS) << "Failed to set voice:" << voice_name;
+#if YARP_VERSION_COMPARE(>=, 4, 0, 0)
         return yarp::dev::ReturnValue_error_not_ready;
+#else
+        return yarp::dev::ReturnValue::return_code::return_value_error_not_ready;
+#endif
     }
 }
 
@@ -134,7 +148,11 @@ yarp::dev::ReturnValue eSpeakSynthesizer::getVoice(std::string & voice_name)
     else
     {
         yCError(ESS) << "No voice set";
+#if YARP_VERSION_COMPARE(>=, 4, 0, 0)
         return yarp::dev::ReturnValue_error_not_ready;
+#else
+        return yarp::dev::ReturnValue::return_code::return_value_error_not_ready;
+#endif
     }
 }
 
@@ -145,7 +163,11 @@ yarp::dev::ReturnValue eSpeakSynthesizer::setSpeed(double speed)
     if (!isVoiceSet)
     {
         yCError(ESS) << "No voice set";
+#if YARP_VERSION_COMPARE(>=, 4, 0, 0)
         return yarp::dev::ReturnValue_error_not_ready;
+#else
+        return yarp::dev::ReturnValue::return_code::return_value_error_not_ready;
+#endif
     }
 
     auto clamped = std::clamp(speed, MIN_SPEED_RATE, MAX_SPEED_RATE);
@@ -153,7 +175,11 @@ yarp::dev::ReturnValue eSpeakSynthesizer::setSpeed(double speed)
 
     return espeak_SetParameter(espeakRATE, userToLibSpeed(clamped), 0) == EE_OK
         ? yarp::dev::ReturnValue_ok
+#if YARP_VERSION_COMPARE(>=, 4, 0, 0)
         : yarp::dev::ReturnValue_error_method_failed;
+#else
+        : yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+#endif
 }
 
 // -----------------------------------------------------------------------------
@@ -169,7 +195,11 @@ yarp::dev::ReturnValue eSpeakSynthesizer::getSpeed(double & speed)
     else
     {
         yCError(ESS) << "No voice set";
+#if YARP_VERSION_COMPARE(>=, 4, 0, 0)
         return yarp::dev::ReturnValue_error_not_ready;
+#else
+        return yarp::dev::ReturnValue::return_code::return_value_error_not_ready;
+#endif
     }
 }
 
@@ -180,7 +210,11 @@ yarp::dev::ReturnValue eSpeakSynthesizer::setPitch(double pitch)
     if (!isVoiceSet)
     {
         yCError(ESS) << "No voice set";
+#if YARP_VERSION_COMPARE(>=, 4, 0, 0)
         return yarp::dev::ReturnValue_error_not_ready;
+#else
+        return yarp::dev::ReturnValue::return_code::return_value_error_not_ready;
+#endif
     }
 
     auto clamped = std::clamp(pitch, 0.0, 1.0);
@@ -188,7 +222,11 @@ yarp::dev::ReturnValue eSpeakSynthesizer::setPitch(double pitch)
 
     return espeak_SetParameter(espeakPITCH, userToLibPitch(clamped), 0) == EE_OK
         ? yarp::dev::ReturnValue_ok
+#if YARP_VERSION_COMPARE(>=, 4, 0, 0)
         : yarp::dev::ReturnValue_error_method_failed;
+#else
+        : yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+#endif
 }
 
 // -----------------------------------------------------------------------------
@@ -204,7 +242,11 @@ yarp::dev::ReturnValue eSpeakSynthesizer::getPitch(double & pitch)
     else
     {
         yCError(ESS) << "No voice set";
+#if YARP_VERSION_COMPARE(>=, 4, 0, 0)
         return yarp::dev::ReturnValue_error_not_ready;
+#else
+        return yarp::dev::ReturnValue::return_code::return_value_error_not_ready;
+#endif
     }
 }
 
@@ -215,7 +257,11 @@ yarp::dev::ReturnValue eSpeakSynthesizer::synthesize(const std::string & text, y
     if (!isVoiceSet)
     {
         yCError(ESS) << "No voice set";
+#if YARP_VERSION_COMPARE(>=, 4, 0, 0)
         return yarp::dev::ReturnValue_error_not_ready;
+#else
+        return yarp::dev::ReturnValue::return_code::return_value_error_not_ready;
+#endif
     }
 
     yCInfo(ESS) << "Synthesizing:" << text;
@@ -243,7 +289,11 @@ yarp::dev::ReturnValue eSpeakSynthesizer::synthesize(const std::string & text, y
     if (espeak_Synth(text.c_str(), 0, 0, POS_CHARACTER, 0, espeakCHARS_AUTO | espeakENDPAUSE, nullptr, nullptr) != EE_OK)
     {
         yCError(ESS) << "Failed to synthesize text";
+#if YARP_VERSION_COMPARE(>=, 4, 0, 0)
         return yarp::dev::ReturnValue_error_method_failed;
+#else
+        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+#endif
     }
 
     return yarp::dev::ReturnValue_ok;
