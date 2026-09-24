@@ -37,8 +37,8 @@ protected:
     double speed, pitch;
     yarp::sig::Sound sound;
 
-    static constexpr yarp::dev::ReturnValue::return_code ok {yarp::dev::ReturnValue::return_code::return_value_ok};
-    static constexpr yarp::dev::ReturnValue::return_code not_ready {yarp::dev::ReturnValue::return_code::return_value_error_not_ready};
+    static constexpr auto ok {yarp::dev::ReturnValue::return_code::return_value_ok};
+    static constexpr auto not_ready {yarp::dev::ReturnValue::return_code::return_value_error_not_ready};
 };
 
 TEST_F(eSpeakSynthesizerTest, eSpeakSynthesizerVoiceNotSet)

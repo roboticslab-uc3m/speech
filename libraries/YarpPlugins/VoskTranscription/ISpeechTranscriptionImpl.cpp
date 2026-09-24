@@ -25,7 +25,7 @@ yarp::dev::ReturnValue VoskTranscription::setLanguage(const std::string & langua
     if (modelFullPath.empty())
     {
         yCError(VOSK) << "Model file not found";
-        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+        return yarp::dev::ReturnValue_error_method_failed;
     }
 
     yCInfo(VOSK) << "Loading model from:" << modelFullPath;
@@ -35,7 +35,7 @@ yarp::dev::ReturnValue VoskTranscription::setLanguage(const std::string & langua
     if (!model)
     {
         yCError(VOSK) << "Failed to load model";
-        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+        return yarp::dev::ReturnValue_error_method_failed;
     }
 
     modelName = language;
@@ -46,7 +46,7 @@ yarp::dev::ReturnValue VoskTranscription::setLanguage(const std::string & langua
         recognizer = nullptr;
     }
 
-    return yarp::dev::ReturnValue::return_code::return_value_ok;
+    return yarp::dev::ReturnValue_ok;
 }
 
 // -----------------------------------------------------------------------------
@@ -56,12 +56,12 @@ yarp::dev::ReturnValue VoskTranscription::getLanguage(std::string & language)
     if (modelName.empty())
     {
         yCError(VOSK) << "Language model not set";
-        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+        return yarp::dev::ReturnValue_error_method_failed;
     }
 
     language = modelName;
 
-    return yarp::dev::ReturnValue::return_code::return_value_ok;
+    return yarp::dev::ReturnValue_ok;
 }
 
 // -----------------------------------------------------------------------------
@@ -71,7 +71,7 @@ yarp::dev::ReturnValue VoskTranscription::transcribe(const yarp::sig::Sound & so
     if (!model)
     {
         yCError(VOSK) << "Model is not loaded";
-        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+        return yarp::dev::ReturnValue_error_method_failed;
     }
 
     if (!recognizer || sampleRate != sound.getFrequency())
@@ -90,7 +90,7 @@ yarp::dev::ReturnValue VoskTranscription::transcribe(const yarp::sig::Sound & so
         if (recognizer == nullptr)
         {
             yCError(VOSK) << "Failed to create recognizer";
-            return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+            return yarp::dev::ReturnValue_error_method_failed;
         }
     }
 
@@ -137,10 +137,10 @@ yarp::dev::ReturnValue VoskTranscription::transcribe(const yarp::sig::Sound & so
     case -1:
     default:
         yCError(VOSK) << "Failed to accept waveform";
-        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+        return yarp::dev::ReturnValue_error_method_failed;
     }
 
-    return yarp::dev::ReturnValue::return_code::return_value_ok;
+    return yarp::dev::ReturnValue_ok;
 }
 
 // -----------------------------------------------------------------------------

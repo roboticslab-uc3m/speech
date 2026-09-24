@@ -27,12 +27,12 @@ yarp::dev::ReturnValue PiperSynthesizer::setLanguage(const std::string & languag
         current_model = &it->second;
         yCInfo(PIPER) << "Setting language to:" << name;
         loadCurrentModel();
-        return yarp::dev::ReturnValue::return_code::return_value_ok;
+        return yarp::dev::ReturnValue_ok;
     }
     else
     {
         yCError(PIPER) << "Language not found:" << name;
-        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+        return yarp::dev::ReturnValue_error_method_failed;
     }
 }
 
@@ -43,12 +43,12 @@ yarp::dev::ReturnValue PiperSynthesizer::getLanguage(std::string & language)
     if (synth)
     {
         language = current_model->language;
-        return yarp::dev::ReturnValue::return_code::return_value_ok;
+        return yarp::dev::ReturnValue_ok;
     }
     else
     {
         yCError(PIPER) << "Synthesizer not initialized";
-        return yarp::dev::ReturnValue::return_code::return_value_error_not_ready;
+        return yarp::dev::ReturnValue_error_not_ready;
     }
 }
 
@@ -67,12 +67,12 @@ yarp::dev::ReturnValue PiperSynthesizer::setVoice(const std::string & voice_name
         current_model = &it->second;
         yCInfo(PIPER) << "Setting voice to:" << name;
         loadCurrentModel();
-        return yarp::dev::ReturnValue::return_code::return_value_ok;
+        return yarp::dev::ReturnValue_ok;
     }
     else
     {
         yCError(PIPER) << "Voice not found:" << name;
-        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+        return yarp::dev::ReturnValue_error_method_failed;
     }
 }
 
@@ -83,12 +83,12 @@ yarp::dev::ReturnValue PiperSynthesizer::getVoice(std::string & voice_name)
     if (synth)
     {
         voice_name = current_model->dataset;
-        return yarp::dev::ReturnValue::return_code::return_value_ok;
+        return yarp::dev::ReturnValue_ok;
     }
     else
     {
         yCError(PIPER) << "Synthesizer not initialized";
-        return yarp::dev::ReturnValue::return_code::return_value_error_not_ready;
+        return yarp::dev::ReturnValue_error_not_ready;
     }
 }
 
@@ -101,12 +101,12 @@ yarp::dev::ReturnValue PiperSynthesizer::setSpeed(double speed)
         speed = std::max(speed, 0.0); // ensure speed is non-negative
         options.length_scale = 1.0 / speed;
         yCInfo(PIPER) << "Setting speed to:" << speed;
-        return yarp::dev::ReturnValue::return_code::return_value_ok;
+        return yarp::dev::ReturnValue_ok;
     }
     else
     {
         yCError(PIPER) << "Synthesizer not initialized";
-        return yarp::dev::ReturnValue::return_code::return_value_error_not_ready;
+        return yarp::dev::ReturnValue_error_not_ready;
     }
 }
 
@@ -117,12 +117,12 @@ yarp::dev::ReturnValue PiperSynthesizer::getSpeed(double & speed)
     if (synth)
     {
         speed = 1.0 / options.length_scale;
-        return yarp::dev::ReturnValue::return_code::return_value_ok;
+        return yarp::dev::ReturnValue_ok;
     }
     else
     {
         yCError(PIPER) << "Synthesizer not initialized";
-        return yarp::dev::ReturnValue::return_code::return_value_error_not_ready;
+        return yarp::dev::ReturnValue_error_not_ready;
     }
 }
 
@@ -130,14 +130,14 @@ yarp::dev::ReturnValue PiperSynthesizer::getSpeed(double & speed)
 
 yarp::dev::ReturnValue PiperSynthesizer::setPitch(double pitch)
 {
-    return yarp::dev::ReturnValue::return_code::return_value_error_not_implemented_by_device;
+    return yarp::dev::ReturnValue_error_not_implemented_by_device;
 }
 
 // -----------------------------------------------------------------------------
 
 yarp::dev::ReturnValue PiperSynthesizer::getPitch(double & pitch)
 {
-    return yarp::dev::ReturnValue::return_code::return_value_error_not_implemented_by_device;
+    return yarp::dev::ReturnValue_error_not_implemented_by_device;
 }
 
 // -----------------------------------------------------------------------------
@@ -147,7 +147,7 @@ yarp::dev::ReturnValue PiperSynthesizer::synthesize(const std::string & text, ya
     if (!synth)
     {
         yCError(PIPER) << "Synthesizer not initialized";
-        return yarp::dev::ReturnValue::return_code::return_value_error_not_ready;
+        return yarp::dev::ReturnValue_error_not_ready;
     }
 
     yCInfo(PIPER) << "Synthesizing:" << text;
@@ -157,7 +157,7 @@ yarp::dev::ReturnValue PiperSynthesizer::synthesize(const std::string & text, ya
     if (ret != PIPER_OK)
     {
         yCError(PIPER) << "Failed to start synthesis:" << ret;
-        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+        return yarp::dev::ReturnValue_error_method_failed;
     }
 
     piper_audio_chunk chunk;
@@ -167,7 +167,7 @@ yarp::dev::ReturnValue PiperSynthesizer::synthesize(const std::string & text, ya
         if (ret != PIPER_OK)
         {
             yCError(PIPER) << "Failed to synthesize next chunk:" << ret;
-            return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+            return yarp::dev::ReturnValue_error_method_failed;
         }
 
         yarp::sig::Sound subSound;
@@ -185,7 +185,7 @@ yarp::dev::ReturnValue PiperSynthesizer::synthesize(const std::string & text, ya
         yCDebug(PIPER) << "Synthesized chunk with" << chunk.num_samples << "samples at" << chunk.sample_rate << "Hz";
     }
 
-    return yarp::dev::ReturnValue::return_code::return_value_ok;
+    return yarp::dev::ReturnValue_ok;
 }
 
 // -----------------------------------------------------------------------------

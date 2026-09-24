@@ -54,7 +54,7 @@ yarp::dev::ReturnValue LlamaGPT::setPrompt(const std::string & prompt)
     if (!messages.empty())
     {
         yCError(LLAMA) << "Conversation has started or the prompt was already set, you must delete the conversation first";
-        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+        return yarp::dev::ReturnValue_error_method_failed;
     }
 
     const auto trimmed = trim(prompt);
@@ -69,7 +69,7 @@ yarp::dev::ReturnValue LlamaGPT::setPrompt(const std::string & prompt)
         yCWarning(LLAMA) << "Requested prompt is empty, not setting it";
     }
 
-    return yarp::dev::ReturnValue::return_code::return_value_ok;
+    return yarp::dev::ReturnValue_ok;
 }
 
 // -----------------------------------------------------------------------------
@@ -86,7 +86,7 @@ yarp::dev::ReturnValue LlamaGPT::readPrompt(std::string & oPrompt)
         oPrompt.clear();
     }
 
-    return yarp::dev::ReturnValue::return_code::return_value_ok;
+    return yarp::dev::ReturnValue_ok;
 }
 
 // -----------------------------------------------------------------------------
@@ -111,7 +111,7 @@ yarp::dev::ReturnValue LlamaGPT::ask(const std::string & question, yarp::dev::LL
     if (new_len < 0)
     {
         yCError(LLAMA) << "Failed to apply the chat template (pre)";
-        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+        return yarp::dev::ReturnValue_error_method_failed;
     }
 
     // remove previous messages to obtain the prompt to generate the response
@@ -130,7 +130,7 @@ yarp::dev::ReturnValue LlamaGPT::ask(const std::string & question, yarp::dev::LL
     if (llama_tokenize(vocab, prompt.c_str(), prompt.size(), prompt_tokens.data(), prompt_tokens.size(), is_first, true) < 0)
     {
         yCError(LLAMA) << "Failed to tokenize the prompt";
-        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+        return yarp::dev::ReturnValue_error_method_failed;
     }
 
     // prepare a batch for the prompt
@@ -151,14 +151,14 @@ yarp::dev::ReturnValue LlamaGPT::ask(const std::string & question, yarp::dev::LL
         if (n_ctx_used + batch.n_tokens > n_ctx)
         {
             yCError(LLAMA) << "Context size exceeded: " << n_ctx_used + batch.n_tokens << " > " << n_ctx;
-            return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+            return yarp::dev::ReturnValue_error_method_failed;
         }
 
         // evaluate the current batch with the transformer model
         if (llama_decode(ctx, batch))
         {
             yCError(LLAMA) << "Failed to call llama_decode()";
-            return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+            return yarp::dev::ReturnValue_error_method_failed;
         }
 
         // sample the next token
@@ -176,7 +176,7 @@ yarp::dev::ReturnValue LlamaGPT::ask(const std::string & question, yarp::dev::LL
         if (n < 0)
         {
             yCError(LLAMA) << "Failed to convert token to piece";
-            return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+            return yarp::dev::ReturnValue_error_method_failed;
         }
 
         std::string s(buf, n);
@@ -231,10 +231,10 @@ yarp::dev::ReturnValue LlamaGPT::ask(const std::string & question, yarp::dev::LL
     if (prev_len < 0)
     {
         yCError(LLAMA) << "Failed to apply the chat template (post)";
-        return yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+        return yarp::dev::ReturnValue_error_method_failed;
     }
 
-    return yarp::dev::ReturnValue::return_code::return_value_ok;
+    return yarp::dev::ReturnValue_ok;
 }
 
 // -----------------------------------------------------------------------------
@@ -250,7 +250,7 @@ yarp::dev::ReturnValue LlamaGPT::getConversation(std::vector<yarp::dev::LLM_Mess
             return yarp::dev::LLM_Message(msg.role, msg.content, {}, {});
         });
 
-    return yarp::dev::ReturnValue::return_code::return_value_ok;
+    return yarp::dev::ReturnValue_ok;
 }
 
 // -----------------------------------------------------------------------------
@@ -259,9 +259,7 @@ yarp::dev::ReturnValue LlamaGPT::deleteConversation()
 {
     yCInfo(LLAMA) << "Deleting conversation and prompt";
 
-    return clear(false)
-        ? yarp::dev::ReturnValue::return_code::return_value_ok
-        : yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+    return clear(false) ? yarp::dev::ReturnValue_ok : yarp::dev::ReturnValue_error_method_failed;
 }
 
 // -----------------------------------------------------------------------------
@@ -270,9 +268,7 @@ yarp::dev::ReturnValue LlamaGPT::refreshConversation()
 {
     yCInfo(LLAMA) << "Deleting conversation while keeping the prompt (if any)";
 
-    return clear(true)
-        ? yarp::dev::ReturnValue::return_code::return_value_ok
-        : yarp::dev::ReturnValue::return_code::return_value_error_method_failed;
+    return clear(true) ? yarp::dev::ReturnValue_ok : yarp::dev::ReturnValue_error_method_failed;
 }
 
 // -----------------------------------------------------------------------------
